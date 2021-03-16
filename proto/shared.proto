@@ -20,7 +20,7 @@ option go_package = "github.com/digital-dream-labs/vector-go-sdk/pkg/vectorpb";
 
 import "behavior.proto";
 import "cube.proto";
-import "alexa.proto"; 
+import "alexa.proto";
 import "messages.proto";
 import "settings.proto";
 import "extensions.proto";
@@ -49,9 +49,9 @@ message ConnectionResponse {
 message Event {
   oneof event_type {
     TimeStampedStatus                time_stamped_status                 = 1;
-    Onboarding                       onboarding                          = 2; 
+    Onboarding                       onboarding                          = 2;
     WakeWord                         wake_word                           = 3;
-    AttentionTransfer                attention_transfer                  = 4; 
+    AttentionTransfer                attention_transfer                  = 4;
     RobotObservedFace                robot_observed_face                 = 5;
     RobotChangedObservedFaceID       robot_changed_observed_face_id      = 6;
     ObjectEvent                      object_event                        = 7;
@@ -62,12 +62,17 @@ message Event {
     // Used by Vector to verify the connection is still alive.
     KeepAlivePing                    keep_alive                          = 12;
     ConnectionResponse               connection_response                 = 13;
-    JdocsChanged                     jdocs_changed                       = 14; 
-    AlexaAuthEvent                   alexa_auth_event                    = 15; 
+    JdocsChanged                     jdocs_changed                       = 14;
+    AlexaAuthEvent                   alexa_auth_event                    = 15;
     MirrorModeDisabled               mirror_mode_disabled                = 16;
     VisionModesAutoDisabled          vision_modes_auto_disabled          = 17;
-    CheckUpdateStatusResponse        check_update_status_response        = 18; 
+    CheckUpdateStatusResponse        check_update_status_response        = 18;
     UserIntent                       user_intent                         = 19;
+    RobotObservedMotion              robot_observed_motion               = 20;
+    RobotErasedEnrolledFace          robot_erased_enrolled_face          = 21;
+    RobotRenamedEnrolledFace         robot_renamed_enrolled_face         = 22;
+    CameraSettingsUpdate             camera_settings_update              = 23;
+    UnexpectedMovement               unexpected_movement                 = 24;
   }
 }
 

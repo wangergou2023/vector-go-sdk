@@ -121,7 +121,7 @@ enum ObjectType
   // Light Cube (a.k.a. Active Block)
   //
   BLOCK_LIGHTCUBE1 = 2;
-  
+
   CHARGER_BASIC = 6;
 
   FIRST_CUSTOM_OBJECT_TYPE = 15;

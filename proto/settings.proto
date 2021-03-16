@@ -18,7 +18,7 @@ syntax = "proto3";
 package Anki.Vector.external_interface;
 option go_package = "github.com/digital-dream-labs/vector-go-sdk/pkg/vectorpb";
 
-import "response_status.proto"; 
+import "response_status.proto";
 
 
 enum ApiVersion {
@@ -147,4 +147,23 @@ message UpdateAccountSettingsResponse {
 
 message JdocsChanged {
   repeated JdocType jdoc_types = 1;
+}
+
+
+enum UserEntitlement {
+  KICKSTARTER_EYES = 0;
+}
+
+message UserEntitlementsConfig {
+  oneof oneof_kickstarter_eyes { bool kickstarter_eyes = 1; }
+}
+
+message UpdateUserEntitlementsRequest {
+  UserEntitlementsConfig user_entitlements = 1;
+}
+
+message UpdateUserEntitlementsResponse {
+  ResponseStatus status = 1;
+  ResultCode code = 2;
+  Jdoc doc = 3;
 }
