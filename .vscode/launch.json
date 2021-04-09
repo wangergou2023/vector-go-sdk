@@ -2,31 +2,40 @@
     // Use IntelliSense to learn about possible attributes.
     // Hover to view descriptions of existing attributes.
     // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
-
-    // Example of Adding configs for VS Code
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Speak Example",
+            "name": "Speak",
             "type": "go",
             "request": "launch",
             "mode": "debug",
-            "program": "${workspaceFolder}\\cmd\\examples\\speak\\main.go",
+            "program": "${workspaceFolder}\\vector-go-sdk\\cmd\\examples\\speak\\main.go",
             "env": {
-                "BOT_TARGET":"YOUR_VECTOR_IP_HERE:443",
-                "BOT_TOKEN":"YOUR SESSION TOKEN GUID HERE",
+                "BOT_TARGET":"192.168.0.148:443",
+                "BOT_TOKEN":"mKLTjMNJQzCwkwkxgBanxg==",
             },
         },
         {
-            "name": "Escape-Pod Example",
+            "name": "Speak Escape Pod",
             "type": "go",
             "request": "launch",
             "mode": "debug",
-            "program": "${workspaceFolder}\\cmd\\escape-pod-login\\main.go",
+            "program": "${workspaceFolder}\\vector-go-sdk\\cmd\\examples\\speak.ep\\main.go",
+            "env": {
+                "BOT_TARGET":"192.168.0.148:443",
+                "BOT_TOKEN":"mKLTjMNJQzCwkwkxgBanxg==",
+            },
+        },
+        {
+            "name": "Escape-Pod",
+            "type": "go",
+            "request": "launch",
+            "mode": "debug",
+            "program": "${workspaceFolder}\\vector-go-sdk\\cmd\\escape-pod-login\\main.go",
             "args": [
                 "-host",
-                "YOUR_VECTOR_IP_HERE"
+                "192.168.0.148"
             ],
-        }
+        }        
     ]
 }
