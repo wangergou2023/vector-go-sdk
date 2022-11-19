@@ -21,7 +21,6 @@ type Vector struct {
 
 // New returns either a vector struct, or an error on failure
 func New(opts ...Option) (*Vector, error) {
-
 	cfg := options{}
 
 	homedir, _ := os.UserHomeDir()
@@ -76,9 +75,20 @@ func New(opts ...Option) (*Vector, error) {
 func NewEP(opts ...Option) (*Vector, error) {
 	cfg := options{}
 
+	homedir, _ := os.UserHomeDir()
+	dirname := filepath.Join(homedir, ".anki_vector", "sdk_config.ini")
+
+	if initData, _ := ini.Load(dirname); initData != nil {
+		sec, _ := initData.GetSection(ini.DefaultSection)
+		sec.MapTo(&cfg)
+	} else {
+		return nil, fmt.Errorf("INI file missing")
+	}
+
 	for _, opt := range opts {
 		opt(&cfg)
 	}
+
 	if cfg.Target == "" {
 		var host = flag.String("host", "", "Vector's IP address")
 		flag.Parse()
