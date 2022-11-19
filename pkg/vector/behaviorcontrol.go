@@ -11,7 +11,6 @@ import (
 // a message to the stop channel.  Failing to do so may leave your bot in a funny, funny
 // state.
 func (v *Vector) BehaviorControl(ctx context.Context, start, stop chan bool) error {
-	print("0...")
 	r, err := v.Conn.BehaviorControl(
 		ctx,
 	)
@@ -19,7 +18,6 @@ func (v *Vector) BehaviorControl(ctx context.Context, start, stop chan bool) err
 		return err
 	}
 
-	print("1...")
 	if err := r.Send(
 		&vectorpb.BehaviorControlRequest{
 			RequestType: &vectorpb.BehaviorControlRequest_ControlRequest{
@@ -32,13 +30,11 @@ func (v *Vector) BehaviorControl(ctx context.Context, start, stop chan bool) err
 		return err
 	}
 
-	print("SENT")
 	for {
 		ctrlresp, err := r.Recv()
 		if err != nil {
 			return err
 		}
-		print("RECEIVED")
 		if ctrlresp.GetControlGrantedResponse() != nil {
 			start <- true
 			break
