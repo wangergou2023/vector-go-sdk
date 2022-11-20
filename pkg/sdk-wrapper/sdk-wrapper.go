@@ -1,21 +1,13 @@
 package sdk_wrapper
 
 import (
-	"bytes"
 	"context"
-	"encoding/binary"
-	"fmt"
 	"github.com/digital-dream-labs/vector-go-sdk/pkg/vector"
 	"github.com/digital-dream-labs/vector-go-sdk/pkg/vectorpb"
-	"github.com/fogleman/gg"
-	"github.com/nfnt/resize"
-	"image"
-	"image/color"
 	_ "image/gif"
 	_ "image/jpeg"
 	_ "image/png"
 	"log"
-	"os"
 	"time"
 )
 
@@ -162,119 +154,4 @@ func MoveHead(speed float32) {
 			SpeedRadPerSec: speed,
 		},
 	)
-}
-
-func TextOnImg(text string, size float64, isBold bool) []byte {
-	bgImage := image.NewRGBA(image.Rectangle{
-		Min: image.Point{X: 0, Y: 0},
-		Max: image.Point{X: 184, Y: 96},
-	})
-	imgWidth := bgImage.Bounds().Dx()
-	imgHeight := bgImage.Bounds().Dy()
-	dc := gg.NewContext(imgWidth, imgHeight)
-	dc.DrawImage(bgImage, 0, 0)
-
-	var fontName = "DroidSans"
-	if isBold {
-		fontName = fontName + "-Bold"
-	}
-
-	if err := dc.LoadFontFace("data/fonts/"+fontName+".ttf", size); err != nil {
-		fmt.Println(err)
-		return nil
-	}
-
-	x := float64(imgWidth / 2)
-	y := float64((imgHeight / 2))
-	maxWidth := float64(imgWidth) - 35.0
-	dc.SetColor(color.RGBA{0, 0, 255, 255}) // Green
-	dc.DrawStringWrapped(text, x, y, 0.5, 0.5, maxWidth, 1.5, gg.AlignCenter)
-	buf := new(bytes.Buffer)
-	bitmap := convertPixelsToRawBitmap(dc.Image())
-	for _, ui := range bitmap {
-		binary.Write(buf, binary.LittleEndian, ui)
-	}
-	os.WriteFile("/tmp/test.raw", buf.Bytes(), 0644)
-	return buf.Bytes()
-}
-
-func DataOnImg(fileName string) []byte {
-	inFile, err := os.Open(fileName)
-	if err != nil {
-		fmt.Println(err)
-		return nil
-	}
-	defer inFile.Close()
-	println("image file loaded OK")
-
-	src, _, err := image.Decode(inFile)
-	if err != nil {
-		fmt.Println(err)
-		return nil
-	}
-	println("image file decoded")
-	dst := resize.Resize(184, 96, src, resize.Bicubic)
-
-	bgImage := image.NewRGBA(image.Rectangle{
-		Min: image.Point{X: 0, Y: 0},
-		Max: image.Point{X: 184, Y: 96},
-	})
-	imgWidth := bgImage.Bounds().Dx()
-	imgHeight := bgImage.Bounds().Dy()
-	dc := gg.NewContext(imgWidth, imgHeight)
-	dc.DrawImage(bgImage, 0, 0)
-	dc.DrawImage(src, 0, 0)
-	println(dst)
-
-	buf := new(bytes.Buffer)
-	bitmap := convertPixelsToRawBitmap(dc.Image())
-	for _, ui := range bitmap {
-		binary.Write(buf, binary.LittleEndian, ui)
-	}
-	os.WriteFile("/tmp/test.raw", buf.Bytes(), 0644)
-	return buf.Bytes()
-}
-
-func WriteText(text string, size float64, isBold bool, duration int, blocking bool) {
-	faceBytes := TextOnImg(text, size, isBold)
-	displayFaceImage(faceBytes, duration, blocking)
-}
-
-func DisplayImage(imageFile string, duration int, blocking bool) {
-	faceBytes := DataOnImg(imageFile)
-	displayFaceImage(faceBytes, duration, blocking)
-}
-
-func displayFaceImage(faceBytes []byte, duration int, blocking bool) {
-	_, _ = Robot.Conn.DisplayFaceImageRGB(
-		ctx,
-		&vectorpb.DisplayFaceImageRGBRequest{
-			FaceData:         faceBytes,
-			DurationMs:       uint32(duration),
-			InterruptRunning: true,
-		},
-	)
-	if blocking {
-		time.Sleep(time.Duration(duration) * time.Millisecond)
-	}
-}
-
-func convertPixesTo16BitRGB(r uint32, g uint32, b uint32, a uint32) uint16 {
-	R, G, B := int(r/257), int(g/257), int(b/257)
-
-	return uint16((int(R>>3) << 11) |
-		(int(G>>2) << 5) |
-		(int(B>>3) << 0))
-}
-
-func convertPixelsToRawBitmap(image image.Image) []uint16 {
-	imgHeight, imgWidth := image.Bounds().Max.Y, image.Bounds().Max.X
-	bitmap := make([]uint16, 184*96)
-
-	for y := 0; y < imgHeight; y++ {
-		for x := 0; x < imgWidth; x++ {
-			bitmap[(y)*184+(x)] = convertPixesTo16BitRGB(image.At(x, y).RGBA())
-		}
-	}
-	return bitmap
 }
