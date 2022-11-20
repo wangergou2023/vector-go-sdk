@@ -4,6 +4,8 @@ go 1.15
 
 require (
 	github.com/digital-dream-labs/hugh v0.0.0-20210210154335-f4159b9fcd5f
+	github.com/fogleman/gg v1.3.0
+	github.com/golang/freetype v0.0.0-20170609003504-e2365dfdc4a0 // indirect
 	github.com/golang/protobuf v1.5.1
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.3.0 // indirect
 	golang.org/x/net v0.0.0-20210316092652-d523dce5a7f4 // indirect

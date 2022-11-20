@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"flag"
 	"github.com/digital-dream-labs/vector-go-sdk/pkg/sdk-wrapper"
 	"math/rand"
@@ -37,7 +38,20 @@ func main() {
 		phrase = *sentence
 	}
 
-	sdk_wrapper.AssumeBehaviorControl("high")
-	sdk_wrapper.SayText(phrase)
-	sdk_wrapper.ReleaseBehaviorControl()
+	ctx := context.Background()
+	start := make(chan bool)
+	stop := make(chan bool)
+
+	go func() {
+		_ = sdk_wrapper.Robot.BehaviorControl(ctx, start, stop)
+	}()
+
+	for {
+		select {
+		case <-start:
+			sdk_wrapper.SayText(phrase)
+			stop <- true
+			return
+		}
+	}
 }
