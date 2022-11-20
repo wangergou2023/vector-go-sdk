@@ -47,7 +47,11 @@ if __name__ == "__main__":
 */
 
 func main() {
-	v, err := vector.NewEP()
+	var serial = flag.String("serial", "", "Vector's Serial Number")
+	var sentence = flag.String("sentence", "", "Sentence to say")
+	flag.Parse()
+
+	v, err := vector.NewEP(*serial)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -66,8 +70,6 @@ func main() {
 	}
 
 	var phrase = ""
-	var sentence = flag.String("sentence", "", "Sentence to say")
-	flag.Parse()
 
 	if *sentence == "" {
 		s1 := rand.NewSource(time.Now().UnixNano())
