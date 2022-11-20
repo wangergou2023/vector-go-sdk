@@ -160,7 +160,7 @@ func MoveHead(speed float32) {
 	)
 }
 
-func TextOnImg(text string, size float64) []byte {
+func TextOnImg(text string, size float64, isBold bool) []byte {
 	bgImage := image.NewRGBA(image.Rectangle{
 		Min: image.Point{X: 0, Y: 0},
 		Max: image.Point{X: 184, Y: 96},
@@ -170,7 +170,12 @@ func TextOnImg(text string, size float64) []byte {
 	dc := gg.NewContext(imgWidth, imgHeight)
 	dc.DrawImage(bgImage, 0, 0)
 
-	if err := dc.LoadFontFace("../../data/DroidSans.ttf", size); err != nil {
+	var fontName = "DroidSans"
+	if isBold {
+		fontName = fontName + "-Bold"
+	}
+
+	if err := dc.LoadFontFace("data/fonts/"+fontName+".ttf", size); err != nil {
 		fmt.Println(err)
 		return nil
 	}
@@ -178,7 +183,7 @@ func TextOnImg(text string, size float64) []byte {
 	x := float64(imgWidth / 2)
 	y := float64((imgHeight / 2))
 	maxWidth := float64(imgWidth) - 35.0
-	dc.SetColor(color.White)
+	dc.SetColor(color.RGBA{0, 0, 255, 255}) // Green
 	dc.DrawStringWrapped(text, x, y, 0.5, 0.5, maxWidth, 1.5, gg.AlignCenter)
 	buf := new(bytes.Buffer)
 	bitmap := convertPixelsToRawBitmap(dc.Image())
@@ -189,16 +194,61 @@ func TextOnImg(text string, size float64) []byte {
 	return buf.Bytes()
 }
 
-func ImgOnFace(text string, size float64) {
-	faceBytes := TextOnImg(text, size)
+func DataOnImg(fileName string) []byte {
+	inFile, err := os.Open(fileName)
+	if err != nil {
+		fmt.Println(err)
+		return nil
+	}
+	defer inFile.Close()
+
+	src, _, err := image.Decode(inFile)
+	if err != nil {
+		fmt.Println(err)
+		return nil
+	}
+
+	bgImage := image.NewRGBA(image.Rectangle{
+		Min: image.Point{X: 0, Y: 0},
+		Max: image.Point{X: 184, Y: 96},
+	})
+	imgWidth := bgImage.Bounds().Dx()
+	imgHeight := bgImage.Bounds().Dy()
+	dc := gg.NewContext(imgWidth, imgHeight)
+	dc.DrawImage(bgImage, 0, 0)
+	dc.DrawImage(src, 0, 0)
+
+	buf := new(bytes.Buffer)
+	bitmap := convertPixelsToRawBitmap(dc.Image())
+	for _, ui := range bitmap {
+		binary.Write(buf, binary.LittleEndian, ui)
+	}
+	os.WriteFile("/tmp/test.raw", buf.Bytes(), 0644)
+	return buf.Bytes()
+}
+
+func WriteText(text string, size float64, isBold bool, duration int, blocking bool) {
+	faceBytes := TextOnImg(text, size, isBold)
+	displayFaceImage(faceBytes, duration, blocking)
+}
+
+func DisplayImage(imageFile string, duration int, blocking bool) {
+	faceBytes := DataOnImg(imageFile)
+	displayFaceImage(faceBytes, duration, blocking)
+}
+
+func displayFaceImage(faceBytes []byte, duration int, blocking bool) {
 	_, _ = Robot.Conn.DisplayFaceImageRGB(
 		ctx,
 		&vectorpb.DisplayFaceImageRGBRequest{
 			FaceData:         faceBytes,
-			DurationMs:       5000,
+			DurationMs:       uint32(duration),
 			InterruptRunning: true,
 		},
 	)
+	if blocking {
+		time.Sleep(time.Duration(duration) * time.Millisecond)
+	}
 }
 
 func convertPixesTo16BitRGB(r uint32, g uint32, b uint32, a uint32) uint16 {
