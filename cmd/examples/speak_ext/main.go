@@ -1,11 +1,8 @@
 package main
 
 import (
-	"context"
 	"flag"
-	"github.com/digital-dream-labs/vector-go-sdk/pkg/vector"
-	"github.com/digital-dream-labs/vector-go-sdk/pkg/vectorpb"
-	"log"
+	"github.com/digital-dream-labs/vector-go-sdk/pkg/sdk-wrapper"
 	"math/rand"
 	"time"
 )
@@ -15,10 +12,7 @@ func main() {
 	var sentence = flag.String("sentence", "", "Sentence to say")
 	flag.Parse()
 
-	v, err := vector.NewEP(*serial)
-	if err != nil {
-		log.Fatal(err)
-	}
+	sdk_wrapper.InitSDK(*serial)
 
 	sentences := [10]string{
 		"Fortune favors the bold",
@@ -43,27 +37,7 @@ func main() {
 		phrase = *sentence
 	}
 
-	ctx := context.Background()
-	start := make(chan bool)
-	stop := make(chan bool)
-
-	go func() {
-		_ = v.BehaviorControl(ctx, start, stop)
-	}()
-
-	for {
-		select {
-		case <-start:
-			_, _ = v.Conn.SayText(
-				ctx,
-				&vectorpb.SayTextRequest{
-					Text:           phrase,
-					UseVectorVoice: true,
-					DurationScalar: 1.0,
-				},
-			)
-			stop <- true
-			return
-		}
-	}
+	sdk_wrapper.AssumeBehaviorControl("high")
+	sdk_wrapper.SayText(phrase)
+	sdk_wrapper.ReleaseBehaviorControl()
 }
