@@ -170,7 +170,7 @@ func TextOnImg(text string, size float64) []byte {
 	dc := gg.NewContext(imgWidth, imgHeight)
 	dc.DrawImage(bgImage, 0, 0)
 
-	if err := dc.LoadFontFace("/data/test.ttf", size); err != nil {
+	if err := dc.LoadFontFace("../../data/DroidSans.ttf", size); err != nil {
 		fmt.Println(err)
 		return nil
 	}
