@@ -1,7 +1,6 @@
 package vector
 
 import (
-	"flag"
 	"fmt"
 	"github.com/digital-dream-labs/hugh/grpc/client"
 	"github.com/digital-dream-labs/vector-go-sdk/pkg/vectorpb"
@@ -54,11 +53,8 @@ func New(opts ...Option) (*Vector, error) {
 }
 
 // NewEP returns either a vector struct for escape pod vector, or an error on failure
-func NewEP(opts ...Option) (*Vector, error) {
-	var serial = flag.String("serial", "", "Vector's Serial Number")
-	flag.Parse()
-
-	if *serial == "" {
+func NewEP(serial string) (*Vector, error) {
+	if serial == "" {
 		log.Fatal("please use the -serial argument and set it to your robots serial number")
 		return nil, fmt.Errorf("Configuration options missing")
 	}
@@ -69,13 +65,13 @@ func NewEP(opts ...Option) (*Vector, error) {
 	dirname := filepath.Join(homedir, ".anki_vector", "sdk_config.ini")
 
 	if initData, _ := ini.Load(dirname); initData != nil {
-		sec, _ := initData.GetSection(*serial)
+		sec, _ := initData.GetSection(serial)
 		sec.MapTo(&cfg)
 	} else {
 		return nil, fmt.Errorf("INI file missing")
 	}
 
-	cfg.SerialNo = *serial
+	cfg.SerialNo = serial
 	cfg.Target = fmt.Sprintf("%s:443", cfg.Target)
 
 	println(cfg.SerialNo)
