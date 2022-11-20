@@ -8,6 +8,7 @@ require (
 	github.com/golang/freetype v0.0.0-20170609003504-e2365dfdc4a0 // indirect
 	github.com/golang/protobuf v1.5.1
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.3.0 // indirect
+	github.com/nfnt/resize v0.0.0-20180221191011-83c6a9932646
 	golang.org/x/net v0.0.0-20210316092652-d523dce5a7f4 // indirect
 	google.golang.org/genproto v0.0.0-20210322173543-5f0e89347f5a
 	google.golang.org/grpc v1.36.0

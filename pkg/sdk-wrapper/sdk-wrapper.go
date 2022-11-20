@@ -8,8 +8,12 @@ import (
 	"github.com/digital-dream-labs/vector-go-sdk/pkg/vector"
 	"github.com/digital-dream-labs/vector-go-sdk/pkg/vectorpb"
 	"github.com/fogleman/gg"
+	"github.com/nfnt/resize"
 	"image"
 	"image/color"
+	_ "image/gif"
+	_ "image/jpeg"
+	_ "image/png"
 	"log"
 	"os"
 	"time"
@@ -201,12 +205,15 @@ func DataOnImg(fileName string) []byte {
 		return nil
 	}
 	defer inFile.Close()
+	println("image file loaded OK")
 
 	src, _, err := image.Decode(inFile)
 	if err != nil {
 		fmt.Println(err)
 		return nil
 	}
+	println("image file decoded")
+	dst := resize.Resize(184, 96, src, resize.Bicubic)
 
 	bgImage := image.NewRGBA(image.Rectangle{
 		Min: image.Point{X: 0, Y: 0},
@@ -217,6 +224,7 @@ func DataOnImg(fileName string) []byte {
 	dc := gg.NewContext(imgWidth, imgHeight)
 	dc.DrawImage(bgImage, 0, 0)
 	dc.DrawImage(src, 0, 0)
+	println(dst)
 
 	buf := new(bytes.Buffer)
 	bitmap := convertPixelsToRawBitmap(dc.Image())
