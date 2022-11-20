@@ -10,42 +10,6 @@ import (
 	"time"
 )
 
-/*
-import anki_vector
-import sys
-
-def main():
-    sentences = [
-            "Fortune favors the bold",
-            "I think, therefore I am",
-            "Time is money",
-            "I came, I saw, I conquered",
-            "When life gives you lemons, make lemonade",
-            "Practice makes perfect",
-            "Knowledge is power",
-            "Have no fear of perfection, you'll never reach it",
-            "No pain no gain",
-            "That which does not kill us makes us stronger"
-            ]
-
-    with anki_vector.Robot(cache_animation_lists=False) as robot:
-        phrase = ""
-        if len(sys.argv)>0:
-            phrase = sys.argv[1]
-
-        if len(phrase)==0:
-            from random import randrange
-            i = randrange(10)
-            phrase = sentences[i]
-
-        print("Say " + phrase)
-        robot.behavior.say_text(phrase, False)
-
-if __name__ == "__main__":
-    main()
-
-*/
-
 func main() {
 	var serial = flag.String("serial", "", "Vector's Serial Number")
 	var sentence = flag.String("sentence", "", "Sentence to say")

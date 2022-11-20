@@ -2,13 +2,17 @@ package main
 
 import (
 	"context"
+	"flag"
 	"github.com/digital-dream-labs/vector-go-sdk/pkg/vector"
 	"github.com/digital-dream-labs/vector-go-sdk/pkg/vectorpb"
 	"log"
 )
 
 func main() {
-	v, err := vector.NewEP()
+	var serial = flag.String("serial", "", "Vector's Serial Number")
+	flag.Parse()
+
+	v, err := vector.NewEP(*serial)
 	if err != nil {
 		log.Fatal(err)
 	}
