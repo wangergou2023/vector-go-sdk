@@ -14,4 +14,5 @@ require (
 	google.golang.org/grpc v1.36.0
 	google.golang.org/protobuf v1.26.0
 	gopkg.in/ini.v1 v1.57.0
+	hz.tools/mjpeg v0.0.3
 )
