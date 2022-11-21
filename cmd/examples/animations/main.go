@@ -4,6 +4,7 @@ import (
 	"context"
 	"flag"
 	"github.com/digital-dream-labs/vector-go-sdk/pkg/sdk-wrapper"
+	"time"
 )
 
 func main() {
@@ -23,7 +24,13 @@ func main() {
 	for {
 		select {
 		case <-start:
-			sdk_wrapper.PlayAnimation("anim_weather_rain_01", 1, false, false, false)
+			println("ANIMATION LIST:")
+			aList := sdk_wrapper.LoadAnimationList()
+			for i := 0; i <= len(aList); i++ {
+				println(aList[i])
+			}
+			sdk_wrapper.PlayAnimation("anim_weather_sunny_01", 1, false, false, false)
+			time.Sleep(time.Duration(5000) * time.Millisecond)
 			stop <- true
 			return
 		}
