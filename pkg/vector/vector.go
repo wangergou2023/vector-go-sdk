@@ -14,6 +14,7 @@ import (
 // Vector is the struct containing info about Vector
 type Vector struct {
 	Conn vectorpb.ExternalInterfaceClient
+	Cfg  options
 }
 
 // New returns either a vector struct, or an error on failure
@@ -47,6 +48,7 @@ func New(opts ...Option) (*Vector, error) {
 
 	r := Vector{
 		Conn: vectorpb.NewExternalInterfaceClient(c.Conn()),
+		Cfg:  cfg,
 	}
 
 	return &r, nil

@@ -3,9 +3,8 @@ package main
 import (
 	"context"
 	"flag"
-	"github.com/digital-dream-labs/vector-go-sdk/pkg/vector"
-	"github.com/digital-dream-labs/vector-go-sdk/pkg/vectorpb"
-	"log"
+	sdk_wrapper "github.com/digital-dream-labs/vector-go-sdk/pkg/sdk-wrapper"
+	"strconv"
 )
 
 func main() {
@@ -15,39 +14,29 @@ func main() {
 	var volume = flag.String("volume", "", "Volume (0-100)")
 	flag.Parse()
 
-	v, err := vector.NewEP(*serial)
-	if err != nil {
-		log.Fatal(err)
-	}
+	sdk_wrapper.InitSDK(*serial)
 
 	ctx := context.Background()
 	start := make(chan bool)
 	stop := make(chan bool)
 
 	go func() {
-		_ = v.BehaviorControl(ctx, start, stop)
+		_ = sdk_wrapper.Robot.BehaviorControl(ctx, start, stop)
 	}()
 
 	for {
 		select {
 		case <-start:
-			if *sentence != "" {
-				_, _ = v.Conn.SayText(
-					ctx,
-					&vectorpb.SayTextRequest{
-						Text:           *sentence,
-						UseVectorVoice: true,
-						DurationScalar: 1.0,
-					},
-				)
-			}
-			if *audioFile != "" {
-				_, _ = v.Conn.ExternalAudioStreamPlayback(
-					ctx,
-					&vectorpb.ExternalAudioStreamRequest{
-						AudioRequestType: ExternalAudioStreamRequest_AudioStreamPrepare,
-					},
-				)
+			vol, err := strconv.Atoi(*volume)
+			if err == nil {
+				println("OK")
+				if *sentence != "" {
+					sdk_wrapper.SayText(*sentence)
+				}
+				if *audioFile != "" {
+					ret := sdk_wrapper.PlaySound(*audioFile, vol)
+					println(ret)
+				}
 			}
 			stop <- true
 			return

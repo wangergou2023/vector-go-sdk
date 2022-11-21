@@ -17,6 +17,10 @@ const IMAGE_TRANSITION_NONE = 0
 const IMAGE_TRANSITION_FADE_IN = 1
 const IMAGE_TRANSITION_SLIDE_LEFT = 2
 const IMAGE_TRANSITION_SLIDE_RIGHT = 3
+const IMAGE_TRANSITION_SLIDE_UP = 4
+const IMAGE_TRANSITION_SLIDE_DOWN = 5
+
+const TRANSITION_SLICES = 20
 
 func TextOnImg(text string, size float64, isBold bool) []byte {
 	bgImage := image.NewRGBA(image.Rectangle{
@@ -41,7 +45,7 @@ func TextOnImg(text string, size float64, isBold bool) []byte {
 	x := float64(imgWidth / 2)
 	y := float64((imgHeight / 2))
 	maxWidth := float64(imgWidth) - 35.0
-	dc.SetColor(color.RGBA{0, 0, 255, 255}) // Green
+	dc.SetColor(color.RGBA{0, 255, 0, 255}) // Green
 	dc.DrawStringWrapped(text, x, y, 0.5, 0.5, maxWidth, 1.5, gg.AlignCenter)
 	buf := new(bytes.Buffer)
 	bitmap := convertPixelsToRawBitmap(dc.Image())
@@ -122,12 +126,29 @@ func DataOnImgWithTransition(fileName string, transition int, pct int) []byte {
 		dst = resize.Resize(uint(imgWidth), 0, src, resize.Bilinear)
 	}
 	x := (imgWidth - dst.Bounds().Dx()) / 2
-	if (transition == IMAGE_TRANSITION_SLIDE_RIGHT) {
-		x = x * pct / 100
-	} else if (transition == IMAGE_TRANSITION_SLIDE_LEFT) {
-		x = dst.Bounds().Dx() - (x * pct / 100)
+	y := (imgHeight - dst.Bounds().Dy()) / 2
+	if transition == IMAGE_TRANSITION_SLIDE_RIGHT {
+		xStart := -1 * dst.Bounds().Dx()
+		xEnd := (imgWidth - dst.Bounds().Dx()) / 2
+		x = xStart + (xEnd-xStart)*pct/100
+		//println(x)
+	} else if transition == IMAGE_TRANSITION_SLIDE_LEFT {
+		xStart := imgWidth + dst.Bounds().Dx()
+		xEnd := (imgWidth - dst.Bounds().Dx()) / 2
+		x = xStart - (xStart-xEnd)*pct/100
+		//println(x)
+	} else if transition == IMAGE_TRANSITION_SLIDE_DOWN {
+		yStart := -1 * dst.Bounds().Dy()
+		yEnd := (imgHeight - dst.Bounds().Dy()) / 2
+		y = yStart + (yEnd-yStart)*pct/100
+		//println(y)
+	} else if transition == IMAGE_TRANSITION_SLIDE_UP {
+		yStart := imgHeight + dst.Bounds().Dy()
+		yEnd := (imgHeight - dst.Bounds().Dy()) / 2
+		y = yStart - (yStart-yEnd)*pct/100
+		//println(y)
 	}
-	dc.DrawImage(dst, x, (imgHeight-dst.Bounds().Dy())/2)
+	dc.DrawImage(dst, x, y)
 
 	buf := new(bytes.Buffer)
 	bitmap := convertPixelsToRawBitmap(dc.Image())
@@ -148,16 +169,15 @@ func DisplayImage(imageFile string, duration int, blocking bool) {
 	displayFaceImage(faceBytes, duration, blocking)
 }
 
-func DisplayImageWithTransition(imageFile string, duration int, transition int, transitionDuration int) {
-	if transitionDuration > 0 && transition != IMAGE_TRANSITION_NONE {
+func DisplayImageWithTransition(imageFile string, duration int, transition int, numSteps int) {
+	if numSteps == 0 || transition == IMAGE_TRANSITION_NONE {
 		faceBytes := DataOnImg(imageFile)
 		displayFaceImage(faceBytes, duration, true)
 	} else {
-		slice := int(transitionDuration / 10)
-		for i := 0; i < 10; i++ {
-			pctProgress := i * 10
+		for i := 0; i <= numSteps; i++ {
+			pctProgress := i * 100 / numSteps
 			tmpFaceBytes := DataOnImgWithTransition(imageFile, transition, pctProgress)
-			displayFaceImage(tmpFaceBytes, slice, true)
+			displayFaceImage(tmpFaceBytes, 100, false)
 		}
 	}
 }
@@ -177,20 +197,23 @@ func displayFaceImage(faceBytes []byte, duration int, blocking bool) {
 }
 
 func convertPixesTo16BitRGB(r uint32, g uint32, b uint32, a uint32) uint16 {
-	R, G, B := int(b/257), int(r/257), int(g/257)
+	// RGB565: 5 bits for red, 6 for green, 5 for blue
+	R, G, B := int8(r/257), int8(g/257), int8(b/257)
 
-	return uint16((int(R>>3) << 11) |
-		(int(G>>2) << 5) |
-		(int(B>>3) << 0))
+	bx := (B >> 3)
+	gx := (G >> 2) << 5
+	rx := (R >> 3) << 11
+
+	return uint16(rx | gx | bx)
 }
 
 func convertPixelsToRawBitmap(image image.Image) []uint16 {
 	imgHeight, imgWidth := image.Bounds().Max.Y, image.Bounds().Max.X
-	bitmap := make([]uint16, 184*96)
+	bitmap := make([]uint16, imgWidth*imgHeight)
 
 	for y := 0; y < imgHeight; y++ {
 		for x := 0; x < imgWidth; x++ {
-			bitmap[(y)*184+(x)] = convertPixesTo16BitRGB(image.At(x, y).RGBA())
+			bitmap[(y)*imgWidth+(x)] = convertPixesTo16BitRGB(image.At(x, y).RGBA())
 		}
 	}
 	return bitmap
