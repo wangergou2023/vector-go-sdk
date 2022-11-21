@@ -3,24 +3,18 @@ package main
 import (
 	"context"
 	"flag"
+	"fmt"
 	"github.com/digital-dream-labs/vector-go-sdk/pkg/sdk-wrapper"
 	"time"
 )
 
 func main() {
 	var serial = flag.String("serial", "", "Vector's Serial Number")
-	var hue = flag.String("hue", "", "Hue")
-	var saturation = flag.String("saturation", "", "Saturation")
+	var hue = flag.String("hue", "", "Hue (0.0 .. 1.0)")
+	var saturation = flag.String("saturation", "", "Saturation (0.0 .. 1.0)")
 	flag.Parse()
 
 	sdk_wrapper.InitSDK(*serial)
-
-	if *hue == "" {
-		*hue = "2"
-	}
-	if *saturation == "" {
-		*hue = "3"
-	}
 
 	ctx := context.Background()
 	start := make(chan bool)
@@ -33,8 +27,20 @@ func main() {
 	for {
 		select {
 		case <-start:
-			sdk_wrapper.SetCustomEyeColor(*hue, *saturation)
-			time.Sleep(time.Duration(5000) * time.Millisecond)
+			if *hue == "" && *saturation == "" {
+				for h := 0; h <= 10; h++ {
+					strHue := fmt.Sprintf("%f", float64(h)/10)
+					println("Hue: " + strHue)
+					for s := 0; s <= 10; s++ {
+						strSat := fmt.Sprintf("%f", float64(s)/10)
+						sdk_wrapper.SetCustomEyeColor(strHue, strSat)
+						time.Sleep(time.Duration(50) * time.Millisecond)
+					}
+				}
+			} else {
+				sdk_wrapper.SetCustomEyeColor(*hue, *saturation)
+			}
+
 			stop <- true
 			return
 		}

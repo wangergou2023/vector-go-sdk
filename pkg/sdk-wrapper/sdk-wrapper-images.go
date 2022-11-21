@@ -20,8 +20,6 @@ const IMAGE_TRANSITION_SLIDE_RIGHT = 3
 const IMAGE_TRANSITION_SLIDE_UP = 4
 const IMAGE_TRANSITION_SLIDE_DOWN = 5
 
-const TRANSITION_SLICES = 20
-
 func TextOnImg(text string, size float64, isBold bool) []byte {
 	bgImage := image.NewRGBA(image.Rectangle{
 		Min: image.Point{X: 0, Y: 0},
@@ -181,6 +179,10 @@ func DisplayImageWithTransition(imageFile string, duration int, transition int, 
 		}
 	}
 }
+
+/********************************************************************************************************/
+/*                                                PRIVATE FUNCTIONS                                     */
+/********************************************************************************************************/
 
 func displayFaceImage(faceBytes []byte, duration int, blocking bool) {
 	_, _ = Robot.Conn.DisplayFaceImageRGB(
