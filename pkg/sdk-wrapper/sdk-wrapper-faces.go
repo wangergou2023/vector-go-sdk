@@ -1,6 +1,8 @@
 package sdk_wrapper
 
-import "github.com/digital-dream-labs/vector-go-sdk/pkg/vectorpb"
+import (
+	"github.com/digital-dream-labs/vector-go-sdk/pkg/vectorpb"
+)
 
 func FaceEnrollmentListAll() []*vectorpb.LoadedKnownFace {
 	response, _ := Robot.Conn.RequestEnrolledNames(
@@ -22,14 +24,26 @@ func FaceEnrollmentChangeName(faceId int32, oldName string, newName string) stri
 	return response.Status.String()
 }
 
-// Start face enrolling for person
-func FaceEnrollmentStart(personName string, id int32) string {
+// Start face enrolling for person with the given name
+// It doesn't seem to work, the face seems enrolled but not saved
+
+func FaceEnrollmentStart(personName string) string {
+	faces := FaceEnrollmentListAll()
+	var maxId int32 = 0
+
+	for i := 0; i < len(faces); i++ {
+		if faces[i].FaceId > maxId {
+			maxId = faces[i].FaceId
+		}
+	}
+	maxId++
+
 	response, _ := Robot.Conn.SetFaceToEnroll(
 		ctx,
 		&vectorpb.SetFaceToEnrollRequest{
 			Name:        personName,
 			ObservedId:  0,
-			SaveId:      id,
+			SaveId:      maxId,
 			SaveToRobot: true,
 			SayName:     true,
 			UseMusic:    true,
