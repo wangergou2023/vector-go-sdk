@@ -9623,7 +9623,8 @@ type EnableImageStreamingRequest struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	Enable bool `protobuf:"varint,1,opt,name=enable,proto3" json:"enable,omitempty"`
+	Enable bool 				  `protobuf:"varint,1,opt,name=enable,proto3" json:"enable,omitempty"`
+	EnableHighResolution bool     `protobuf:"varint,1,opt,name=enable_high_resolution,json=enableHighResolution" json:"enable_high_resolution,omitempty"`
 }
 
 func (x *EnableImageStreamingRequest) Reset() {
@@ -10064,6 +10065,8 @@ type CaptureSingleImageRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
+
+	EnableHighResolution bool     `protobuf:"varint,1,opt,name=enable_high_resolution,json=enableHighResolution" json:"enable_high_resolution,omitempty"`
 }
 
 func (x *CaptureSingleImageRequest) Reset() {

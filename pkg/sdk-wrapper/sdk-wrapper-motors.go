@@ -31,3 +31,17 @@ func MoveHead(speed float32) {
 		},
 	)
 }
+
+func DriveOffCharger() {
+	_, _ = Robot.Conn.DriveOffCharger(
+		ctx,
+		&vectorpb.DriveOffChargerRequest{},
+	)
+}
+
+func DriveOnCharger() {
+	_, _ = Robot.Conn.DriveOnCharger(
+		ctx,
+		&vectorpb.DriveOnChargerRequest{},
+	)
+}
