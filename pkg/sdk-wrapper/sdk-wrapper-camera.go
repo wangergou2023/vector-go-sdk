@@ -3,6 +3,7 @@ package sdk_wrapper
 import (
 	"bytes"
 	"github.com/digital-dream-labs/vector-go-sdk/pkg/vectorpb"
+	"gocv.io/x/gocv"
 	"image"
 	"image/jpeg"
 	"math/rand"
@@ -63,6 +64,31 @@ func SaveCameraPicture(fileName string) error {
 		opt.Quality = 100
 		err = jpeg.Encode(f, img, &opt)
 	}
+	return err
+}
+
+// Enables camera, saves current image (1280 x 720) on a file in jpg format, disables camera
+func SaveHiResCameraPicture(fileName string) error {
+	if !camStreamEnable {
+		EnableCameraStream()
+	}
+	i, err := Robot.Conn.CaptureSingleImage(
+		ctx,
+		&vectorpb.CaptureSingleImageRequest{},
+	)
+	if err != nil {
+		var imageData = i.GetData()
+		var mat gocv.Mat
+		mat, err = gocv.IMDecode(imageData, -1)
+		if err == nil && !mat.Empty() {
+			buf, err2 := gocv.IMEncode("jpg", mat)
+			if err2 == nil {
+				err = os.WriteFile(fileName, buf.GetBytes(), 0644)
+			}
+			err = err2
+		}
+	}
+	DisableCameraStream()
 	return err
 }
 

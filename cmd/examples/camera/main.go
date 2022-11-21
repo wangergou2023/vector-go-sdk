@@ -23,7 +23,7 @@ func main() {
 	for {
 		select {
 		case <-start:
-			sdk_wrapper.SaveCameraPicture("camera.jpg")
+			sdk_wrapper.SaveHiResCameraPicture("camera.jpg")
 			stop <- true
 			return
 		}
