@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"flag"
+	"fmt"
 	"github.com/digital-dream-labs/vector-go-sdk/pkg/sdk-wrapper"
 	"time"
 )
@@ -24,13 +25,19 @@ func main() {
 	for {
 		select {
 		case <-start:
+			println("")
 			println("ANIMATION LIST:")
 			aList := sdk_wrapper.LoadAnimationList()
-			for i := 0; i < len(aList); i++ {
-				println(aList[i])
+			if nil != aList {
+				println(fmt.Sprintf("%d animations found.", len(aList)))
+				for i := 0; i < len(aList); i++ {
+					println(aList[i])
+					sdk_wrapper.PlayAnimation(aList[i], 1, false, false, false)
+					time.Sleep(time.Duration(5000) * time.Millisecond)
+				}
+			} else {
+				println("Could not load animation list :(")
 			}
-			sdk_wrapper.PlayAnimation("anim_weather_sunny_01", 1, false, false, false)
-			time.Sleep(time.Duration(5000) * time.Millisecond)
 			stop <- true
 			return
 		}
