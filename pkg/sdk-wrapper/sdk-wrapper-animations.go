@@ -1191,7 +1191,7 @@ func LoadAnimationList() []string {
 	)
 	if err == nil {
 		items = make([]string, len(animationList.AnimationNames))
-		for i := 0; i <= len(animationList.AnimationNames); i++ {
+		for i := 0; i < len(animationList.AnimationNames); i++ {
 			items[i] = animationList.AnimationNames[i].Name
 		}
 	}

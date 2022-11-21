@@ -26,7 +26,7 @@ func main() {
 		case <-start:
 			println("ANIMATION LIST:")
 			aList := sdk_wrapper.LoadAnimationList()
-			for i := 0; i <= len(aList); i++ {
+			for i := 0; i < len(aList); i++ {
 				println(aList[i])
 			}
 			sdk_wrapper.PlayAnimation("anim_weather_sunny_01", 1, false, false, false)
