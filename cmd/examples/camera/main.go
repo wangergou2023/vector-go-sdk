@@ -17,7 +17,7 @@ func main() {
 	stop := make(chan bool)
 
 	go func() {
-		_ = sdk_wrapper.Robot.BehaviorControl(ctx, start, stop)
+		_ = sdk_wrapper.Robot.BehaviorControl(ctx, start, stop, nil)
 	}()
 
 	for {
