@@ -49,6 +49,7 @@ func FaceEnrollmentStart(personName string) string {
 			UseMusic:    true,
 		},
 	)
+
 	return response.Status.String()
 }
 

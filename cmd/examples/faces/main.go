@@ -36,7 +36,6 @@ func main() {
 
 			sdk_wrapper.FaceEnrollmentStart("Ambrogio")
 			time.Sleep(time.Duration(30000) * time.Millisecond)
-
 			stop <- true
 			return
 		}
