@@ -55,6 +55,7 @@ func (v *Vector) BehaviorControl(ctx context.Context, start, stop chan bool) err
 			}
 			return nil
 		default:
+			print("ciao")
 			continue
 		}
 	}

@@ -29,7 +29,6 @@ func main() {
 				&vectorpb.EventRequest{})
 			for {
 				evt, _ := evtStreamHandler.Recv()
-				print("FIRED!")
 				evtRobotState := evt.Event.GetRobotState()
 				if evtRobotState != nil {
 					print(evtRobotState.String())
