@@ -19,6 +19,7 @@ var ctx context.Context
 var transCfg = &http.Transport{
 	TLSClientConfig: &tls.Config{InsecureSkipVerify: true}, // ignore SSL warnings
 }
+var eventStream vectorpb.ExternalInterface_EventStreamClient
 
 func InitSDK(serial string) {
 	var err error
@@ -27,6 +28,15 @@ func InitSDK(serial string) {
 		log.Fatal(err)
 	}
 	ctx = context.Background()
+	eventStream, err = Robot.Conn.EventStream(ctx, &vectorpb.EventRequest{})
+}
+
+func WaitForEvent() *vectorpb.Event {
+	evt, err := eventStream.Recv()
+	if err != nil {
+		return nil
+	}
+	return evt.GetEvent()
 }
 
 func AssumeBehaviorControl(priority string) {

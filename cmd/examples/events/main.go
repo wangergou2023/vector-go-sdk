@@ -4,7 +4,6 @@ import (
 	"context"
 	"flag"
 	sdk_wrapper "github.com/digital-dream-labs/vector-go-sdk/pkg/sdk-wrapper"
-	"github.com/digital-dream-labs/vector-go-sdk/pkg/vectorpb"
 	"time"
 )
 
@@ -17,29 +16,33 @@ func main() {
 	ctx := context.Background()
 	start := make(chan bool)
 	stop := make(chan bool)
-	event := make(chan *vectorpb.Event)
 
 	go func() {
-		_ = sdk_wrapper.Robot.BehaviorControl(ctx, start, stop, event)
+		_ = sdk_wrapper.Robot.BehaviorControl(ctx, start, stop)
 	}()
 
 	for {
 		select {
 		case <-start:
-			//evtStreamHandler, _ := sdk_wrapper.Robot.Conn.EventStream(ctx, &vectorpb.EventRequest{})
+			go func() {
+				println("Listening for events...")
+				for {
+					evt := sdk_wrapper.WaitForEvent()
+					if evt != nil {
+						evtRobotState := evt.GetRobotState()
+						if evtRobotState != nil {
+							if evtRobotState.TouchData.IsBeingTouched == true {
+								println("I am being touched.")
+							}
+						}
+					}
+				}
+			}()
 			for {
 				time.Sleep(time.Duration(100) * time.Millisecond)
 			}
 			stop <- true
 			return
-		case <-event:
-			evt := <-event
-			evtRobotState := evt.GetRobotState()
-			if evtRobotState != nil {
-				if evtRobotState.TouchData.IsBeingTouched {
-					println("You touch me!")
-				}
-			}
 		}
 	}
 }

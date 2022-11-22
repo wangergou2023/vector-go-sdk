@@ -22,7 +22,7 @@ func main() {
 	stop := make(chan bool)
 
 	go func() {
-		_ = v.BehaviorControl(ctx, start, stop, nil)
+		_ = v.BehaviorControl(ctx, start, stop)
 	}()
 
 	for {

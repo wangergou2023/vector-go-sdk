@@ -9,7 +9,7 @@ import (
 // assumed, a signal is sent on the start channel. To give control back to the bot, send
 // a message to the stop channel.  Failing to do so may leave your bot in a funny, funny
 // state.
-func (v *Vector) BehaviorControl(ctx context.Context, start, stop chan bool, event chan *vectorpb.Event) error {
+func (v *Vector) BehaviorControl(ctx context.Context, start, stop chan bool) error {
 	r, err := v.Conn.BehaviorControl(
 		ctx,
 	)
@@ -40,8 +40,6 @@ func (v *Vector) BehaviorControl(ctx context.Context, start, stop chan bool, eve
 		}
 	}
 
-	evtStreamHandler, _ := v.Conn.EventStream(ctx, &vectorpb.EventRequest{})
-
 	for {
 		select {
 		case <-stop:
@@ -56,10 +54,6 @@ func (v *Vector) BehaviorControl(ctx context.Context, start, stop chan bool, eve
 			}
 			return nil
 		default:
-			if nil != event {
-				evt, _ := evtStreamHandler.Recv()
-				event <- evt.Event
-			}
 			continue
 		}
 	}
