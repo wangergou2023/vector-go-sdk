@@ -16,7 +16,6 @@ import (
 var Robot *vector.Vector
 var bcAssumption bool = false
 var ctx context.Context
-var EventDispatcher *Dispatcher
 var transCfg = &http.Transport{
 	TLSClientConfig: &tls.Config{InsecureSkipVerify: true}, // ignore SSL warnings
 }
@@ -28,7 +27,6 @@ func InitSDK(serial string) {
 		log.Fatal(err)
 	}
 	ctx = context.Background()
-	EventDispatcher = NewDispatcher()
 }
 
 func AssumeBehaviorControl(priority string) {
