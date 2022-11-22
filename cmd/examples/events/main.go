@@ -26,13 +26,19 @@ func main() {
 		case <-start:
 			go func() {
 				println("Listening for events...")
+				isBusy := false
 				for {
 					evt := sdk_wrapper.WaitForEvent()
 					if evt != nil {
 						evtRobotState := evt.GetRobotState()
 						if evtRobotState != nil {
-							if evtRobotState.TouchData.IsBeingTouched == true {
+							if evtRobotState.TouchData.IsBeingTouched == true && !isBusy {
+								isBusy = true
 								println("I am being touched.")
+								sdk_wrapper.PlayAnimation("anim_eyepose_angry", 1, false, false, false)
+								_ = sdk_wrapper.PlaySound("data/audio/roar.wav", 100)
+								time.Sleep(time.Duration(1000) * time.Millisecond)
+								isBusy = false
 							}
 						}
 					}
