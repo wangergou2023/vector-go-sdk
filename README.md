@@ -38,6 +38,7 @@ Please see the cmd/examples directory for usage examples.
 
 ***RELEASE_ALPHA_02***
 
+- To try to support hires camera image snapshot I added OpenCV as a dependency. To install OpenCV on a Raspberry Pi or other Linux environment, run setup.sh
 - Added camera functions
 - Added face enrollment functions
 - Added events with examples (Vector roars when touched)
@@ -51,5 +52,4 @@ I have taken the go SDK and did some changes.
   - Audio playback and volume settings
   - Custom eye colors
   - Animations
-  - Images
   - Settings
