@@ -34,11 +34,13 @@ func main() {
 						if evtRobotState != nil {
 							if evtRobotState.TouchData.IsBeingTouched == true && !isBusy {
 								isBusy = true
-								println("I am being touched.")
-								sdk_wrapper.PlayAnimation("anim_eyepose_angry", 1, false, false, false)
-								_ = sdk_wrapper.PlaySound("data/audio/roar.wav", 100)
-								time.Sleep(time.Duration(1000) * time.Millisecond)
-								isBusy = false
+								go func() {
+									println("I am being touched.")
+									sdk_wrapper.PlayAnimation("anim_eyepose_angry", 1, false, false, false)
+									_ = sdk_wrapper.PlaySound("data/audio/roar.pcm", 100)
+									time.Sleep(time.Duration(1000) * time.Millisecond)
+									isBusy = false
+								}()
 							}
 						}
 					}
