@@ -199,14 +199,17 @@ func displayFaceImage(faceBytes []byte, duration int, blocking bool) {
 }
 
 func convertPixesTo16BitRGB(r uint32, g uint32, b uint32, a uint32) uint16 {
-	// RGB565: 5 bits for red, 6 for green, 5 for blue
-	R, G, B := int8(r/257), int8(g/257), int8(b/257)
+	R, G, B := uint16(r/257), uint16(g/257), uint16(b/257)
 
-	bx := (B >> 3)
-	gx := (G >> 2) << 5
-	rx := (R >> 3) << 11
+	//The format appears to be: 000bbbbbrrrrrggg
 
-	return uint16(rx | gx | bx)
+	var Br uint16 = (uint16(B & 0xF8)) << 5 // 5 bits for blue  [8..12]
+	var Rr uint16 = (uint16(R & 0xF8))      // 5 bits for red   [3..7]
+	var Gr uint16 = (uint16(G & 0xF8)) >> 5 // 3 bits for green [0..2]
+
+	out := uint16(Br | Rr | Gr)
+	//println(fmt.Sprintf("%d,%d,%d -> R: %016b G: %016b B: %016b = %016b", R, G, B, Rr, Gr, Br, out))
+	return out
 }
 
 func convertPixelsToRawBitmap(image image.Image) []uint16 {
@@ -215,6 +218,13 @@ func convertPixelsToRawBitmap(image image.Image) []uint16 {
 
 	for y := 0; y < imgHeight; y++ {
 		for x := 0; x < imgWidth; x++ {
+			/*
+				// TEST
+				r := 0
+				g := 65535 / imgWidth * (x + 1)
+				b := 0
+				bitmap[(y)*imgWidth+(x)] = convertPixesTo16BitRGB(uint32(r), uint32(g), uint32(b), 0)
+			*/
 			bitmap[(y)*imgWidth+(x)] = convertPixesTo16BitRGB(image.At(x, y).RGBA())
 		}
 	}

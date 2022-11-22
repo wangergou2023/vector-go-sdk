@@ -11,6 +11,23 @@ import (
 	"time"
 )
 
+var audioStreamClient vectorpb.ExternalInterface_AudioFeedClient
+var audioStreamEnable bool = false
+
+func EnableAudioStream() {
+	audioStreamClient, _ = Robot.Conn.AudioFeed(ctx, &vectorpb.AudioFeedRequest{})
+	audioStreamEnable = true
+}
+
+func DisableAudioStream() {
+	audioStreamEnable = false
+	audioStreamClient = nil
+}
+
+func ProcessAudioStream() {
+	// TODO!!!
+}
+
 // Plays amy sound file (mp3, wav, ecc) using FFMpeg to convert it to the right format
 
 func PlaySound(filename string, volume int) string {
