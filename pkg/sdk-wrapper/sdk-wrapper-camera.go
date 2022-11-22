@@ -97,3 +97,22 @@ func SaveHiResCameraPicture(fileName string) error {
 
 	return err
 }
+
+func GetCameraPictureOpenCv() gocv.Mat {
+	var mat gocv.Mat
+	i, err := Robot.Conn.CaptureSingleImage(
+		ctx,
+		&vectorpb.CaptureSingleImageRequest{
+			EnableHighResolution: true,
+		},
+	)
+	if err == nil {
+		var imageData = i.GetData()
+		var mat2 gocv.Mat
+		mat2, err = gocv.IMDecode(imageData, -1)
+		if err == nil {
+			mat = mat2
+		}
+	}
+	return mat
+}
