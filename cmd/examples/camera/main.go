@@ -23,6 +23,7 @@ func main() {
 	for {
 		select {
 		case <-start:
+			sdk_wrapper.PlayAnimation("anim_generic_look_up_01", 0, false, false, false)
 			sdk_wrapper.SaveHiResCameraPicture("camera.jpg")
 			stop <- true
 			return
