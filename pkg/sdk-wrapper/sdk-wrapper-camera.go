@@ -2,9 +2,7 @@ package sdk_wrapper
 
 import (
 	"bytes"
-	"fmt"
 	"github.com/digital-dream-labs/vector-go-sdk/pkg/vectorpb"
-	"gocv.io/x/gocv"
 	"image"
 	"image/jpeg"
 	"math/rand"
@@ -81,38 +79,22 @@ func SaveHiResCameraPicture(fileName string) error {
 		},
 	)
 	if err == nil {
+		println("Image captured")
 		var imageData = i.GetData()
-		var mat gocv.Mat
-		mat, err = gocv.IMDecode(imageData, -1)
-		var size = mat.Size()
-		println(fmt.Sprintf("\nGot an image %dx%d\n", size[1], size[0]))
-		if err == nil && !mat.Empty() {
-			buf, err2 := gocv.IMEncode(".jpg", mat)
-			if err2 == nil {
-				err = os.WriteFile(fileName, buf.GetBytes(), 0644)
+		img, _, err := image.Decode(bytes.NewReader(imageData))
+		if err == nil {
+			println("Image decoded")
+			f, err := os.Create(fileName)
+			if err == nil {
+				var opt jpeg.Options
+				opt.Quality = 100
+				err = jpeg.Encode(f, img, &opt)
+				if err == nil {
+					println("Image saved as " + fileName)
+				}
 			}
-			err = err2
 		}
 	}
 
 	return err
-}
-
-func GetCameraPictureOpenCv() gocv.Mat {
-	var mat gocv.Mat
-	i, err := Robot.Conn.CaptureSingleImage(
-		ctx,
-		&vectorpb.CaptureSingleImageRequest{
-			EnableHighResolution: true,
-		},
-	)
-	if err == nil {
-		var imageData = i.GetData()
-		var mat2 gocv.Mat
-		mat2, err = gocv.IMDecode(imageData, -1)
-		if err == nil {
-			mat = mat2
-		}
-	}
-	return mat
 }

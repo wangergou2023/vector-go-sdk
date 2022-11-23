@@ -31,10 +31,13 @@ Please see the cmd/examples directory for usage examples.
 - SaveHiResCameraPicture(fileName string) 
   - This doesn't seem to work on my production Vector on Wirepod. Probably vector-cloud on the robot needs to be updated. But since it's a production robot I'm stuck to 1.8...
     Anyway the image is saved at the regular 360p size.
-- WriteText() / DisplayImage() / DisplayImageWithTransition()
-  - Image and text displayed have garbled colors 
 
 ## Changelog 
+
+***RELEASE_ALPHA_03***
+
+- Removed dependency from OpenCV, because goCV sucks and requires user to download a lot of stuff. Better use OpenCv in Python!
+- Bugfix: WriteText() / DisplayImage() / DisplayImageWithTransition() Image and text displayed have garbled colors
 
 ***RELEASE_ALPHA_02***
 
