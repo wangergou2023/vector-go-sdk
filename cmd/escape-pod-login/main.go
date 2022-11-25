@@ -4,7 +4,6 @@ import (
 	"context"
 	"crypto/x509"
 	"encoding/json"
-	"flag"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -25,37 +24,37 @@ const (
 )
 
 func main() {
-	var robotName = flag.String("name", "", "Vector's name")
-	var host = flag.String("host", "", "Vector's IP address")
-	var serial = flag.String("serial", "", "Vector's serial number")
-	var username = flag.String("username", "", "Anki account username")
-	var password = flag.String("password", "", "Anki account password")
-	flag.Parse()
-
-	if *robotName == "" {
-		log.Fatal("please use the -name argument and set it to your robot name")
-	}
-	if *host == "" {
-		log.Fatal("please use the -host argument and set it to your robots IP address")
-	}
-	if *serial == "" {
-		log.Fatal("please use the -serial argument and set it to your robots serial number")
-	}
-	if *username == "" {
-		log.Fatal("please use the -username argument and set it to your anki account username")
-	}
-	if *password == "" {
-		log.Fatal("please use the -password argument and set it to your anki account password")
-	}
-
-	var certFile = download_certificate(*serial, "./")
+	var robotName = "Vector-R8H6"               //flag.String("name", "", "Vector's name")
+	var host = "192.168.43.216"                 //flag.String("host", "", "Vector's IP address")
+	var serial = "005070ac"                     //flag.String("serial", "", "Vector's serial number")
+	var username = "filippo.forchino@gmail.com" //flag.String("username", "", "Anki account username")
+	var password = "Suka99!!!"                  //flag.String("password", "", "Anki account password")
+	/*
+		flag.Parse()
+		if *robotName == "" {
+			log.Fatal("please use the -name argument and set it to your robot name")
+		}
+		if *host == "" {
+			log.Fatal("please use the -host argument and set it to your robots IP address")
+		}
+		if *serial == "" {
+			log.Fatal("please use the -serial argument and set it to your robots serial number")
+		}
+		if *username == "" {
+			log.Fatal("please use the -username argument and set it to your anki account username")
+		}
+		if *password == "" {
+			log.Fatal("please use the -password argument and set it to your anki account password")
+		}
+	*/
+	var certFile = download_certificate(serial, "./")
 	var cert, _ = ioutil.ReadFile(certFile)
-	var token = get_session_token(*username, *password)
+	var token = get_session_token(username, password)
 	st := token["session"].(map[string]interface{})
 	stt := []byte(fmt.Sprintf("%s", st["session_token"]))
 	print("Session token: " + string(stt) + "\n\n")
 
-	guid, err := user_authentication(stt, cert, *host, *robotName)
+	guid, err := user_authentication(stt, cert, host, robotName)
 
 	if err != nil {
 		log.Fatal(err)
@@ -73,8 +72,9 @@ func user_authentication(session_id []byte, cert []byte, ip string, name string)
 		client.WithTarget(
 			fmt.Sprintf("%s:443", ip),
 		),
-		//client.WithCertPool(certPool),
-		client.WithInsecureSkipVerify(),
+		client.WithCertPool(certPool),
+		client.WithOverrideServerName(name),
+		//client.WithInsecureSkipVerify(),
 	)
 	if err != nil {
 		log.Fatal(err)
@@ -93,7 +93,14 @@ func user_authentication(session_id []byte, cert []byte, ip string, name string)
 			ClientName:    []byte("192.168.43.67"),
 		},
 	)
-	print(response)
+	var b []byte = response.GetClientTokenGuid()
+	println("")
+	println("GUID: " + response.Code.String())
+	if len(b) > 0 {
+		for i := 0; i <= len(b); i++ {
+			println(fmt.Sprintf("%02x", b[i]))
+		}
+	}
 
 	return string(response.GetClientTokenGuid()), err2
 }

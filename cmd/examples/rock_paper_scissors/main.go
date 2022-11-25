@@ -8,7 +8,10 @@ import (
 	sdk_wrapper "github.com/digital-dream-labs/vector-go-sdk/pkg/sdk-wrapper"
 	"log"
 	"math/rand"
+	"os"
 	"os/exec"
+	"regexp"
+	"strconv"
 	"time"
 )
 
@@ -29,20 +32,43 @@ func main() {
 	stop := make(chan bool)
 
 	go func() {
+		//time.Sleep(time.Duration(10000) * time.Millisecond)
 		_ = sdk_wrapper.Robot.BehaviorControl(ctx, start, stop)
 	}()
 
 	for {
 		select {
 		case <-start:
-			playGame(3)
+			//playDemo()
+			sdk_wrapper.SayText("Let's play!")
+			playGame(10)
+			sdk_wrapper.SayText("Ok, I think it's enough")
 			stop <- true
 			return
 		}
 	}
 }
 
+func playDemo() {
+	sdk_wrapper.WriteText("OPENCV", 32, true, 10000, true)
+	sdk_wrapper.WriteText("MEDIAPIPE", 32, true, 10000, true)
+	sdk_wrapper.WriteText("0.", 64, true, 2000, true)
+	sdk_wrapper.WriteText("0..", 64, true, 2000, true)
+	sdk_wrapper.WriteText("0...", 64, true, 2000, true)
+	sdk_wrapper.WriteText("0...5", 64, true, 2000, true)
+	sdk_wrapper.WriteText("0", 64, true, 2000, true)
+	sdk_wrapper.DisplayImage("data/images/rock.png", 2000, true)
+	sdk_wrapper.WriteText("2", 64, true, 1000, true)
+	sdk_wrapper.DisplayImage("data/images/scissors.png", 2000, true)
+	sdk_wrapper.WriteText("5", 64, true, 1000, true)
+	sdk_wrapper.DisplayImage("data/images/paper.png", 2000, true)
+	sdk_wrapper.DisplayImage("/tmp/rps.jpg", 5000, true)
+	sdk_wrapper.DisplayImage("/tmp/rps_annotated.jpg", 5000, true)
+}
+
 func playGame(numSteps int) {
+	myScore := 0
+	userScore := 0
 	options := [3]string{
 		"rock",
 		"paper",
@@ -57,9 +83,6 @@ func playGame(numSteps int) {
 
 		myMove := options[r1.Intn(len(options))]
 		sdk_wrapper.DisplayImage("data/images/"+myMove+".png", 5000, false)
-		sdk_wrapper.PlaySound("data/sounds/quick-win.wav", 100)
-		sdk_wrapper.SayText(myMove + "!")
-
 		fName := "/tmp/rps.jpg"
 		err := sdk_wrapper.SaveHiResCameraPicture(fName)
 		if err == nil {
@@ -71,12 +94,22 @@ func playGame(numSteps int) {
 				if err != nil {
 					log.Fatal(err)
 				}
-				fmt.Printf("FRAME %d, Output: %s\n", i, out.String())
 
+				var output string = out.String()
+				output = regexp.MustCompile(`[^0-9]`).ReplaceAllString(output, "")
+
+				var numFingers int = -1
+				if len(output) > 0 {
+					numFingers, _ = strconv.Atoi(output)
+				}
 				win := 0
 				answer := ""
 				userMove := ""
-				if out.String() == "0" {
+
+				fmt.Printf("num fingers %d, Output: %q\n", numFingers, output)
+
+				switch numFingers {
+				case 0:
 					// User plays "rock"
 					userMove = "rock"
 					if myMove == "paper" {
@@ -84,7 +117,8 @@ func playGame(numSteps int) {
 					} else if myMove == "scissors" {
 						win = -1
 					}
-				} else if out.String() == "2" {
+					break
+				case 2:
 					// User plays "scissors"
 					userMove = "scissors"
 					if myMove == "rock" {
@@ -92,7 +126,8 @@ func playGame(numSteps int) {
 					} else if myMove == "paper" {
 						win = -1
 					}
-				} else if out.String() == "5" {
+					break
+				case 5:
 					// User plays "paper"
 					userMove = "paper"
 					if myMove == "scissors" {
@@ -100,27 +135,34 @@ func playGame(numSteps int) {
 					} else if myMove == "rock" {
 						win = -1
 					}
-				} else {
-					answer = "Sorry, I don't get it"
+					break
+				default:
+					answer = "Sorry... I don't get it"
+					sdk_wrapper.DisplayImage("/tmp/rps.jpg", 5000, true)
+					_ = os.Rename("/tmp/rps.jpg", "/mp/not_recognized_"+string(time.Now().Unix())+".jpg")
+					break
 				}
 
 				if answer == "" {
-					answer = "You put " + userMove + ", I put " + myMove + ". "
+					answer = "You put " + userMove + ". "
 
 					switch win {
 					case -1:
 						answer = answer + "You win!"
+						userScore++
 						break
 					case 1:
 						answer = answer + "I win!"
+						myScore++
 						break
 					default:
 						answer = answer + "It's a draw!"
 						break
 					}
 				}
+				sdk_wrapper.SayText("I put " + myMove + "!")
 				sdk_wrapper.SayText(answer)
-				time.Sleep(time.Duration(5000) * time.Millisecond)
+				sdk_wrapper.WriteText(fmt.Sprintf("%d - %d", myScore, userScore), 64, true, 5000, true)
 			} else {
 				println("OPENCV Python script not found!")
 			}
