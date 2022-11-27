@@ -34,6 +34,11 @@ Please see the cmd/examples directory for usage examples.
 
 ## Changelog 
 
+***RELEASE_ALPHA_04***
+
+- Added voice functions (internationalized TTS using htgo or espeak TTS engines)
+  - Some voices are not directly supported in espeak (just need to figure out what dependencies to install)
+
 ***RELEASE_ALPHA_03***
 
 - Removed dependency from OpenCV, because goCV sucks and requires user to download a lot of stuff. Better use OpenCv in Python!
