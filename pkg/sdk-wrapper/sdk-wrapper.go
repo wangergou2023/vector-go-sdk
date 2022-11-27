@@ -130,13 +130,6 @@ func ReleaseBehaviorControl() {
 	bcAssumption = false
 }
 
-func SayText(text string) {
-	_, _ = Robot.Conn.SayText(
-		ctx,
-		&vectorpb.SayTextRequest{
-			Text:           text,
-			UseVectorVoice: true,
-			DurationScalar: 1.0,
-		},
-	)
+func GetRobotSerial() string {
+	return Robot.Cfg.SerialNo
 }
