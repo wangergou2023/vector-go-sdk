@@ -94,6 +94,7 @@ func NewEP(serial string) (*Vector, error) {
 	}
 
 	return New(
+		WithSerialNo(cfg.SerialNo),
 		WithTarget(cfg.Target),
 		WithToken(cfg.Token),
 	)

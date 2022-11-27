@@ -29,3 +29,12 @@ func WithToken(s string) Option {
 		}
 	}
 }
+
+// WithSerialNo set the serialno for the vector robot.
+func WithSerialNo(s string) Option {
+	return func(o *options) {
+		if len(s) > 0 {
+			o.SerialNo = s
+		}
+	}
+}
