@@ -28,7 +28,7 @@ const LANGUAGE_CHINESE = voices.Chinese
 
 const TTS_ENGINE_HTGO = 0
 const TTS_ENGINE_ESPEAK = 1
-const TTS_ENGINE_MAX = TTS_ENGINE_ESPEAK
+const TTS_ENGINE_MAX = TTS_ENGINE_HTGO
 
 var language string = LANGUAGE_ENGLISH
 var eSpeakLang string = "english"
@@ -101,9 +101,9 @@ func SayText(text string) {
 			PlaySound("/tmp/"+fName+".mp3", volume)
 			os.Remove("/tmp/" + fName + ".mp3")
 		} else {
-			// Speex, more robotic
+			// Speex, more robotic. Chinese, Japanese and Russian are not directly supported
 			fName := "/tmp/TTS-" + GetRobotSerial() + ".wav"
-			cmdData := "espeak " + "\"" + text + "\"" + " -v " + eSpeakLang + " -w " + fName + " echo 20 75 pitch 82 74"
+			cmdData := "espeak " + "\"" + text + "\"" + " -l " + eSpeakLang + " -w " + fName + " echo 20 75 pitch 82 74"
 			_, _, err := shellout(cmdData)
 			if err != nil {
 				println("ESPEAK ERROR " + err.Error())
