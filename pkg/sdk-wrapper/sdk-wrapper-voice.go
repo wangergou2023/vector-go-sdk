@@ -7,14 +7,12 @@
 package sdk_wrapper
 
 import (
-	"bytes"
 	"github.com/bregydoc/gtranslate"
 	"github.com/digital-dream-labs/vector-go-sdk/pkg/vectorpb"
 	htgotts "github.com/hegedustibor/htgo-tts"
 	"github.com/hegedustibor/htgo-tts/handlers"
 	"github.com/hegedustibor/htgo-tts/voices"
 	"os"
-	"os/exec"
 )
 
 const LANGUAGE_ENGLISH = voices.English
@@ -33,16 +31,38 @@ const TTS_ENGINE_ESPEAK = 1
 const TTS_ENGINE_MAX = TTS_ENGINE_ESPEAK
 
 var language string = LANGUAGE_ENGLISH
+var eSpeakLang string = "english"
 var ttsEngine = TTS_ENGINE_ESPEAK
 
 var volume = 100
 
-func Init() {
+func InitLanguages(language string) {
 	// Here we should get the master volume level...
+	SetLanguage(language)
 }
 
 func SetLanguage(lang string) {
 	language = lang
+	eSpeakLang = "english"
+	if language == LANGUAGE_ITALIAN {
+		eSpeakLang = "italian"
+	} else if language == LANGUAGE_SPANISH {
+		eSpeakLang = "spanish"
+	} else if language == LANGUAGE_FRENCH {
+		eSpeakLang = "french"
+	} else if language == LANGUAGE_GERMAN {
+		eSpeakLang = "german"
+	} else if language == LANGUAGE_PORTUGUESE {
+		eSpeakLang = "portuguese"
+	} else if language == LANGUAGE_DUTCH {
+		eSpeakLang = "dutch"
+	} else if language == LANGUAGE_RUSSIAN {
+		eSpeakLang = "russian"
+	} else if language == LANGUAGE_JAPANESE {
+		eSpeakLang = "japanese"
+	} else if language == LANGUAGE_CHINESE {
+		eSpeakLang = "chinese"
+	}
 }
 
 func GetLanguage() string {
@@ -53,17 +73,6 @@ func SetTTSEngine(TTSEngine int) {
 	if TTSEngine >= 0 && TTSEngine < TTS_ENGINE_MAX {
 		ttsEngine = TTSEngine
 	}
-}
-
-func sayText(text string) {
-	_, _ = Robot.Conn.SayText(
-		ctx,
-		&vectorpb.SayTextRequest{
-			Text:           text,
-			UseVectorVoice: true,
-			DurationScalar: 1.0,
-		},
-	)
 }
 
 func SayText(text string) {
@@ -94,13 +103,8 @@ func SayText(text string) {
 		} else {
 			// Speex, more robotic
 			fName := "/tmp/TTS-" + GetRobotSerial() + ".wav"
-			cmdData := "\"" + text + "\"" + " -v italian -w " + fName + " echo 20 75 pitch 82 74"
-			println(cmdData)
-			cmd := exec.Command("espeak", cmdData)
-			var out bytes.Buffer
-			cmd.Stdout = &out
-			err := cmd.Run()
-			println(out.String())
+			cmdData := "espeak " + "\"" + text + "\"" + " -v " + eSpeakLang + " -w " + fName + " echo 20 75 pitch 82 74"
+			_, _, err := shellout(cmdData)
 			if err != nil {
 				println("ESPEAK ERROR " + err.Error())
 			} else {
@@ -124,4 +128,19 @@ func Translate(text string, inputLanguage string, outputLanguage string) string 
 		translated = inputLanguage
 	}
 	return translated
+}
+
+/**********************************************************************************************************************/
+/*                                              PRIVATE FUNCTIONS                                                     */
+/**********************************************************************************************************************/
+
+func sayText(text string) {
+	_, _ = Robot.Conn.SayText(
+		ctx,
+		&vectorpb.SayTextRequest{
+			Text:           text,
+			UseVectorVoice: true,
+			DurationScalar: 1.0,
+		},
+	)
 }

@@ -1,6 +1,7 @@
 package sdk_wrapper
 
 import (
+	"bytes"
 	"context"
 	"crypto/tls"
 	"github.com/digital-dream-labs/vector-go-sdk/pkg/vector"
@@ -10,6 +11,7 @@ import (
 	_ "image/png"
 	"log"
 	"net/http"
+	"os/exec"
 	"time"
 )
 
@@ -23,6 +25,7 @@ var eventStream vectorpb.ExternalInterface_EventStreamClient
 
 func InitSDK(serial string) {
 	var err error
+	InitLanguages(LANGUAGE_ENGLISH)
 	Robot, err = vector.NewEP(serial)
 	if err != nil {
 		log.Fatal(err)
@@ -132,4 +135,20 @@ func ReleaseBehaviorControl() {
 
 func GetRobotSerial() string {
 	return Robot.Cfg.SerialNo
+}
+
+/**********************************************************************************************************************/
+/*                                              PRIVATE FUNCTIONS                                                     */
+/**********************************************************************************************************************/
+
+const shellToUse = "bash"
+
+func shellout(command string) (string, string, error) {
+	var stdout bytes.Buffer
+	var stderr bytes.Buffer
+	cmd := exec.Command(shellToUse, "-c", command)
+	cmd.Stdout = &stdout
+	cmd.Stderr = &stderr
+	err := cmd.Run()
+	return stdout.String(), stderr.String(), err
 }
