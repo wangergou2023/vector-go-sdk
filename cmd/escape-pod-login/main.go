@@ -2,12 +2,12 @@ package main
 
 import (
 	"context"
-	"crypto/x509"
 	"encoding/json"
 	"fmt"
 	"io"
 	"io/ioutil"
 	"log"
+	"net"
 	"net/http"
 	"net/url"
 	"os"
@@ -63,18 +63,19 @@ func main() {
 }
 
 func user_authentication(session_id []byte, cert []byte, ip string, name string) (string, error) {
-	certPool := x509.NewCertPool()
-	if !certPool.AppendCertsFromPEM(cert) {
-		log.Fatal("failed to add server CA's certificate")
-	}
+	/*
+		certPool := x509.NewCertPool()
+		if !certPool.AppendCertsFromPEM(cert) {
+			log.Fatal("failed to add server CA's certificate")
+		}*/
 
 	c, err := client.New(
 		client.WithTarget(
 			fmt.Sprintf("%s:443", ip),
 		),
-		client.WithCertPool(certPool),
-		client.WithOverrideServerName(name),
-		//client.WithInsecureSkipVerify(),
+		//client.WithCertPool(certPool),
+		//client.WithOverrideServerName(name),
+		client.WithInsecureSkipVerify(),
 	)
 	if err != nil {
 		log.Fatal(err)
@@ -90,17 +91,12 @@ func user_authentication(session_id []byte, cert []byte, ip string, name string)
 	response, err2 := vc.UserAuthentication(context.Background(),
 		&vectorpb.UserAuthenticationRequest{
 			UserSessionId: session_id,
-			ClientName:    []byte("192.168.43.67"),
+			ClientName:    []byte(GetOutboundIP().String()),
 		},
 	)
-	var b []byte = response.GetClientTokenGuid()
+	var guid string = string(response.GetClientTokenGuid())
 	println("")
-	println("GUID: " + response.Code.String())
-	if len(b) > 0 {
-		for i := 0; i <= len(b); i++ {
-			println(fmt.Sprintf("%02x", b[i]))
-		}
-	}
+	println("GUID from robot: " + guid)
 
 	return string(response.GetClientTokenGuid()), err2
 }
@@ -171,4 +167,16 @@ func get_session_token(username string, password string) map[string]interface{} 
 	var jsonObj map[string]interface{}
 	json.Unmarshal([]byte(ret), &jsonObj)
 	return jsonObj
+}
+
+func GetOutboundIP() net.IP {
+	conn, err := net.Dial("udp", "8.8.8.8:80")
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer conn.Close()
+
+	localAddr := conn.LocalAddr().(*net.UDPAddr)
+
+	return localAddr.IP
 }
