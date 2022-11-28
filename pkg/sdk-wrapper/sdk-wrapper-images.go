@@ -20,8 +20,14 @@ const IMAGE_TRANSITION_SLIDE_LEFT = 2
 const IMAGE_TRANSITION_SLIDE_RIGHT = 3
 const IMAGE_TRANSITION_SLIDE_UP = 4
 const IMAGE_TRANSITION_SLIDE_DOWN = 5
+const IMAGE_TRANSITION_FADE_OUT = 6
 
-func TextOnImg(text string, size float64, isBold bool) []byte {
+const ANIMATED_GIF_SPEED_FAST = 0.5
+const ANIMATED_GIF_SPEED_NORMAL = 1.0
+const ANIMATED_GIF_SPEED_SLOW = 2.0
+const ANIMATED_GIF_SPEED_SLOWER = 3.0
+
+func TextOnImg(text string, size float64, isBold bool, color color.RGBA) []byte {
 	bgImage := image.NewRGBA(image.Rectangle{
 		Min: image.Point{X: 0, Y: 0},
 		Max: image.Point{X: 184, Y: 96},
@@ -44,10 +50,10 @@ func TextOnImg(text string, size float64, isBold bool) []byte {
 	x := float64(imgWidth / 2)
 	y := float64((imgHeight / 2))
 	maxWidth := float64(imgWidth) - 35.0
-	dc.SetColor(color.RGBA{0, 255, 0, 255}) // Green
+	dc.SetColor(color)
 	dc.DrawStringWrapped(text, x, y, 0.5, 0.5, maxWidth, 1.5, gg.AlignCenter)
 	buf := new(bytes.Buffer)
-	bitmap := convertPixelsToRawBitmap(dc.Image())
+	bitmap := convertPixelsToRawBitmap(dc.Image(), 100)
 	for _, ui := range bitmap {
 		binary.Write(buf, binary.LittleEndian, ui)
 	}
@@ -78,16 +84,11 @@ func DataOnImg(fileName string) []byte {
 	dc := gg.NewContext(imgWidth, imgHeight)
 	dc.DrawImage(bgImage, 0, 0)
 
-	var dst = src
-	if src.Bounds().Dy() > src.Bounds().Dx() {
-		dst = resize.Resize(0, uint(imgHeight), src, resize.Bicubic)
-	} else {
-		dst = resize.Resize(uint(imgWidth), 0, src, resize.Bicubic)
-	}
+	dst := resize.Thumbnail(uint(imgWidth), uint(imgHeight), src, resize.Bilinear)
 	dc.DrawImage(dst, (imgWidth-dst.Bounds().Dx())/2, (imgHeight-dst.Bounds().Dy())/2)
 
 	buf := new(bytes.Buffer)
-	bitmap := convertPixelsToRawBitmap(dc.Image())
+	bitmap := convertPixelsToRawBitmap(dc.Image(), 100)
 	for _, ui := range bitmap {
 		binary.Write(buf, binary.LittleEndian, ui)
 	}
@@ -118,14 +119,10 @@ func DataOnImgWithTransition(fileName string, transition int, pct int) []byte {
 	dc := gg.NewContext(imgWidth, imgHeight)
 	dc.DrawImage(bgImage, 0, 0)
 
-	var dst = src
-	if src.Bounds().Dy() > src.Bounds().Dx() {
-		dst = resize.Resize(0, uint(imgHeight), src, resize.Bilinear)
-	} else {
-		dst = resize.Resize(uint(imgWidth), 0, src, resize.Bilinear)
-	}
+	dst := resize.Thumbnail(uint(imgWidth), uint(imgHeight), src, resize.Bilinear)
 	x := (imgWidth - dst.Bounds().Dx()) / 2
 	y := (imgHeight - dst.Bounds().Dy()) / 2
+	opacity := 100
 	if transition == IMAGE_TRANSITION_SLIDE_RIGHT {
 		xStart := -1 * dst.Bounds().Dx()
 		xEnd := (imgWidth - dst.Bounds().Dx()) / 2
@@ -146,11 +143,16 @@ func DataOnImgWithTransition(fileName string, transition int, pct int) []byte {
 		yEnd := (imgHeight - dst.Bounds().Dy()) / 2
 		y = yStart - (yStart-yEnd)*pct/100
 		//println(y)
+	} else if transition == IMAGE_TRANSITION_FADE_IN {
+		opacity = pct
+	} else if transition == IMAGE_TRANSITION_FADE_OUT {
+		opacity = 100 - pct
 	}
+
 	dc.DrawImage(dst, x, y)
 
 	buf := new(bytes.Buffer)
-	bitmap := convertPixelsToRawBitmap(dc.Image())
+	bitmap := convertPixelsToRawBitmap(dc.Image(), opacity)
 	for _, ui := range bitmap {
 		binary.Write(buf, binary.LittleEndian, ui)
 	}
@@ -159,7 +161,12 @@ func DataOnImgWithTransition(fileName string, transition int, pct int) []byte {
 }
 
 func WriteText(text string, size float64, isBold bool, duration int, blocking bool) {
-	faceBytes := TextOnImg(text, size, isBold)
+	faceBytes := TextOnImg(text, size, isBold, color.RGBA{0, 255, 0, 255}) // Green
+	displayFaceImage(faceBytes, duration, blocking)
+}
+
+func WriteColoredText(text string, size float64, isBold bool, color color.RGBA, duration int, blocking bool) {
+	faceBytes := TextOnImg(text, size, isBold, color)
 	displayFaceImage(faceBytes, duration, blocking)
 }
 
@@ -168,20 +175,32 @@ func DisplayImage(imageFile string, duration int, blocking bool) {
 	displayFaceImage(faceBytes, duration, blocking)
 }
 
-func DisplayImageWithTransition(imageFile string, duration int, transition int, numSteps int) {
+func DisplayImageWithTransition(imageFile string, duration int, transition int, numSteps int) error {
 	if numSteps == 0 || transition == IMAGE_TRANSITION_NONE {
 		faceBytes := DataOnImg(imageFile)
 		displayFaceImage(faceBytes, duration, true)
 	} else {
+		if numSteps*100 > duration {
+			return fmt.Errorf("Duration too short")
+		}
+		if transition == IMAGE_TRANSITION_FADE_OUT {
+			tmpFaceBytes := DataOnImg(imageFile)
+			displayFaceImage(tmpFaceBytes, duration-numSteps*33, true)
+		}
 		for i := 0; i <= numSteps; i++ {
 			pctProgress := i * 100 / numSteps
 			tmpFaceBytes := DataOnImgWithTransition(imageFile, transition, pctProgress)
-			displayFaceImage(tmpFaceBytes, 100, false)
+			displayFaceImage(tmpFaceBytes, 33, true)
+		}
+		if transition != IMAGE_TRANSITION_FADE_OUT {
+			tmpFaceBytes := DataOnImg(imageFile)
+			displayFaceImage(tmpFaceBytes, duration-numSteps*33, true)
 		}
 	}
+	return nil
 }
 
-func DisplayAnimatedGif(imageFile string, duration int, blocking bool) error {
+func DisplayAnimatedGif(imageFile string, speed float64, loops int, repaintBackgroundAtEveryFrame bool) error {
 	file, err := os.Open(imageFile)
 	if err != nil {
 		return fmt.Errorf("Unable to open file: %v", err)
@@ -193,31 +212,41 @@ func DisplayAnimatedGif(imageFile string, duration int, blocking bool) error {
 		return fmt.Errorf("Unable to decode GIF: %v", err)
 	}
 
-	for i, img := range imageGIF.Image {
-		bgImage := image.NewRGBA(image.Rectangle{
-			Min: image.Point{X: 0, Y: 0},
-			Max: image.Point{X: 184, Y: 96},
-		})
-		imgWidth := bgImage.Bounds().Dx()
-		imgHeight := bgImage.Bounds().Dy()
-		dc := gg.NewContext(imgWidth, imgHeight)
-		dc.DrawImage(bgImage, 0, 0)
-
-		var dst image.Image
-		if img.Bounds().Dy() > img.Bounds().Dx() {
-			dst = resize.Resize(0, uint(imgHeight), img, resize.Bicubic)
-		} else {
-			dst = resize.Resize(uint(imgWidth), 0, img, resize.Bicubic)
+	bgImage := image.NewRGBA(image.Rectangle{
+		Min: image.Point{X: 0, Y: 0},
+		Max: image.Point{X: 184, Y: 96},
+	})
+	imgWidth := bgImage.Bounds().Dx()
+	imgHeight := bgImage.Bounds().Dy()
+	dc := gg.NewContext(imgWidth, imgHeight)
+	for x := 0; x < imgWidth; x++ {
+		for y := 0; y < imgHeight; y++ {
+			bgImage.Set(x, y, color.White)
 		}
-		dc.DrawImage(dst, (imgWidth-dst.Bounds().Dx())/2, (imgHeight-dst.Bounds().Dy())/2)
+	}
+	dc.DrawImage(bgImage, 0, 0)
 
-		buf := new(bytes.Buffer)
-		bitmap := convertPixelsToRawBitmap(dc.Image())
-		for _, ui := range bitmap {
-			binary.Write(buf, binary.LittleEndian, ui)
+	for l := 0; l < loops; l++ {
+		for i, img := range imageGIF.Image {
+			if repaintBackgroundAtEveryFrame {
+				dc.DrawImage(bgImage, 0, 0)
+			}
+			dst := resize.Thumbnail(uint(imgWidth), uint(imgHeight), img, resize.Bilinear)
+			dc.DrawImage(dst, (imgWidth-dst.Bounds().Dx())/2, (imgHeight-dst.Bounds().Dy())/2)
+
+			buf := new(bytes.Buffer)
+			bitmap := convertPixelsToRawBitmap(dc.Image(), 100)
+			for _, ui := range bitmap {
+				binary.Write(buf, binary.LittleEndian, ui)
+			}
+
+			displayFaceImage(buf.Bytes(), imageGIF.Delay[i]*int(speed*10), true)
+			/*
+				println(fmt.Sprintf("Frame %d, size: %dx%d (resized to %dx%d) duration = %d", i,
+					img.Bounds().Dx(), img.Bounds().Dy(),
+					dst.Bounds().Dx(), dst.Bounds().Dy(),
+					imageGIF.Delay[i]))*/
 		}
-
-		displayFaceImage(buf.Bytes(), imageGIF.Delay[i]*1000, true)
 	}
 	return nil
 }
@@ -240,8 +269,12 @@ func displayFaceImage(faceBytes []byte, duration int, blocking bool) {
 	}
 }
 
-func convertPixesTo16BitRGB(r uint32, g uint32, b uint32, a uint32) uint16 {
+func convertPixesTo16BitRGB(r uint32, g uint32, b uint32, a uint32, opacityPercentage uint16) uint16 {
 	R, G, B := uint16(r/257), uint16(g/8193), uint16(b/257)
+
+	R = R * opacityPercentage / 100
+	G = G * opacityPercentage / 100
+	B = B * opacityPercentage / 100
 
 	//The format appears to be: 000bbbbbrrrrrggg
 
@@ -254,7 +287,7 @@ func convertPixesTo16BitRGB(r uint32, g uint32, b uint32, a uint32) uint16 {
 	return out
 }
 
-func convertPixelsToRawBitmap(image image.Image) []uint16 {
+func convertPixelsToRawBitmap(image image.Image, opacityPercentage int) []uint16 {
 	imgHeight, imgWidth := image.Bounds().Max.Y, image.Bounds().Max.X
 	bitmap := make([]uint16, imgWidth*imgHeight)
 
@@ -267,7 +300,8 @@ func convertPixelsToRawBitmap(image image.Image) []uint16 {
 				b := 0
 				bitmap[(y)*imgWidth+(x)] = convertPixesTo16BitRGB(uint32(r), uint32(g), uint32(b), 0)
 			*/
-			bitmap[(y)*imgWidth+(x)] = convertPixesTo16BitRGB(image.At(x, y).RGBA())
+			r, g, b, a := image.At(x, y).RGBA()
+			bitmap[(y)*imgWidth+(x)] = convertPixesTo16BitRGB(r, g, b, a, uint16(opacityPercentage))
 		}
 	}
 	return bitmap

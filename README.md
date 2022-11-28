@@ -34,6 +34,12 @@ Please see the cmd/examples directory for usage examples.
 
 ## Changelog 
 
+***RELEASE_ALPHA_05***
+- Image functions
+  - Added animated gif processing
+  - Fixed a bug in image resize
+  - Added fade in/fade out (from/to black) image transition 
+
 ***RELEASE_ALPHA_04***
 
 - Added voice functions (internationalized TTS using htgo or espeak TTS engines)
