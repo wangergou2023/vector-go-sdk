@@ -9,6 +9,7 @@ import (
 	"github.com/nfnt/resize"
 	"image"
 	"image/color"
+	"image/gif"
 	"os"
 	"time"
 )
@@ -178,6 +179,47 @@ func DisplayImageWithTransition(imageFile string, duration int, transition int, 
 			displayFaceImage(tmpFaceBytes, 100, false)
 		}
 	}
+}
+
+func DisplayAnimatedGif(imageFile string, duration int, blocking bool) error {
+	file, err := os.Open(imageFile)
+	if err != nil {
+		return fmt.Errorf("Unable to open file: %v", err)
+	}
+	defer file.Close()
+
+	imageGIF, err := gif.DecodeAll(file)
+	if err != nil {
+		return fmt.Errorf("Unable to decode GIF: %v", err)
+	}
+
+	for i, img := range imageGIF.Image {
+		bgImage := image.NewRGBA(image.Rectangle{
+			Min: image.Point{X: 0, Y: 0},
+			Max: image.Point{X: 184, Y: 96},
+		})
+		imgWidth := bgImage.Bounds().Dx()
+		imgHeight := bgImage.Bounds().Dy()
+		dc := gg.NewContext(imgWidth, imgHeight)
+		dc.DrawImage(bgImage, 0, 0)
+
+		var dst image.Image
+		if img.Bounds().Dy() > img.Bounds().Dx() {
+			dst = resize.Resize(0, uint(imgHeight), img, resize.Bicubic)
+		} else {
+			dst = resize.Resize(uint(imgWidth), 0, img, resize.Bicubic)
+		}
+		dc.DrawImage(dst, (imgWidth-dst.Bounds().Dx())/2, (imgHeight-dst.Bounds().Dy())/2)
+
+		buf := new(bytes.Buffer)
+		bitmap := convertPixelsToRawBitmap(dc.Image())
+		for _, ui := range bitmap {
+			binary.Write(buf, binary.LittleEndian, ui)
+		}
+
+		displayFaceImage(buf.Bytes(), imageGIF.Delay[i]*1000, true)
+	}
+	return nil
 }
 
 /********************************************************************************************************/

@@ -23,12 +23,15 @@ func main() {
 	for {
 		select {
 		case <-start:
-			sdk_wrapper.WriteText("HI", 32, true, 5000, false)
-			sdk_wrapper.SayText("Hi")
-			sdk_wrapper.WriteText("I am Vector", 32, false, 5000, false)
-			sdk_wrapper.SayText("I am Vector")
-			sdk_wrapper.DisplayImage("data/images/birthday-cake.jpg", 5000, true)
-			sdk_wrapper.SayText("Happy birthday!")
+			/*
+				sdk_wrapper.WriteText("HI", 32, true, 5000, false)
+				sdk_wrapper.SayText("Hi")
+				sdk_wrapper.WriteText("I am Vector", 32, false, 5000, false)
+				sdk_wrapper.SayText("I am Vector")
+				sdk_wrapper.DisplayImage("data/images/birthday-cake.jpg", 5000, true)
+				sdk_wrapper.SayText("Happy birthday!")
+			*/
+			
 			stop <- true
 			return
 		}
