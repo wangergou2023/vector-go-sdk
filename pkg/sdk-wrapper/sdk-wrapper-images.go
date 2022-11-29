@@ -27,10 +27,13 @@ const ANIMATED_GIF_SPEED_NORMAL = 1.0
 const ANIMATED_GIF_SPEED_SLOW = 2.0
 const ANIMATED_GIF_SPEED_SLOWER = 3.0
 
+const VECTOR_SCREEN_WIDTH = 184
+const VECTOR_SCREEN_HEIGHT = 96
+
 func TextOnImg(text string, size float64, isBold bool, color color.RGBA) []byte {
 	bgImage := image.NewRGBA(image.Rectangle{
 		Min: image.Point{X: 0, Y: 0},
-		Max: image.Point{X: 184, Y: 96},
+		Max: image.Point{X: VECTOR_SCREEN_WIDTH, Y: VECTOR_SCREEN_HEIGHT},
 	})
 	imgWidth := bgImage.Bounds().Dx()
 	imgHeight := bgImage.Bounds().Dy()
@@ -75,25 +78,7 @@ func DataOnImg(fileName string) []byte {
 		return nil
 	}
 
-	bgImage := image.NewRGBA(image.Rectangle{
-		Min: image.Point{X: 0, Y: 0},
-		Max: image.Point{X: 184, Y: 96},
-	})
-	imgWidth := bgImage.Bounds().Dx()
-	imgHeight := bgImage.Bounds().Dy()
-	dc := gg.NewContext(imgWidth, imgHeight)
-	dc.DrawImage(bgImage, 0, 0)
-
-	dst := resize.Thumbnail(uint(imgWidth), uint(imgHeight), src, resize.Bilinear)
-	dc.DrawImage(dst, (imgWidth-dst.Bounds().Dx())/2, (imgHeight-dst.Bounds().Dy())/2)
-
-	buf := new(bytes.Buffer)
-	bitmap := convertPixelsToRawBitmap(dc.Image(), 100)
-	for _, ui := range bitmap {
-		binary.Write(buf, binary.LittleEndian, ui)
-	}
-	os.WriteFile("/tmp/test.raw", buf.Bytes(), 0644)
-	return buf.Bytes()
+	return imageOnImg(src)
 }
 
 func DataOnImgWithTransition(fileName string, transition int, pct int) []byte {
@@ -112,7 +97,7 @@ func DataOnImgWithTransition(fileName string, transition int, pct int) []byte {
 
 	bgImage := image.NewRGBA(image.Rectangle{
 		Min: image.Point{X: 0, Y: 0},
-		Max: image.Point{X: 184, Y: 96},
+		Max: image.Point{X: VECTOR_SCREEN_WIDTH, Y: VECTOR_SCREEN_HEIGHT},
 	})
 	imgWidth := bgImage.Bounds().Dx()
 	imgHeight := bgImage.Bounds().Dy()
@@ -214,7 +199,7 @@ func DisplayAnimatedGif(imageFile string, speed float64, loops int, repaintBackg
 
 	bgImage := image.NewRGBA(image.Rectangle{
 		Min: image.Point{X: 0, Y: 0},
-		Max: image.Point{X: 184, Y: 96},
+		Max: image.Point{X: VECTOR_SCREEN_WIDTH, Y: VECTOR_SCREEN_HEIGHT},
 	})
 	imgWidth := bgImage.Bounds().Dx()
 	imgHeight := bgImage.Bounds().Dy()
@@ -305,4 +290,25 @@ func convertPixelsToRawBitmap(image image.Image, opacityPercentage int) []uint16
 		}
 	}
 	return bitmap
+}
+
+func imageOnImg(src image.Image) []byte {
+	bgImage := image.NewRGBA(image.Rectangle{
+		Min: image.Point{X: 0, Y: 0},
+		Max: image.Point{X: VECTOR_SCREEN_WIDTH, Y: VECTOR_SCREEN_HEIGHT},
+	})
+	imgWidth := bgImage.Bounds().Dx()
+	imgHeight := bgImage.Bounds().Dy()
+	dc := gg.NewContext(imgWidth, imgHeight)
+	dc.DrawImage(bgImage, 0, 0)
+
+	dst := resize.Thumbnail(uint(imgWidth), uint(imgHeight), src, resize.Bilinear)
+	dc.DrawImage(dst, (imgWidth-dst.Bounds().Dx())/2, (imgHeight-dst.Bounds().Dy())/2)
+
+	buf := new(bytes.Buffer)
+	bitmap := convertPixelsToRawBitmap(dc.Image(), 100)
+	for _, ui := range bitmap {
+		binary.Write(buf, binary.LittleEndian, ui)
+	}
+	return buf.Bytes()
 }
