@@ -11,6 +11,8 @@ import (
 	"time"
 )
 
+const SYSTEMSOUND_WIN = "data/audio/win.wav"
+
 var audioStreamClient vectorpb.ExternalInterface_AudioFeedClient
 var audioStreamEnable bool = false
 
