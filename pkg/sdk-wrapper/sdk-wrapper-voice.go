@@ -34,8 +34,6 @@ var language string = LANGUAGE_ENGLISH
 var eSpeakLang string = "english"
 var ttsEngine = TTS_ENGINE_ESPEAK
 
-var volume = 100
-
 func InitLanguages(language string) {
 	// Here we should get the master volume level...
 	SetLanguage(language)
@@ -98,7 +96,7 @@ func SayText(text string) {
 			fName := "TTS-" + GetRobotSerial()
 			speech := htgotts.Speech{Folder: "/tmp", Language: language, Handler: &handlers.Native{}}
 			speech.CreateSpeechFile(text, fName)
-			PlaySound("/tmp/"+fName+".mp3", volume)
+			PlaySound("/tmp/" + fName + ".mp3")
 			os.Remove("/tmp/" + fName + ".mp3")
 		} else {
 			// Speex, more robotic. Chinese, Japanese and Russian are not directly supported
@@ -108,7 +106,7 @@ func SayText(text string) {
 			if err != nil {
 				println("ESPEAK ERROR " + err.Error())
 			} else {
-				PlaySound(fName, volume)
+				PlaySound(fName)
 				os.Remove(fName)
 			}
 		}

@@ -33,6 +33,7 @@ func InitSDK(serial string) {
 	}
 	ctx = context.Background()
 	eventStream, err = Robot.Conn.EventStream(ctx, &vectorpb.EventRequest{})
+	RefreshSDKSettings()
 }
 
 func WaitForEvent() *vectorpb.Event {
@@ -161,4 +162,15 @@ func getTempFilename(extension string, fullpath bool) string {
 		tmpFile = tmpPath + tmpFile
 	}
 	return tmpFile
+}
+
+func getSDKSettings() []byte {
+	resp, err := Robot.Conn.PullJdocs(ctx, &vectorpb.PullJdocsRequest{
+		JdocTypes: []vectorpb.JdocType{vectorpb.JdocType_ROBOT_SETTINGS},
+	})
+	if err != nil {
+		return []byte(err.Error())
+	}
+	json := resp.NamedJdocs[0].Doc.JsonDoc
+	return []byte(json)
 }

@@ -6,12 +6,13 @@ import (
 	"github.com/digital-dream-labs/vector-go-sdk/pkg/vectorpb"
 	"os"
 	"os/exec"
-	"strconv"
 	"strings"
 	"time"
 )
 
 const SYSTEMSOUND_WIN = "data/audio/win.pcm"
+const VOLUME_LEVEL_MAXIMUM = 5
+const VOLUME_LEVEL_MINIMUM = 1
 
 var audioStreamClient vectorpb.ExternalInterface_AudioFeedClient
 var audioStreamEnable bool = false
@@ -30,9 +31,36 @@ func ProcessAudioStream() {
 	// TODO!!!
 }
 
+// Returns values in the range 1-5
+func GetMasterVolume() int {
+	return settings["master_volume"].(int)
+}
+
+// Returns values in the range 0-100
+func GetAudioVolume() int {
+	audioVol := 100 * GetMasterVolume() / VOLUME_LEVEL_MAXIMUM
+	return audioVol
+}
+
+func SetMasterVolume(volume int) error {
+	if volume <= VOLUME_LEVEL_MAXIMUM && volume >= VOLUME_LEVEL_MINIMUM {
+		_, err := Robot.Conn.SetMasterVolume(
+			ctx,
+			&vectorpb.MasterVolumeRequest{
+				VolumeLevel: vectorpb.MasterVolumeLevel(volume),
+			},
+		)
+		if err != nil {
+			RefreshSDKSettings()
+		}
+		return err
+	}
+	return fmt.Errorf("Invalid volume level")
+}
+
 // Plays amy sound file (mp3, wav, ecc) using FFMpeg to convert it to the right format
 
-func PlaySound(filename string, volume int) string {
+func PlaySound(filename string) string {
 	if _, err := os.Stat(filename); errors.Is(err, os.ErrNotExist) {
 		println("File not found!")
 		return "failure"
@@ -64,7 +92,7 @@ func PlaySound(filename string, volume int) string {
 		AudioRequestType: &vectorpb.ExternalAudioStreamRequest_AudioStreamPrepare{
 			AudioStreamPrepare: &vectorpb.ExternalAudioStreamPrepare{
 				AudioFrameRate: 16000,
-				AudioVolume:    uint32(volume),
+				AudioVolume:    uint32(GetAudioVolume()),
 			},
 		},
 	})
@@ -88,16 +116,4 @@ func PlaySound(filename string, volume int) string {
 	os.Remove(tmpFileName)
 
 	return "success"
-}
-
-// Sets master volume (1 to 5)
-
-func SetMasterVolume(volume int) bool {
-	ret := false
-	if volume >= 1 && volume <= 5 {
-		strVol := strconv.Itoa(volume)
-		SetSettingSDKstring("master_volume", strVol)
-		ret = true
-	}
-	return ret
 }

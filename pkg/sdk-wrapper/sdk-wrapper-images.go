@@ -32,6 +32,11 @@ const VECTOR_SCREEN_WIDTH = 184
 const VECTOR_SCREEN_HEIGHT = 96
 
 var backgroundColor color.RGBA = color.RGBA{0, 0, 0, 0}
+var useVectorEyeColor = false
+
+func UseVectorEyeColorInImages(enabled bool) {
+	useVectorEyeColor = enabled
+}
 
 func SetBackgroundColor(col color.RGBA) {
 	backgroundColor = col
@@ -60,7 +65,11 @@ func TextOnImg(text string, size float64, isBold bool, color color.RGBA) []byte 
 	x := float64(imgWidth / 2)
 	y := float64((imgHeight / 2))
 	maxWidth := float64(imgWidth) - 35.0
-	dc.SetColor(color)
+	if useVectorEyeColor {
+		dc.SetColor(GetEyeColor())
+	} else {
+		dc.SetColor(color)
+	}
 	dc.DrawStringWrapped(text, x, y, 0.5, 0.5, maxWidth, 1.5, gg.AlignCenter)
 	buf := new(bytes.Buffer)
 	bitmap := convertPixelsToRawBitmap(dc.Image(), 100)
