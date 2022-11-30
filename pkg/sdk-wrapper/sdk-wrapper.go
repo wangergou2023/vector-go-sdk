@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"crypto/tls"
+	"fmt"
 	"github.com/digital-dream-labs/vector-go-sdk/pkg/vector"
 	"github.com/digital-dream-labs/vector-go-sdk/pkg/vectorpb"
 	_ "image/gif"
@@ -151,4 +152,13 @@ func shellout(command string) (string, string, error) {
 	cmd.Stderr = &stderr
 	err := cmd.Run()
 	return stdout.String(), stderr.String(), err
+}
+
+func getTempFilename(extension string, fullpath bool) string {
+	tmpPath := "/tmp/"
+	tmpFile := GetRobotSerial() + fmt.Sprintf("_%d", time.Now().Unix()) + "." + extension
+	if fullpath {
+		tmpFile = tmpPath + tmpFile
+	}
+	return tmpFile
 }

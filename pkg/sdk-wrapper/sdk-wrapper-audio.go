@@ -11,7 +11,7 @@ import (
 	"time"
 )
 
-const SYSTEMSOUND_WIN = "data/audio/win.pcm"
+const SYSTEMSOUND_WIN = "data/audio/win.wav"
 
 var audioStreamClient vectorpb.ExternalInterface_AudioFeedClient
 var audioStreamEnable bool = false
@@ -40,6 +40,7 @@ func PlaySound(filename string, volume int) string {
 
 	go func() {
 		var pcmFile []byte
+		tmpFileName := getTempFilename("pcm", true)
 		if strings.Contains(filename, ".pcm") || strings.Contains(filename, ".raw") {
 			fmt.Println("Assuming already pcm")
 			pcmFile, _ = os.ReadFile(filename)
@@ -49,7 +50,7 @@ func PlaySound(filename string, volume int) string {
 				fmt.Println(conError)
 			}
 			fmt.Println("FFMPEG output: " + string(conOutput))
-			pcmFile, _ = os.ReadFile("/tmp/output.pcm")
+			pcmFile, _ = os.ReadFile(tmpFileName)
 		}
 		var audioChunks [][]byte
 		for len(pcmFile) >= 1024 {
@@ -85,7 +86,7 @@ func PlaySound(filename string, volume int) string {
 				AudioStreamComplete: &vectorpb.ExternalAudioStreamComplete{},
 			},
 		})
-		os.Remove("/tmp/output.pcm")
+		//os.Remove(tmpFileName)
 	}()
 
 	return "success"
