@@ -34,9 +34,10 @@ func main() {
 			r1 := rand.New(s1)
 			dieImage := fmt.Sprintf("data/images/dice/%d.png", r1.Intn(6)+1)
 
-			sdk_wrapper.DisplayAnimatedGif("data/images/dice/roll-the-dice.gif", sdk_wrapper.ANIMATED_GIF_SPEED_FAST, 1, false)
+			sdk_wrapper.DisplayAnimatedGif("data/images/dice/roll-the-dice.gif", sdk_wrapper.ANIMATED_GIF_SPEED_FASTEST, 1, false)
+			sdk_wrapper.DisplayImage(dieImage, 100, false)
 			sdk_wrapper.PlaySound(sdk_wrapper.SYSTEMSOUND_WIN, 100)
-			sdk_wrapper.DisplayImageWithTransition(dieImage, 3000, sdk_wrapper.IMAGE_TRANSITION_FADE_IN, 10)
+			sdk_wrapper.DisplayImageWithTransition(dieImage, 3000, sdk_wrapper.IMAGE_TRANSITION_FADE_OUT, 10)
 			stop <- true
 			return
 		}

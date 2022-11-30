@@ -22,6 +22,7 @@ const IMAGE_TRANSITION_SLIDE_UP = 4
 const IMAGE_TRANSITION_SLIDE_DOWN = 5
 const IMAGE_TRANSITION_FADE_OUT = 6
 
+const ANIMATED_GIF_SPEED_FASTEST = 0
 const ANIMATED_GIF_SPEED_FAST = 0.5
 const ANIMATED_GIF_SPEED_NORMAL = 1.0
 const ANIMATED_GIF_SPEED_SLOW = 2.0
@@ -230,7 +231,11 @@ func DisplayAnimatedGif(imageFile string, speed float64, loops int, repaintBackg
 				binary.Write(buf, binary.LittleEndian, ui)
 			}
 
-			displayFaceImage(buf.Bytes(), imageGIF.Delay[i]*int(speed*10), true)
+			if speed > 0 {
+				displayFaceImage(buf.Bytes(), imageGIF.Delay[i]*int(speed*10), true)
+			} else {
+				displayFaceImage(buf.Bytes(), 0, false)
+			}
 			/*
 				println(fmt.Sprintf("Frame %d, size: %dx%d (resized to %dx%d) duration = %d", i,
 					img.Bounds().Dx(), img.Bounds().Dy(),
