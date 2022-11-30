@@ -41,8 +41,8 @@ func main() {
 								isBusy = true
 								go func() {
 									println("I am being touched.")
-									sdk_wrapper.PlayAnimation("anim_eyepose_angry", 0, false, false, false)
-									_ = sdk_wrapper.PlaySound("data/audio/roar.pcm", 100)
+									//sdk_wrapper.PlayAnimation("anim_eyepose_angry", 0, false, false, false)
+									_ = sdk_wrapper.PlaySound("data/audio/roar.wav", 100)
 									time.Sleep(time.Duration(1000) * time.Millisecond)
 									isBusy = false
 								}()
