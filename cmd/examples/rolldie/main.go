@@ -23,11 +23,9 @@ func main() {
 	for {
 		select {
 		case <-start:
-			err1 := sdk_wrapper.DisplayTemperature(16, sdk_wrapper.WEATHER_UNIT_CELSIUS, 5000, true)
-			if err1 != nil {
-				println("ERROR " + err1.Error())
-			}
-			sdk_wrapper.DisplayCondition("shower rain", "09n", 5000, true)
+			sdk_wrapper.MoveHead(3.0)
+			sdk_wrapper.DisplayImageWithTransition("data/images/birthday-cake.jpg", 2000, sdk_wrapper.IMAGE_TRANSITION_FADE_IN, 10)
+			sdk_wrapper.DisplayAnimatedGif("data/images/dice/roll-the-dice.gif", sdk_wrapper.ANIMATED_GIF_SPEED_NORMAL, 3, false)
 			stop <- true
 			return
 		}
