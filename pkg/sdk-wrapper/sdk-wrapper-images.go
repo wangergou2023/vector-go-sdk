@@ -30,6 +30,12 @@ const ANIMATED_GIF_SPEED_SLOWER = 3.0
 const VECTOR_SCREEN_WIDTH = 184
 const VECTOR_SCREEN_HEIGHT = 96
 
+var backgroundColor color.RGBA = color.RGBA{0, 0, 0, 0}
+
+func SetBackgroundColor(col color.RGBA) {
+	backgroundColor = col
+}
+
 func TextOnImg(text string, size float64, isBold bool, color color.RGBA) []byte {
 	bgImage := image.NewRGBA(image.Rectangle{
 		Min: image.Point{X: 0, Y: 0},
@@ -102,6 +108,8 @@ func DataOnImgWithTransition(fileName string, transition int, pct int) []byte {
 	imgWidth := bgImage.Bounds().Dx()
 	imgHeight := bgImage.Bounds().Dy()
 	dc := gg.NewContext(imgWidth, imgHeight)
+	dc.SetColor(backgroundColor)
+	dc.Fill()
 	dc.DrawImage(bgImage, 0, 0)
 
 	dst := resize.Thumbnail(uint(imgWidth), uint(imgHeight), src, resize.Bilinear)
@@ -204,11 +212,8 @@ func DisplayAnimatedGif(imageFile string, speed float64, loops int, repaintBackg
 	imgWidth := bgImage.Bounds().Dx()
 	imgHeight := bgImage.Bounds().Dy()
 	dc := gg.NewContext(imgWidth, imgHeight)
-	for x := 0; x < imgWidth; x++ {
-		for y := 0; y < imgHeight; y++ {
-			bgImage.Set(x, y, color.White)
-		}
-	}
+	dc.SetColor(backgroundColor)
+	dc.Fill()
 	dc.DrawImage(bgImage, 0, 0)
 
 	for l := 0; l < loops; l++ {

@@ -47,6 +47,7 @@ func main() {
 			sdk_wrapper.DisplayImageWithTransition("data/images/birthday-cake.jpg", 2000, sdk_wrapper.IMAGE_TRANSITION_FADE_OUT, 10)
 			sdk_wrapper.SayText("Animated gifs")
 
+			sdk_wrapper.SetBackgroundColor(color.RGBA{0xff, 0xff, 0xff, 0xff})
 			sdk_wrapper.DisplayAnimatedGif("data/images/animated.gif", sdk_wrapper.ANIMATED_GIF_SPEED_SLOW, 3, false)
 			sdk_wrapper.DisplayAnimatedGif("data/images/animated2.gif", sdk_wrapper.ANIMATED_GIF_SPEED_NORMAL, 3, false)
 			sdk_wrapper.DisplayAnimatedGif("data/images/animated3.gif", sdk_wrapper.ANIMATED_GIF_SPEED_FAST, 3, false)

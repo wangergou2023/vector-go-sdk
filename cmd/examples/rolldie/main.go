@@ -4,6 +4,7 @@ import (
 	"context"
 	"flag"
 	"github.com/digital-dream-labs/vector-go-sdk/pkg/sdk-wrapper"
+	"image/color"
 )
 
 func main() {
@@ -24,8 +25,9 @@ func main() {
 		select {
 		case <-start:
 			sdk_wrapper.MoveHead(3.0)
+			sdk_wrapper.SetBackgroundColor(color.RGBA{0, 0, 0, 0})
 			sdk_wrapper.DisplayImageWithTransition("data/images/birthday-cake.jpg", 2000, sdk_wrapper.IMAGE_TRANSITION_FADE_IN, 10)
-			sdk_wrapper.DisplayAnimatedGif("data/images/dice/roll-the-dice.gif", sdk_wrapper.ANIMATED_GIF_SPEED_NORMAL, 3, false)
+			sdk_wrapper.DisplayAnimatedGif("data/images/dice/roll-the-dice.gif", sdk_wrapper.ANIMATED_GIF_SPEED_FAST, 3, false)
 			stop <- true
 			return
 		}
