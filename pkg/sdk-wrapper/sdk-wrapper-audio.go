@@ -33,7 +33,7 @@ func ProcessAudioStream() {
 
 // Returns values in the range 1-5
 func GetMasterVolume() int {
-	return settings["master_volume"].(int)
+	return int(settings["master_volume"].(float64))
 }
 
 // Returns values in the range 0-100

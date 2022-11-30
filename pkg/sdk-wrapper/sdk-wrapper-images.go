@@ -305,6 +305,16 @@ func convertPixelsToRawBitmap(image image.Image, opacityPercentage int) []uint16
 				bitmap[(y)*imgWidth+(x)] = convertPixesTo16BitRGB(uint32(r), uint32(g), uint32(b), 0)
 			*/
 			r, g, b, a := image.At(x, y).RGBA()
+			if useVectorEyeColor {
+				vectorEyes := GetEyeColor()
+				vR := uint32(vectorEyes.R) * 255
+				vG := uint32(vectorEyes.G) * 255
+				vB := uint32(vectorEyes.B) * 255
+
+				r = r * vR / 0xffff
+				g = g * vG / 0xffff
+				b = b * vB / 0xffff
+			}
 			bitmap[(y)*imgWidth+(x)] = convertPixesTo16BitRGB(r, g, b, a, uint16(opacityPercentage))
 		}
 	}

@@ -34,6 +34,16 @@ Please see the cmd/examples directory for usage examples.
 
 ## Changelog 
 
+***RELEASE_ALPHA_06***
+- Image functions
+  - Add the option to use Vector's eye color to blend the images with (kind of near monochrome effect)
+- Audio functions
+  - Use master volume to play audio files. Set the master volume higher if you want to play audio louder
+- Settings
+  - Added utility to get Vector's eye colors as RGB, and audio volume in the range 0..100 
+- Examples
+  - Add full example of "Roll a die" (uses the features above)
+
 ***RELEASE_ALPHA_05***
 - Image functions
   - Added animated gif processing
