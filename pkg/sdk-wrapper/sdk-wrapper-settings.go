@@ -26,7 +26,7 @@ func RefreshSDKSettings() {
 	if err != nil {
 		customSettings = defaultCustomSettings
 	}
-	println(string(settingsJSON))
+	//println(string(settingsJSON))
 	json.Unmarshal([]byte(settingsJSON), &settings)
 	json.Unmarshal([]byte(customSettingsJSON), &customSettings)
 }

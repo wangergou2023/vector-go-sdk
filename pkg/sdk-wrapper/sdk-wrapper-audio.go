@@ -10,7 +10,8 @@ import (
 	"time"
 )
 
-const SYSTEMSOUND_WIN = "data/audio/win.pcm"
+var SYSTEMSOUND_WIN = GetDataPath("audio/win.pcm")
+
 const VOLUME_LEVEL_MAXIMUM = 5
 const VOLUME_LEVEL_MINIMUM = 1
 
