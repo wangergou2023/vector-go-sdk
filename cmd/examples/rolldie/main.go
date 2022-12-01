@@ -8,6 +8,7 @@ import (
 	"github.com/digital-dream-labs/vector-go-sdk/pkg/sdk-wrapper/audio"
 	"github.com/digital-dream-labs/vector-go-sdk/pkg/sdk-wrapper/images"
 	"github.com/digital-dream-labs/vector-go-sdk/pkg/sdk-wrapper/motors"
+	"github.com/digital-dream-labs/vector-go-sdk/pkg/sdk-wrapper/sdk"
 	"github.com/digital-dream-labs/vector-go-sdk/pkg/sdk-wrapper/voice"
 	"image/color"
 	"math/rand"
@@ -18,7 +19,7 @@ func main() {
 	var serial = flag.String("serial", "", "Vector's Serial Number")
 	flag.Parse()
 
-	sdk_wrapper.InitSDK(*serial)
+	sdk.InitDefault(*serial)
 
 	ctx := context.Background()
 	start := make(chan bool)

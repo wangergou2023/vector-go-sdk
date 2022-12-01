@@ -3,7 +3,6 @@ package sdk_wrapper
 import (
 	"context"
 	"fmt"
-	"github.com/digital-dream-labs/vector-go-sdk/pkg/sdk-wrapper/voice"
 	"github.com/digital-dream-labs/vector-go-sdk/pkg/vector"
 	"github.com/digital-dream-labs/vector-go-sdk/pkg/vectorpb"
 	_ "image/gif"
@@ -31,17 +30,15 @@ var SDKConfig = SDKConfigData{"/tmp/", "data", "nvm"}
 
 func InitSDK(serial string) {
 	var err error
-	voice.InitLanguages(voice.LANGUAGE_ENGLISH)
 	Robot, err = vector.NewEP(serial)
 	if err != nil {
 		log.Fatal(err)
 	}
 	Ctx = context.Background()
 	eventStream, err = Robot.Conn.EventStream(Ctx, &vectorpb.EventRequest{})
-	RefreshSDKSettings()
 }
 
-func SetNDKPaths(tmpPath string, dataPath string, nvmPath string) {
+func SetSDKPaths(tmpPath string, dataPath string, nvmPath string) {
 	SDKConfig.TmpPath = tmpPath
 	SDKConfig.DataPath = dataPath
 	SDKConfig.NvmPath = nvmPath

@@ -10,7 +10,7 @@ import (
 	"github.com/bregydoc/gtranslate"
 	"github.com/digital-dream-labs/vector-go-sdk/pkg/sdk-wrapper"
 	"github.com/digital-dream-labs/vector-go-sdk/pkg/sdk-wrapper/audio"
-	"github.com/digital-dream-labs/vector-go-sdk/pkg/sdk-wrapper/common"
+	"github.com/digital-dream-labs/vector-go-sdk/pkg/sdk-wrapper/sdk"
 	"github.com/digital-dream-labs/vector-go-sdk/pkg/vectorpb"
 	htgotts "github.com/hegedustibor/htgo-tts"
 	"github.com/hegedustibor/htgo-tts/handlers"
@@ -105,7 +105,7 @@ func SayText(text string) {
 			// Speex, more robotic. Chinese, Japanese and Russian are not directly supported
 			fName := "/tmp/TTS-" + sdk_wrapper.GetRobotSerial() + ".wav"
 			cmdData := "espeak " + "\"" + text + "\"" + " -l " + eSpeakLang + " -w " + fName + " echo 20 75 pitch 82 74"
-			_, _, err := common.Shellout(cmdData)
+			_, _, err := sdk.Shellout(cmdData)
 			if err != nil {
 				println("ESPEAK ERROR " + err.Error())
 			} else {
