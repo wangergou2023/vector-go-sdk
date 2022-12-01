@@ -57,13 +57,11 @@ func playDemo() {
 	sdk_wrapper.WriteText("0...", 64, true, 2000, true)
 	sdk_wrapper.WriteText("0...5", 64, true, 2000, true)
 	sdk_wrapper.WriteText("0", 64, true, 2000, true)
-	sdk_wrapper.DisplayImage("data/images/rock.png", 2000, true)
+	sdk_wrapper.DisplayImage(sdk_wrapper.GetDataPath("images/rock.png"), 2000, true)
 	sdk_wrapper.WriteText("2", 64, true, 1000, true)
-	sdk_wrapper.DisplayImage("data/images/scissors.png", 2000, true)
+	sdk_wrapper.DisplayImage(sdk_wrapper.GetDataPath("images/scissors.png"), 2000, true)
 	sdk_wrapper.WriteText("5", 64, true, 1000, true)
-	sdk_wrapper.DisplayImage("data/images/paper.png", 2000, true)
-	sdk_wrapper.DisplayImage("/tmp/rps.jpg", 5000, true)
-	sdk_wrapper.DisplayImage("/tmp/rps_annotated.jpg", 5000, true)
+	sdk_wrapper.DisplayImage(sdk_wrapper.GetDataPath("images/paper.png"), 2000, true)
 }
 
 func playGame(numSteps int) {
@@ -82,7 +80,7 @@ func playGame(numSteps int) {
 		sdk_wrapper.SayText("one, two, three!")
 
 		myMove := options[r1.Intn(len(options))]
-		sdk_wrapper.DisplayImage("data/images/"+myMove+".png", 5000, false)
+		sdk_wrapper.DisplayImage(sdk_wrapper.GetDataPath("images/"+myMove+".png"), 5000, false)
 		fName := sdk_wrapper.GetTemporaryFilename("rps", "jpg", true)
 		err := sdk_wrapper.SaveHiResCameraPicture(fName)
 		if err == nil {

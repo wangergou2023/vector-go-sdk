@@ -12,7 +12,9 @@ import (
 	_ "image/png"
 	"log"
 	"net/http"
+	"os"
 	"os/exec"
+	"path/filepath"
 	"strings"
 	"time"
 )
@@ -46,15 +48,6 @@ func InitSDK(serial string) {
 }
 
 func SetNDKPaths(tmpPath string, dataPath string, nvmPath string) {
-	if !strings.HasSuffix(tmpPath, "/") {
-		tmpPath += "/"
-	}
-	if !strings.HasSuffix(dataPath, "/") {
-		dataPath += "/"
-	}
-	if !strings.HasSuffix(nvmPath, "/") {
-		nvmPath += "/"
-	}
 	SDKConfig.TmpPath = tmpPath
 	SDKConfig.DataPath = dataPath
 	SDKConfig.NvmPath = nvmPath
@@ -172,6 +165,23 @@ func GetTemporaryFilename(tag string, extension string, fullpath bool) string {
 	return tmpFile
 }
 
+func GetMyStoragePath(filename string) string {
+	nvmPath := SDKConfig.NvmPath
+	nvmPath = filepath.Join(nvmPath, GetRobotSerial())
+	_ = os.MkdirAll(nvmPath, os.ModePerm)
+	nvmPath = filepath.Join(nvmPath, filename)
+	return nvmPath
+}
+
+func GetDataPath(filename string) string {
+	dataPath := SDKConfig.DataPath
+	var chunks []string = strings.Split(filename, "/")
+	for _, chunk := range chunks {
+		dataPath = filepath.Join(dataPath, chunk)
+	}
+	return dataPath
+}
+
 /**********************************************************************************************************************/
 /*                                              PRIVATE FUNCTIONS                                                     */
 /**********************************************************************************************************************/
@@ -186,15 +196,4 @@ func shellout(command string) (string, string, error) {
 	cmd.Stderr = &stderr
 	err := cmd.Run()
 	return stdout.String(), stderr.String(), err
-}
-
-func getSDKSettings() []byte {
-	resp, err := Robot.Conn.PullJdocs(ctx, &vectorpb.PullJdocsRequest{
-		JdocTypes: []vectorpb.JdocType{vectorpb.JdocType_ROBOT_SETTINGS},
-	})
-	if err != nil {
-		return []byte(err.Error())
-	}
-	json := resp.NamedJdocs[0].Doc.JsonDoc
-	return []byte(json)
 }

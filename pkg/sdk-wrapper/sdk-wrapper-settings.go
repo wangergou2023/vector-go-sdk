@@ -8,15 +8,23 @@ import (
 	"image/color"
 	"log"
 	"net/http"
+	"os"
 	"strings"
 )
 
+type CustomSettings struct {
+	robot_name string
+}
+
 var settings map[string]interface{}
+var customSettings = CustomSettings{""}
 
 func RefreshSDKSettings() {
 	settingsJSON := getSDKSettings()
-	//println(string(settingsJSON))
+	customSettingsJSON := getCustomSettings()
+	println(string(settingsJSON))
 	json.Unmarshal([]byte(settingsJSON), &settings)
+	json.Unmarshal([]byte(customSettingsJSON), &customSettings)
 }
 
 func GetEyeColor() color.RGBA {
@@ -62,6 +70,15 @@ func GetEyeColor() color.RGBA {
 	return eyeColor
 }
 
+func GetTemperatureUnit() string {
+	unit := WEATHER_UNIT_CELSIUS
+	isFaranheit := settings["temp_is_fahrenheit"].(bool)
+	if isFaranheit {
+		unit = WEATHER_UNIT_FARANHEIT
+	}
+	return unit
+}
+
 func SetCustomEyeColor(hue string, sat string) {
 	payload := `{"custom_eye_color": {"enabled": true, "hue": ` + hue + `, "saturation": ` + sat + `} }`
 	setSettingSDKStringHelper(payload)
@@ -85,17 +102,30 @@ func SetTimeZone(timezone string) {
 }
 
 func SetRobotName(name string) {
-	SetSettingSDKstring("robot_name", name)
+	customSettings.robot_name = name
+	saveCustomSettings()
 }
 
 func SetSettingSDKstring(setting string, value string) {
 	payload := `{"` + setting + `": "` + value + `" }`
 	setSettingSDKStringHelper(payload)
+	RefreshSDKSettings()
 }
 
 /********************************************************************************************************/
 /*                                                PRIVATE FUNCTIONS                                     */
 /********************************************************************************************************/
+
+func getSDKSettings() []byte {
+	resp, err := Robot.Conn.PullJdocs(ctx, &vectorpb.PullJdocsRequest{
+		JdocTypes: []vectorpb.JdocType{vectorpb.JdocType_ROBOT_SETTINGS},
+	})
+	if err != nil {
+		return []byte(err.Error())
+	}
+	json := resp.NamedJdocs[0].Doc.JsonDoc
+	return []byte(json)
+}
 
 func setSettingSDKStringHelper(payload string) {
 	if !strings.Contains(Robot.Cfg.Token, "error") {
@@ -114,4 +144,17 @@ func setSettingSDKStringHelper(payload string) {
 		log.Println("GUID not there")
 	}
 	RefreshSDKSettings()
+}
+
+func getCustomSettings() []byte {
+	json, err := os.ReadFile(GetMyStoragePath("custom_settings.json"))
+	if err == nil {
+		return []byte(err.Error())
+	}
+	return []byte(json)
+}
+
+func saveCustomSettings() {
+	file, _ := json.MarshalIndent(customSettings, "", " ")
+	_ = os.WriteFile(GetMyStoragePath("custom_settings.json"), file, 0644)
 }

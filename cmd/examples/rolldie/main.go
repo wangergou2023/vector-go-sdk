@@ -34,9 +34,10 @@ func main() {
 			s1 := rand.NewSource(time.Now().UnixNano())
 			r1 := rand.New(s1)
 			die := r1.Intn(6) + 1
-			dieImage := fmt.Sprintf("data/images/dice/%d.png", die)
+			dieImage := fmt.Sprintf("images/dice/%d.png", die)
+			dieImage = sdk_wrapper.GetDataPath(dieImage)
 
-			sdk_wrapper.DisplayAnimatedGif("data/images/dice/roll-the-dice.gif", sdk_wrapper.ANIMATED_GIF_SPEED_FASTEST, 1, false)
+			sdk_wrapper.DisplayAnimatedGif(sdk_wrapper.GetDataPath("images/dice/roll-the-dice.gif"), sdk_wrapper.ANIMATED_GIF_SPEED_FASTEST, 1, false)
 			sdk_wrapper.DisplayImage(dieImage, 100, false)
 			sdk_wrapper.PlaySound(sdk_wrapper.SYSTEMSOUND_WIN)
 			sdk_wrapper.SayText(fmt.Sprintf("You rolled a %d", die))

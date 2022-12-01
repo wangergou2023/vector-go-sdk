@@ -23,7 +23,12 @@ func main() {
 	for {
 		select {
 		case <-start:
-			err1 := sdk_wrapper.DisplayTemperature(16, sdk_wrapper.WEATHER_UNIT_CELSIUS, 5000, true)
+			temperature := 16
+			unit := sdk_wrapper.GetTemperatureUnit()
+			if unit == sdk_wrapper.WEATHER_UNIT_FARANHEIT {
+				temperature = (temperature * 9 / 5) + 32
+			}
+			err1 := sdk_wrapper.DisplayTemperature(temperature, unit, 5000, true)
 			if err1 != nil {
 				println("ERROR " + err1.Error())
 			}
