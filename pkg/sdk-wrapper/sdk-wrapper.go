@@ -13,8 +13,15 @@ import (
 	"log"
 	"net/http"
 	"os/exec"
+	"strings"
 	"time"
 )
+
+type SDKConfigData struct {
+	TmpPath  string
+	DataPath string
+	NvmPath  string
+}
 
 var Robot *vector.Vector
 var bcAssumption bool = false
@@ -22,7 +29,9 @@ var ctx context.Context
 var transCfg = &http.Transport{
 	TLSClientConfig: &tls.Config{InsecureSkipVerify: true}, // ignore SSL warnings
 }
+
 var eventStream vectorpb.ExternalInterface_EventStreamClient
+var SDKConfig = SDKConfigData{"/tmp/", "data", "nvm"}
 
 func InitSDK(serial string) {
 	var err error
@@ -34,6 +43,21 @@ func InitSDK(serial string) {
 	ctx = context.Background()
 	eventStream, err = Robot.Conn.EventStream(ctx, &vectorpb.EventRequest{})
 	RefreshSDKSettings()
+}
+
+func SetNDKPaths(tmpPath string, dataPath string, nvmPath string) {
+	if !strings.HasSuffix(tmpPath, "/") {
+		tmpPath += "/"
+	}
+	if !strings.HasSuffix(dataPath, "/") {
+		dataPath += "/"
+	}
+	if !strings.HasSuffix(nvmPath, "/") {
+		nvmPath += "/"
+	}
+	SDKConfig.TmpPath = tmpPath
+	SDKConfig.DataPath = dataPath
+	SDKConfig.NvmPath = nvmPath
 }
 
 func WaitForEvent() *vectorpb.Event {
@@ -139,6 +163,15 @@ func GetRobotSerial() string {
 	return Robot.Cfg.SerialNo
 }
 
+func GetTemporaryFilename(tag string, extension string, fullpath bool) string {
+	tmpPath := SDKConfig.TmpPath
+	tmpFile := GetRobotSerial() + "_" + tag + fmt.Sprintf("_%d", time.Now().Unix()) + "." + extension
+	if fullpath {
+		tmpFile = tmpPath + tmpFile
+	}
+	return tmpFile
+}
+
 /**********************************************************************************************************************/
 /*                                              PRIVATE FUNCTIONS                                                     */
 /**********************************************************************************************************************/
@@ -153,15 +186,6 @@ func shellout(command string) (string, string, error) {
 	cmd.Stderr = &stderr
 	err := cmd.Run()
 	return stdout.String(), stderr.String(), err
-}
-
-func getTempFilename(extension string, fullpath bool) string {
-	tmpPath := "/tmp/"
-	tmpFile := GetRobotSerial() + fmt.Sprintf("_%d", time.Now().Unix()) + "." + extension
-	if fullpath {
-		tmpFile = tmpPath + tmpFile
-	}
-	return tmpFile
 }
 
 func getSDKSettings() []byte {

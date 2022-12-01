@@ -83,7 +83,7 @@ func playGame(numSteps int) {
 
 		myMove := options[r1.Intn(len(options))]
 		sdk_wrapper.DisplayImage("data/images/"+myMove+".png", 5000, false)
-		fName := "/tmp/rps.jpg"
+		fName := sdk_wrapper.GetTemporaryFilename("rps", "jpg", true)
 		err := sdk_wrapper.SaveHiResCameraPicture(fName)
 		if err == nil {
 			if err == nil {
@@ -138,8 +138,8 @@ func playGame(numSteps int) {
 					break
 				default:
 					answer = "Sorry... I don't get it"
-					sdk_wrapper.DisplayImage("/tmp/rps.jpg", 5000, true)
-					_ = os.Rename("/tmp/rps.jpg", "/mp/not_recognized_"+string(time.Now().Unix())+".jpg")
+					sdk_wrapper.DisplayImage(fName, 5000, true)
+					_ = os.Rename(fName, "/tmp/not_recognized_"+string(time.Now().Unix())+".jpg")
 					break
 				}
 

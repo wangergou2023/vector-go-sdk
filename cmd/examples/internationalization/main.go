@@ -23,6 +23,7 @@ func main() {
 	for {
 		select {
 		case <-start:
+			sdk_wrapper.SetRobotName("Augustus")
 			sdk_wrapper.SetLanguage(sdk_wrapper.LANGUAGE_ENGLISH)
 			sdk_wrapper.SayText("Hello world!")
 			sdk_wrapper.SetLanguage(sdk_wrapper.LANGUAGE_ITALIAN)

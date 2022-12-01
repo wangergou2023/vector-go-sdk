@@ -28,7 +28,11 @@ func DisableAudioStream() {
 }
 
 func ProcessAudioStream() {
-	// TODO!!!
+	if audioStreamEnable {
+		response, _ := audioStreamClient.Recv()
+		audioSample := response.SignalPower
+		println(string(audioSample))
+	}
 }
 
 // Returns values in the range 1-5
@@ -67,7 +71,7 @@ func PlaySound(filename string) string {
 	}
 
 	var pcmFile []byte
-	tmpFileName := getTempFilename("pcm", true)
+	tmpFileName := GetTemporaryFilename("sound", "pcm", true)
 	if strings.Contains(filename, ".pcm") || strings.Contains(filename, ".raw") {
 		fmt.Println("Assuming already pcm")
 		pcmFile, _ = os.ReadFile(filename)

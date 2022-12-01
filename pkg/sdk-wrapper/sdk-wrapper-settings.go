@@ -84,6 +84,10 @@ func SetTimeZone(timezone string) {
 	SetSettingSDKstring("time_zone", timezone)
 }
 
+func SetRobotName(name string) {
+	SetSettingSDKstring("robot_name", name)
+}
+
 func SetSettingSDKstring(setting string, value string) {
 	payload := `{"` + setting + `": "` + value + `" }`
 	setSettingSDKStringHelper(payload)
