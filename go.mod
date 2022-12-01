@@ -1,4 +1,4 @@
-module github.com/digital-dream-labs/vector-go-sdk
+module github.com/fforchino/vector-go-sdk
 
 go 1.18
 

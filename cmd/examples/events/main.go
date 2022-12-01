@@ -3,8 +3,8 @@ package main
 import (
 	"context"
 	"flag"
-	sdk_wrapper "github.com/digital-dream-labs/vector-go-sdk/pkg/sdk-wrapper"
-	"github.com/digital-dream-labs/vector-go-sdk/pkg/vectorpb"
+	sdk_wrapper "github.com/fforchino/vector-go-sdk/pkg/sdk-wrapper"
+	"github.com/fforchino/vector-go-sdk/pkg/vectorpb"
 	"time"
 )
 
@@ -42,7 +42,7 @@ func main() {
 								go func() {
 									println("I am being touched.")
 									//sdk_wrapper.PlayAnimation("anim_eyepose_angry", 0, false, false, false)
-									_ = sdk_wrapper.PlaySound("data/audio/roar.wav", 100)
+									_ = sdk_wrapper.PlaySound(sdk_wrapper.GetDataPath("audio/roar.wav"))
 									time.Sleep(time.Duration(1000) * time.Millisecond)
 									isBusy = false
 								}()

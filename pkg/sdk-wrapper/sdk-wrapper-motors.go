@@ -1,6 +1,6 @@
 package sdk_wrapper
 
-import "github.com/digital-dream-labs/vector-go-sdk/pkg/vectorpb"
+import "github.com/fforchino/vector-go-sdk/pkg/vectorpb"
 
 func DriveWheelsForward(lw float32, rw float32, lwtwo float32, rwtwo float32) {
 	_, _ = Robot.Conn.DriveWheels(

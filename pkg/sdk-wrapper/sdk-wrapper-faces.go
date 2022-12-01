@@ -1,7 +1,7 @@
 package sdk_wrapper
 
 import (
-	"github.com/digital-dream-labs/vector-go-sdk/pkg/vectorpb"
+	"github.com/fforchino/vector-go-sdk/pkg/vectorpb"
 )
 
 func FaceEnrollmentListAll() []*vectorpb.LoadedKnownFace {

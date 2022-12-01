@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"github.com/PerformLine/go-stockutil/colorutil"
-	"github.com/digital-dream-labs/vector-go-sdk/pkg/vectorpb"
+	"github.com/fforchino/vector-go-sdk/pkg/vectorpb"
 	"image/color"
 	"log"
 	"net/http"

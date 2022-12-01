@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"encoding/binary"
 	"fmt"
-	"github.com/digital-dream-labs/vector-go-sdk/pkg/vectorpb"
+	"github.com/fforchino/vector-go-sdk/pkg/vectorpb"
 	"github.com/fogleman/gg"
 	"github.com/nfnt/resize"
 	"image"

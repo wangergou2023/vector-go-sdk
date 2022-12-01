@@ -3,7 +3,7 @@ package main
 import (
 	"context"
 	"flag"
-	"github.com/digital-dream-labs/vector-go-sdk/pkg/sdk-wrapper"
+	sdk_wrapper "github.com/fforchino/vector-go-sdk/pkg/sdk-wrapper"
 	"image/color"
 )
 

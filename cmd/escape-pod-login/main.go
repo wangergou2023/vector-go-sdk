@@ -14,7 +14,7 @@ import (
 	"strings"
 
 	"github.com/digital-dream-labs/hugh/grpc/client"
-	"github.com/digital-dream-labs/vector-go-sdk/pkg/vectorpb"
+	"github.com/fforchino/vector-go-sdk/pkg/vectorpb"
 )
 
 const (

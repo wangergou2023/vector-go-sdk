@@ -3,7 +3,7 @@ package sdk_wrapper
 import (
 	"errors"
 	"fmt"
-	"github.com/digital-dream-labs/vector-go-sdk/pkg/vectorpb"
+	"github.com/fforchino/vector-go-sdk/pkg/vectorpb"
 	"os"
 	"os/exec"
 	"strings"

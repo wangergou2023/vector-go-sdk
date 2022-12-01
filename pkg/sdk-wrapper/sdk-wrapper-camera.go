@@ -2,7 +2,7 @@ package sdk_wrapper
 
 import (
 	"bytes"
-	"github.com/digital-dream-labs/vector-go-sdk/pkg/vectorpb"
+	"github.com/fforchino/vector-go-sdk/pkg/vectorpb"
 	"image"
 	"image/jpeg"
 	"math/rand"

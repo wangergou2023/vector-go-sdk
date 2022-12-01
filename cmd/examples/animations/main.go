@@ -4,7 +4,7 @@ import (
 	"context"
 	"flag"
 	"fmt"
-	"github.com/digital-dream-labs/vector-go-sdk/pkg/sdk-wrapper"
+	"github.com/fforchino/vector-go-sdk/pkg/sdk-wrapper"
 	"time"
 )
 

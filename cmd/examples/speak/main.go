@@ -3,8 +3,8 @@ package main
 import (
 	"context"
 	"flag"
-	"github.com/digital-dream-labs/vector-go-sdk/pkg/vector"
-	"github.com/digital-dream-labs/vector-go-sdk/pkg/vectorpb"
+	"github.com/fforchino/vector-go-sdk/pkg/vector"
+	"github.com/fforchino/vector-go-sdk/pkg/vectorpb"
 	"log"
 )
 
