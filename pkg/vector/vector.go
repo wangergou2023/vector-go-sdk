@@ -1,6 +1,8 @@
 package vector
 
 import (
+	"encoding/json"
+	"errors"
 	"fmt"
 	"github.com/digital-dream-labs/hugh/grpc/client"
 	"github.com/fforchino/vector-go-sdk/pkg/vectorpb"
@@ -9,6 +11,7 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"strings"
 )
 
 // Vector is the struct containing info about Vector
@@ -54,7 +57,62 @@ func New(opts ...Option) (*Vector, error) {
 	return &r, nil
 }
 
+type RobotSDKInfoStore struct {
+	GlobalGUID string `json:"global_guid"`
+	Robots     []struct {
+		Esn       string `json:"esn"`
+		IPAddress string `json:"ip_address"`
+	} `json:"robots"`
+}
+
+// NewWP returns either a vector struct for wirepod pod vector, or an error on failure
+// This function assumes you are working with Wirepod, that saves in "./jdocs/botSdkInfo.json" a JSON file with the
+// configuration info needed
+func NewWP(serial string) (*Vector, error) {
+	if serial == "" {
+		log.Fatal("please use the -serial argument and set it to your robots serial number")
+		return nil, fmt.Errorf("Configuration options missing")
+	}
+
+	cfg := options{}
+	jsonBytes, err := os.ReadFile("./jdocs/botSdkInfo.json")
+	if err != nil {
+		log.Println("vector-go-sdk error: Error opening ./jdocs/botSdkInfo.json, likely doesn't exist")
+		return nil, err
+	}
+	var robotSDKInfo RobotSDKInfoStore
+	json.Unmarshal(jsonBytes, &robotSDKInfo)
+	matched := false
+	for _, robot := range robotSDKInfo.Robots {
+		if strings.TrimSpace(strings.ToLower(robot.Esn)) == strings.TrimSpace(strings.ToLower(serial)) {
+			cfg.Target = robot.IPAddress + ":443"
+			matched = true
+		}
+	}
+	if !matched {
+		log.Println("vector-go-sdk error: serial did not match any bot in bot json")
+		return nil, errors.New("vector-go-sdk error: serial did not match any bot in bot json")
+	}
+	c, err := client.New(
+		client.WithTarget(cfg.Target),
+		client.WithInsecureSkipVerify(),
+	)
+	if err != nil {
+		return nil, err
+	}
+	if err := c.Connect(); err != nil {
+		return nil, err
+	}
+
+	return New(
+		WithTarget(cfg.Target),
+		WithToken(robotSDKInfo.GlobalGUID),
+	)
+}
+
 // NewEP returns either a vector struct for escape pod vector, or an error on failure
+// This function assumes you are working with the old Python SDK, that saves in ".anki_vector" a .ini file with the
+// configuration info needed
 func NewEP(serial string) (*Vector, error) {
 	if serial == "" {
 		log.Fatal("please use the -serial argument and set it to your robots serial number")

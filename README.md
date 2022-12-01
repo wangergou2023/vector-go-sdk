@@ -47,6 +47,8 @@ CODE REFACTORING aimed at:
 
 Forgive me for the very quick description, I will soon document all properly in a wiki. The important thing is
 that the GO SDK the way it is now is ready for the integration with Wirepod. Hooray!
+Remember to get the updated version:
+go get -u github.com/fforchino/vector-go-sdk/pkg/sdk-wrapper
 
 ***RELEASE_ALPHA_06***
 - Image functions
