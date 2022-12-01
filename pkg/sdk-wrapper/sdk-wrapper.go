@@ -1,7 +1,6 @@
 package sdk_wrapper
 
 import (
-	"bytes"
 	"context"
 	"fmt"
 	"github.com/digital-dream-labs/vector-go-sdk/pkg/sdk-wrapper/voice"
@@ -12,7 +11,6 @@ import (
 	_ "image/png"
 	"log"
 	"os"
-	"os/exec"
 	"path/filepath"
 	"strings"
 	"time"
@@ -181,15 +179,3 @@ func GetDataPath(filename string) string {
 /**********************************************************************************************************************/
 /*                                              PRIVATE FUNCTIONS                                                     */
 /**********************************************************************************************************************/
-
-const shellToUse = "bash"
-
-func shellout(command string) (string, string, error) {
-	var stdout bytes.Buffer
-	var stderr bytes.Buffer
-	cmd := exec.Command(shellToUse, "-c", command)
-	cmd.Stdout = &stdout
-	cmd.Stderr = &stderr
-	err := cmd.Run()
-	return stdout.String(), stderr.String(), err
-}
