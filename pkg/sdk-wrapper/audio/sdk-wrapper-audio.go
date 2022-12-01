@@ -3,8 +3,8 @@ package audio
 import (
 	"errors"
 	"fmt"
+	"github.com/digital-dream-labs/vector-go-sdk/pkg"
 	"github.com/digital-dream-labs/vector-go-sdk/pkg/sdk-wrapper"
-	"github.com/digital-dream-labs/vector-go-sdk/pkg/sdk-wrapper/settings"
 	"github.com/digital-dream-labs/vector-go-sdk/pkg/vectorpb"
 	"os"
 	"os/exec"
@@ -40,7 +40,7 @@ func ProcessAudioStream() {
 
 // Returns values in the range 1-5
 func GetMasterVolume() int {
-	return int(settings.GetSDKSetting("master_volume").(float64))
+	return int(pkg.GetSDKSetting("master_volume").(float64))
 }
 
 // Returns values in the range 0-100
@@ -58,7 +58,7 @@ func SetMasterVolume(volume int) error {
 			},
 		)
 		if err != nil {
-			settings.RefreshSDKSettings()
+			pkg.RefreshSDKSettings()
 		}
 		return err
 	}

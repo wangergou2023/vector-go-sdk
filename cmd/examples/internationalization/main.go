@@ -3,8 +3,8 @@ package main
 import (
 	"context"
 	"flag"
+	"github.com/digital-dream-labs/vector-go-sdk/pkg"
 	"github.com/digital-dream-labs/vector-go-sdk/pkg/sdk-wrapper"
-	"github.com/digital-dream-labs/vector-go-sdk/pkg/sdk-wrapper/settings"
 	"github.com/digital-dream-labs/vector-go-sdk/pkg/sdk-wrapper/voice"
 )
 
@@ -25,7 +25,7 @@ func main() {
 	for {
 		select {
 		case <-start:
-			settings.SetRobotName("Augustus")
+			pkg.SetRobotName("Augustus")
 			voice.SetLanguage(voice.LANGUAGE_ENGLISH)
 			voice.SayText("Hello world!")
 			voice.SetLanguage(voice.LANGUAGE_ITALIAN)

@@ -3,9 +3,7 @@ package sdk_wrapper
 import (
 	"bytes"
 	"context"
-	"crypto/tls"
 	"fmt"
-	"github.com/digital-dream-labs/vector-go-sdk/pkg/sdk-wrapper/settings"
 	"github.com/digital-dream-labs/vector-go-sdk/pkg/sdk-wrapper/voice"
 	"github.com/digital-dream-labs/vector-go-sdk/pkg/vector"
 	"github.com/digital-dream-labs/vector-go-sdk/pkg/vectorpb"
@@ -13,7 +11,6 @@ import (
 	_ "image/jpeg"
 	_ "image/png"
 	"log"
-	"net/http"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -30,9 +27,6 @@ type SDKConfigData struct {
 var Robot *vector.Vector
 var bcAssumption bool = false
 var Ctx context.Context
-var transCfg = &http.Transport{
-	TLSClientConfig: &tls.Config{InsecureSkipVerify: true}, // ignore SSL warnings
-}
 
 var eventStream vectorpb.ExternalInterface_EventStreamClient
 var SDKConfig = SDKConfigData{"/tmp/", "data", "nvm"}
@@ -46,7 +40,7 @@ func InitSDK(serial string) {
 	}
 	Ctx = context.Background()
 	eventStream, err = Robot.Conn.EventStream(Ctx, &vectorpb.EventRequest{})
-	settings.RefreshSDKSettings()
+	RefreshSDKSettings()
 }
 
 func SetNDKPaths(tmpPath string, dataPath string, nvmPath string) {
@@ -198,23 +192,4 @@ func shellout(command string) (string, string, error) {
 	cmd.Stderr = &stderr
 	err := cmd.Run()
 	return stdout.String(), stderr.String(), err
-}
-
-func SetSettingSDKStringHelper(payload string) {
-	if !strings.Contains(Robot.Cfg.Token, "error") {
-		url := "https://" + Robot.Cfg.Target + "/v1/update_settings"
-		var updateJSON = []byte(`{"update_settings": true, "settings": ` + payload + ` }`)
-		req, _ := http.NewRequest("POST", url, bytes.NewBuffer(updateJSON))
-		req.Header.Set("Authorization", "Bearer "+Robot.Cfg.Token)
-		req.Header.Set("Content-Type", "application/json")
-		client := &http.Client{Transport: transCfg}
-		resp, err := client.Do(req)
-		if err != nil {
-			panic(err)
-		}
-		defer resp.Body.Close()
-	} else {
-		log.Println("GUID not there")
-	}
-	settings.RefreshSDKSettings()
 }

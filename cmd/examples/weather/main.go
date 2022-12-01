@@ -3,9 +3,9 @@ package main
 import (
 	"context"
 	"flag"
+	"github.com/digital-dream-labs/vector-go-sdk/pkg"
 	"github.com/digital-dream-labs/vector-go-sdk/pkg/sdk-wrapper"
 	"github.com/digital-dream-labs/vector-go-sdk/pkg/sdk-wrapper/images"
-	"github.com/digital-dream-labs/vector-go-sdk/pkg/sdk-wrapper/settings"
 	"github.com/digital-dream-labs/vector-go-sdk/pkg/sdk-wrapper/weather"
 )
 
@@ -27,7 +27,7 @@ func main() {
 		select {
 		case <-start:
 			temperature := 16
-			unit := settings.GetTemperatureUnit()
+			unit := pkg.GetTemperatureUnit()
 			if unit == weather.WEATHER_UNIT_FARANHEIT {
 				temperature = (temperature * 9 / 5) + 32
 			}

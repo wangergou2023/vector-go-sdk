@@ -4,8 +4,8 @@ import (
 	"bytes"
 	"encoding/binary"
 	"fmt"
+	"github.com/digital-dream-labs/vector-go-sdk/pkg"
 	"github.com/digital-dream-labs/vector-go-sdk/pkg/sdk-wrapper"
-	"github.com/digital-dream-labs/vector-go-sdk/pkg/sdk-wrapper/settings"
 	"github.com/digital-dream-labs/vector-go-sdk/pkg/vectorpb"
 	"github.com/fogleman/gg"
 	"github.com/nfnt/resize"
@@ -68,7 +68,7 @@ func TextOnImg(text string, size float64, isBold bool, color color.RGBA) []byte 
 	y := float64((imgHeight / 2))
 	maxWidth := float64(imgWidth) - 35.0
 	if useVectorEyeColor {
-		dc.SetColor(settings.GetEyeColor())
+		dc.SetColor(pkg.GetEyeColor())
 	} else {
 		dc.SetColor(color)
 	}
@@ -308,7 +308,7 @@ func convertPixelsToRawBitmap(image image.Image, opacityPercentage int) []uint16
 			*/
 			r, g, b, a := image.At(x, y).RGBA()
 			if useVectorEyeColor {
-				vectorEyes := settings.GetEyeColor()
+				vectorEyes := pkg.GetEyeColor()
 				vR := uint32(vectorEyes.R) * 255
 				vG := uint32(vectorEyes.G) * 255
 				vB := uint32(vectorEyes.B) * 255

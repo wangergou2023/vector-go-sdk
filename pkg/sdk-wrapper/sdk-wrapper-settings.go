@@ -1,13 +1,17 @@
-package settings
+package sdk_wrapper
 
 import (
+	"bytes"
+	"crypto/tls"
 	"encoding/json"
 	"github.com/PerformLine/go-stockutil/colorutil"
-	"github.com/digital-dream-labs/vector-go-sdk/pkg/sdk-wrapper"
 	"github.com/digital-dream-labs/vector-go-sdk/pkg/sdk-wrapper/weather"
 	"github.com/digital-dream-labs/vector-go-sdk/pkg/vectorpb"
 	"image/color"
+	"log"
+	"net/http"
 	"os"
+	"strings"
 )
 
 type CustomSettings struct {
@@ -87,12 +91,12 @@ func GetSDKSetting(name string) interface{} {
 
 func SetCustomEyeColor(hue string, sat string) {
 	payload := `{"custom_eye_color": {"enabled": true, "hue": ` + hue + `, "saturation": ` + sat + `} }`
-	sdk_wrapper.SetSettingSDKStringHelper(payload)
+	setSettingSDKStringHelper(payload)
 }
 
 func SetPresetEyeColor(value string) {
 	payload := `{"custom_eye_color": {"enabled": false}, "eye_color": ` + value + `}`
-	sdk_wrapper.SetSettingSDKStringHelper(payload)
+	setSettingSDKStringHelper(payload)
 }
 
 func SetLocale(locale string) {
@@ -114,7 +118,7 @@ func SetRobotName(name string) {
 
 func SetSettingSDKstring(setting string, value string) {
 	payload := `{"` + setting + `": "` + value + `" }`
-	sdk_wrapper.SetSettingSDKStringHelper(payload)
+	setSettingSDKStringHelper(payload)
 	RefreshSDKSettings()
 }
 
@@ -122,8 +126,12 @@ func SetSettingSDKstring(setting string, value string) {
 /*                                                PRIVATE FUNCTIONS                                     */
 /********************************************************************************************************/
 
+var transCfg = &http.Transport{
+	TLSClientConfig: &tls.Config{InsecureSkipVerify: true}, // ignore SSL warnings
+}
+
 func getSDKSettings() []byte {
-	resp, err := sdk_wrapper.Robot.Conn.PullJdocs(sdk_wrapper.Ctx, &vectorpb.PullJdocsRequest{
+	resp, err := Robot.Conn.PullJdocs(Ctx, &vectorpb.PullJdocsRequest{
 		JdocTypes: []vectorpb.JdocType{vectorpb.JdocType_ROBOT_SETTINGS},
 	})
 	if err != nil {
@@ -134,7 +142,7 @@ func getSDKSettings() []byte {
 }
 
 func getCustomSettings() ([]byte, error) {
-	json, err := os.ReadFile(sdk_wrapper.GetMyStoragePath("custom_settings.json"))
+	json, err := os.ReadFile(GetMyStoragePath("custom_settings.json"))
 	if err == nil {
 		return nil, err
 	}
@@ -143,5 +151,24 @@ func getCustomSettings() ([]byte, error) {
 
 func saveCustomSettings() {
 	file, _ := json.MarshalIndent(customSettings, "", " ")
-	_ = os.WriteFile(sdk_wrapper.GetMyStoragePath("custom_settings.json"), file, 0644)
+	_ = os.WriteFile(GetMyStoragePath("custom_settings.json"), file, 0644)
+}
+
+func setSettingSDKStringHelper(payload string) {
+	if !strings.Contains(Robot.Cfg.Token, "error") {
+		url := "https://" + Robot.Cfg.Target + "/v1/update_settings"
+		var updateJSON = []byte(`{"update_settings": true, "settings": ` + payload + ` }`)
+		req, _ := http.NewRequest("POST", url, bytes.NewBuffer(updateJSON))
+		req.Header.Set("Authorization", "Bearer "+Robot.Cfg.Token)
+		req.Header.Set("Content-Type", "application/json")
+		client := &http.Client{Transport: transCfg}
+		resp, err := client.Do(req)
+		if err != nil {
+			panic(err)
+		}
+		defer resp.Body.Close()
+	} else {
+		log.Println("GUID not there")
+	}
+	RefreshSDKSettings()
 }
