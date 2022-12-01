@@ -199,3 +199,22 @@ func shellout(command string) (string, string, error) {
 	err := cmd.Run()
 	return stdout.String(), stderr.String(), err
 }
+
+func SetSettingSDKStringHelper(payload string) {
+	if !strings.Contains(Robot.Cfg.Token, "error") {
+		url := "https://" + Robot.Cfg.Target + "/v1/update_settings"
+		var updateJSON = []byte(`{"update_settings": true, "settings": ` + payload + ` }`)
+		req, _ := http.NewRequest("POST", url, bytes.NewBuffer(updateJSON))
+		req.Header.Set("Authorization", "Bearer "+Robot.Cfg.Token)
+		req.Header.Set("Content-Type", "application/json")
+		client := &http.Client{Transport: transCfg}
+		resp, err := client.Do(req)
+		if err != nil {
+			panic(err)
+		}
+		defer resp.Body.Close()
+	} else {
+		log.Println("GUID not there")
+	}
+	settings.RefreshSDKSettings()
+}

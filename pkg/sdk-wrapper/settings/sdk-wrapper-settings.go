@@ -1,17 +1,13 @@
 package settings
 
 import (
-	"bytes"
 	"encoding/json"
 	"github.com/PerformLine/go-stockutil/colorutil"
 	"github.com/digital-dream-labs/vector-go-sdk/pkg/sdk-wrapper"
 	"github.com/digital-dream-labs/vector-go-sdk/pkg/sdk-wrapper/weather"
 	"github.com/digital-dream-labs/vector-go-sdk/pkg/vectorpb"
 	"image/color"
-	"log"
-	"net/http"
 	"os"
-	"strings"
 )
 
 type CustomSettings struct {
@@ -91,12 +87,12 @@ func GetSDKSetting(name string) interface{} {
 
 func SetCustomEyeColor(hue string, sat string) {
 	payload := `{"custom_eye_color": {"enabled": true, "hue": ` + hue + `, "saturation": ` + sat + `} }`
-	setSettingSDKStringHelper(payload)
+	sdk_wrapper.SetSettingSDKStringHelper(payload)
 }
 
 func SetPresetEyeColor(value string) {
 	payload := `{"custom_eye_color": {"enabled": false}, "eye_color": ` + value + `}`
-	setSettingSDKStringHelper(payload)
+	sdk_wrapper.SetSettingSDKStringHelper(payload)
 }
 
 func SetLocale(locale string) {
@@ -118,7 +114,7 @@ func SetRobotName(name string) {
 
 func SetSettingSDKstring(setting string, value string) {
 	payload := `{"` + setting + `": "` + value + `" }`
-	setSettingSDKStringHelper(payload)
+	sdk_wrapper.SetSettingSDKStringHelper(payload)
 	RefreshSDKSettings()
 }
 
@@ -135,25 +131,6 @@ func getSDKSettings() []byte {
 	}
 	json := resp.NamedJdocs[0].Doc.JsonDoc
 	return []byte(json)
-}
-
-func setSettingSDKStringHelper(payload string) {
-	if !strings.Contains(sdk_wrapper.Robot.Cfg.Token, "error") {
-		url := "https://" + sdk_wrapper.Robot.Cfg.Target + "/v1/update_settings"
-		var updateJSON = []byte(`{"update_settings": true, "settings": ` + payload + ` }`)
-		req, _ := http.NewRequest("POST", url, bytes.NewBuffer(updateJSON))
-		req.Header.Set("Authorization", "Bearer "+sdk_wrapper.Robot.Cfg.Token)
-		req.Header.Set("Content-Type", "application/json")
-		client := &http.Client{Transport: sdk_wrapper.transCfg}
-		resp, err := client.Do(req)
-		if err != nil {
-			panic(err)
-		}
-		defer resp.Body.Close()
-	} else {
-		log.Println("GUID not there")
-	}
-	RefreshSDKSettings()
 }
 
 func getCustomSettings() ([]byte, error) {
