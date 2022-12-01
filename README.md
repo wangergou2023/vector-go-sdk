@@ -34,6 +34,9 @@ Please see the cmd/examples directory for usage examples.
 
 ## Changelog 
 
++***RELEASE_ALPHA_08***
+Integration with Wirepod
+
 +***RELEASE_ALPHA_07***
 CODE REFACTORING aimed at:
 - Make all paths os-independent

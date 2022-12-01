@@ -107,7 +107,20 @@ func SetTimeZone(timezone string) {
 
 func SetRobotName(name string) {
 	customSettings.robot_name = name
-	saveCustomSettings()
+	SaveCustomSettings()
+}
+
+func GetRobotName() string {
+	return customSettings.robot_name
+}
+
+func GetCustomSettings() *CustomSettings {
+	return &customSettings
+}
+
+func SaveCustomSettings() {
+	file, _ := json.MarshalIndent(customSettings, "", " ")
+	_ = os.WriteFile(GetMyStoragePath("custom_settings.json"), file, 0644)
 }
 
 func SetSettingSDKstring(setting string, value string) {
@@ -156,9 +169,4 @@ func getCustomSettings() ([]byte, error) {
 		return nil, err
 	}
 	return []byte(json), nil
-}
-
-func saveCustomSettings() {
-	file, _ := json.MarshalIndent(customSettings, "", " ")
-	_ = os.WriteFile(GetMyStoragePath("custom_settings.json"), file, 0644)
 }

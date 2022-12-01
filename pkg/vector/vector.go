@@ -104,11 +104,7 @@ func NewWP(serial string) (*Vector, error) {
 		return nil, err
 	}
 
-	log.Println("Init serial no. " + serial)
-
 	cfg.SerialNo = serial
-
-	log.Println("Init serial no. " + cfg.SerialNo)
 
 	return New(
 		WithTarget(cfg.Target),
