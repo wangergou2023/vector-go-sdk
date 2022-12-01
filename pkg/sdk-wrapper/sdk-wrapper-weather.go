@@ -33,7 +33,7 @@ func DisplayTemperature(temp int, unit string, delay int, blocking bool) error {
 	defer digit02File.Close()
 	defer unitFile.Close()
 	defer signFile.Close()
-
+	
 	var digit01Img, digit02Img, unitImg, signImg image.Image
 
 	digit01Img, _, err1 = image.Decode(digit01File)

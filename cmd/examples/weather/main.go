@@ -28,10 +28,12 @@ func main() {
 			if unit == sdk_wrapper.WEATHER_UNIT_FARANHEIT {
 				temperature = (temperature * 9 / 5) + 32
 			}
+			sdk_wrapper.UseVectorEyeColorInImages(true)
 			err1 := sdk_wrapper.DisplayTemperature(temperature, unit, 5000, true)
 			if err1 != nil {
 				println("ERROR " + err1.Error())
 			}
+			sdk_wrapper.UseVectorEyeColorInImages(false)
 			sdk_wrapper.DisplayCondition("shower rain", "09n", 5000, true)
 			stop <- true
 			return
