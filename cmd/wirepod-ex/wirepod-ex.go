@@ -11,6 +11,8 @@ var Name = "Wirepod SDK Extesion Plugin"
 func Action(transcribedText string, botSerial string) string {
 	println("Wirepod-Ex starting for bot " + botSerial)
 	sdk_wrapper.InitSDKForWirepod(botSerial)
+	println("Wirepod-Ex starting for bot " + sdk_wrapper.Robot.Cfg.SerialNo)
+	println("Wirepod-Ex starting for bot " + sdk_wrapper.GetRobotSerial())
 
 	ctx := context.Background()
 	start := make(chan bool)

@@ -104,6 +104,8 @@ func NewWP(serial string) (*Vector, error) {
 		return nil, err
 	}
 
+	cfg.SerialNo = serial
+	
 	return New(
 		WithTarget(cfg.Target),
 		WithSerialNo(cfg.SerialNo),
