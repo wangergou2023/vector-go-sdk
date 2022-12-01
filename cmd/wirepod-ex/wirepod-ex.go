@@ -9,6 +9,7 @@ var Utterances = []string{"banana"}
 var Name = "Wirepod SDK Extesion Plugin"
 
 func Action(transcribedText string, botSerial string) string {
+	println("Wirepod-Ex starting for bot " + botSerial)
 	sdk_wrapper.InitSDKForWirepod(botSerial)
 
 	ctx := context.Background()
@@ -22,6 +23,7 @@ func Action(transcribedText string, botSerial string) string {
 	for {
 		select {
 		case <-start:
+			sdk_wrapper.SetRobotName("Augustus")
 			sdk_wrapper.SayText("Ok. My name is Augustus")
 			stop <- true
 			return "intent_greeting_hello"

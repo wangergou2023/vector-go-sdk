@@ -106,6 +106,7 @@ func NewWP(serial string) (*Vector, error) {
 
 	return New(
 		WithTarget(cfg.Target),
+		WithSerialNo(cfg.SerialNo),
 		WithToken(robotSDKInfo.GlobalGUID),
 	)
 }
