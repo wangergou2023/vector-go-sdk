@@ -47,7 +47,33 @@ func InitSDK(serial string) {
 	RefreshSDKSettings()
 }
 
-func SetNDKPaths(tmpPath string, dataPath string, nvmPath string) {
+func InitSDKForWirepod(serial string) {
+	var err error
+	InitLanguages(LANGUAGE_ENGLISH)
+	Robot, err = vector.NewWP(serial)
+	if err != nil {
+		log.Fatal(err)
+	}
+	ctx = context.Background()
+	eventStream, err = Robot.Conn.EventStream(ctx, &vectorpb.EventRequest{})
+	tmpPath := os.Getenv("WIREPOD_EX_TMP_PATH")
+	dataPath := os.Getenv("WIREPOD_EX_DATA_PATH")
+	nvmPath := os.Getenv("WIREPOD_EX_NVM_PATH")
+
+	if tmpPath == "" {
+		tmpPath = SDKConfig.TmpPath
+	}
+	if dataPath == "" {
+		dataPath = SDKConfig.DataPath
+	}
+	if nvmPath == "" {
+		nvmPath = SDKConfig.NvmPath
+	}
+	SetSDKPaths(tmpPath, dataPath, nvmPath)
+	RefreshSDKSettings()
+}
+
+func SetSDKPaths(tmpPath string, dataPath string, nvmPath string) {
 	SDKConfig.TmpPath = tmpPath
 	SDKConfig.DataPath = dataPath
 	SDKConfig.NvmPath = nvmPath
