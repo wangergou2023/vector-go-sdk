@@ -34,6 +34,20 @@ Please see the cmd/examples directory for usage examples.
 
 ## Changelog 
 
++***RELEASE_ALPHA_07***
+CODE REFACTORING aimed at:
+- Make all paths os-independent
+- Make all temporary files bot-dependent, to allow usage in a scenario where multiple robots are connected to an escape pod
+- Organize external files in 3 categories:
+  - (TMP) Temporary files living in a TmpPath, they are relative to the bot invoking a certain function
+  - (DATA) Data files, they are read only files that the SDK needs, so they are shared among all bots
+  - (NVM) Persistent cloud storage available to the bot
+     +- The introduction of NVM allows the implementation of CustomSettings, an extra data structure that every bot
+  now owns and contains new settings, like robot_name
+
+Forgive me for the very quick description, I will soon document all properly in a wiki. The important thing is
+that the GO SDK the way it is now is ready for the integration with Wirepod. Hooray!
+
 ***RELEASE_ALPHA_06***
 - Image functions
   - Add the option to use Vector's eye color to blend the images with (kind of near monochrome effect)
