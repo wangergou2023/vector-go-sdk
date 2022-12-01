@@ -2,10 +2,8 @@ package sdk_wrapper
 
 import (
 	"bytes"
-	"crypto/tls"
 	"encoding/json"
 	"github.com/PerformLine/go-stockutil/colorutil"
-	"github.com/digital-dream-labs/vector-go-sdk/pkg/sdk-wrapper/weather"
 	"github.com/digital-dream-labs/vector-go-sdk/pkg/vectorpb"
 	"image/color"
 	"log"
@@ -77,16 +75,12 @@ func GetEyeColor() color.RGBA {
 }
 
 func GetTemperatureUnit() string {
-	unit := weather.WEATHER_UNIT_CELSIUS
+	unit := WEATHER_UNIT_CELSIUS
 	isFaranheit := settings["temp_is_fahrenheit"].(bool)
 	if isFaranheit {
-		unit = weather.WEATHER_UNIT_FARANHEIT
+		unit = WEATHER_UNIT_FARANHEIT
 	}
 	return unit
-}
-
-func GetSDKSetting(name string) interface{} {
-	return settings["name"]
 }
 
 func SetCustomEyeColor(hue string, sat string) {
@@ -126,12 +120,8 @@ func SetSettingSDKstring(setting string, value string) {
 /*                                                PRIVATE FUNCTIONS                                     */
 /********************************************************************************************************/
 
-var transCfg = &http.Transport{
-	TLSClientConfig: &tls.Config{InsecureSkipVerify: true}, // ignore SSL warnings
-}
-
 func getSDKSettings() []byte {
-	resp, err := Robot.Conn.PullJdocs(Ctx, &vectorpb.PullJdocsRequest{
+	resp, err := Robot.Conn.PullJdocs(ctx, &vectorpb.PullJdocsRequest{
 		JdocTypes: []vectorpb.JdocType{vectorpb.JdocType_ROBOT_SETTINGS},
 	})
 	if err != nil {
@@ -139,19 +129,6 @@ func getSDKSettings() []byte {
 	}
 	json := resp.NamedJdocs[0].Doc.JsonDoc
 	return []byte(json)
-}
-
-func getCustomSettings() ([]byte, error) {
-	json, err := os.ReadFile(GetMyStoragePath("custom_settings.json"))
-	if err == nil {
-		return nil, err
-	}
-	return []byte(json), nil
-}
-
-func saveCustomSettings() {
-	file, _ := json.MarshalIndent(customSettings, "", " ")
-	_ = os.WriteFile(GetMyStoragePath("custom_settings.json"), file, 0644)
 }
 
 func setSettingSDKStringHelper(payload string) {
@@ -171,4 +148,17 @@ func setSettingSDKStringHelper(payload string) {
 		log.Println("GUID not there")
 	}
 	RefreshSDKSettings()
+}
+
+func getCustomSettings() ([]byte, error) {
+	json, err := os.ReadFile(GetMyStoragePath("custom_settings.json"))
+	if err == nil {
+		return nil, err
+	}
+	return []byte(json), nil
+}
+
+func saveCustomSettings() {
+	file, _ := json.MarshalIndent(customSettings, "", " ")
+	_ = os.WriteFile(GetMyStoragePath("custom_settings.json"), file, 0644)
 }

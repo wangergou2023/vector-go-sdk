@@ -1,11 +1,9 @@
-package images
+package sdk_wrapper
 
 import (
 	"bytes"
 	"encoding/binary"
 	"fmt"
-	"github.com/digital-dream-labs/vector-go-sdk/pkg"
-	"github.com/digital-dream-labs/vector-go-sdk/pkg/sdk-wrapper"
 	"github.com/digital-dream-labs/vector-go-sdk/pkg/vectorpb"
 	"github.com/fogleman/gg"
 	"github.com/nfnt/resize"
@@ -68,7 +66,7 @@ func TextOnImg(text string, size float64, isBold bool, color color.RGBA) []byte 
 	y := float64((imgHeight / 2))
 	maxWidth := float64(imgWidth) - 35.0
 	if useVectorEyeColor {
-		dc.SetColor(pkg.GetEyeColor())
+		dc.SetColor(GetEyeColor())
 	} else {
 		dc.SetColor(color)
 	}
@@ -262,8 +260,8 @@ func DisplayAnimatedGif(imageFile string, speed float64, loops int, repaintBackg
 /********************************************************************************************************/
 
 func displayFaceImage(faceBytes []byte, duration int, blocking bool) {
-	_, _ = sdk_wrapper.Robot.Conn.DisplayFaceImageRGB(
-		sdk_wrapper.Ctx,
+	_, _ = Robot.Conn.DisplayFaceImageRGB(
+		ctx,
 		&vectorpb.DisplayFaceImageRGBRequest{
 			FaceData:         faceBytes,
 			DurationMs:       uint32(duration),
@@ -308,7 +306,7 @@ func convertPixelsToRawBitmap(image image.Image, opacityPercentage int) []uint16
 			*/
 			r, g, b, a := image.At(x, y).RGBA()
 			if useVectorEyeColor {
-				vectorEyes := pkg.GetEyeColor()
+				vectorEyes := GetEyeColor()
 				vR := uint32(vectorEyes.R) * 255
 				vG := uint32(vectorEyes.G) * 255
 				vB := uint32(vectorEyes.B) * 255

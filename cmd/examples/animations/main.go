@@ -5,7 +5,6 @@ import (
 	"flag"
 	"fmt"
 	"github.com/digital-dream-labs/vector-go-sdk/pkg/sdk-wrapper"
-	"github.com/digital-dream-labs/vector-go-sdk/pkg/sdk-wrapper/animations"
 	"time"
 )
 
@@ -28,12 +27,12 @@ func main() {
 		case <-start:
 			println("")
 			println("ANIMATION LIST:")
-			aList := animations.LoadAnimationList()
+			aList := sdk_wrapper.LoadAnimationList()
 			if nil != aList {
 				println(fmt.Sprintf("%d animations found.", len(aList)))
 				for i := 0; i < len(aList); i++ {
 					println(aList[i])
-					animations.PlayAnimation(aList[i], 1, false, false, false)
+					sdk_wrapper.PlayAnimation(aList[i], 1, false, false, false)
 					time.Sleep(time.Duration(5000) * time.Millisecond)
 				}
 			} else {

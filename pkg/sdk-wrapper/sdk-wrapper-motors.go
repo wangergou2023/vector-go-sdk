@@ -1,13 +1,10 @@
-package motors
+package sdk_wrapper
 
-import (
-	"github.com/digital-dream-labs/vector-go-sdk/pkg/sdk-wrapper"
-	"github.com/digital-dream-labs/vector-go-sdk/pkg/vectorpb"
-)
+import "github.com/digital-dream-labs/vector-go-sdk/pkg/vectorpb"
 
 func DriveWheelsForward(lw float32, rw float32, lwtwo float32, rwtwo float32) {
-	_, _ = sdk_wrapper.Robot.Conn.DriveWheels(
-		sdk_wrapper.Ctx,
+	_, _ = Robot.Conn.DriveWheels(
+		ctx,
 		&vectorpb.DriveWheelsRequest{
 			LeftWheelMmps:   lw,
 			RightWheelMmps:  rw,
@@ -18,8 +15,8 @@ func DriveWheelsForward(lw float32, rw float32, lwtwo float32, rwtwo float32) {
 }
 
 func MoveLift(speed float32) {
-	_, _ = sdk_wrapper.Robot.Conn.MoveLift(
-		sdk_wrapper.Ctx,
+	_, _ = Robot.Conn.MoveLift(
+		ctx,
 		&vectorpb.MoveLiftRequest{
 			SpeedRadPerSec: speed,
 		},
@@ -27,8 +24,8 @@ func MoveLift(speed float32) {
 }
 
 func MoveHead(speed float32) {
-	_, _ = sdk_wrapper.Robot.Conn.MoveHead(
-		sdk_wrapper.Ctx,
+	_, _ = Robot.Conn.MoveHead(
+		ctx,
 		&vectorpb.MoveHeadRequest{
 			SpeedRadPerSec: speed,
 		},
@@ -36,15 +33,15 @@ func MoveHead(speed float32) {
 }
 
 func DriveOffCharger() {
-	_, _ = sdk_wrapper.Robot.Conn.DriveOffCharger(
-		sdk_wrapper.Ctx,
+	_, _ = Robot.Conn.DriveOffCharger(
+		ctx,
 		&vectorpb.DriveOffChargerRequest{},
 	)
 }
 
 func DriveOnCharger() {
-	_, _ = sdk_wrapper.Robot.Conn.DriveOnCharger(
-		sdk_wrapper.Ctx,
+	_, _ = Robot.Conn.DriveOnCharger(
+		ctx,
 		&vectorpb.DriveOnChargerRequest{},
 	)
 }

@@ -1,7 +1,9 @@
 package sdk_wrapper
 
 import (
+	"bytes"
 	"context"
+	"crypto/tls"
 	"fmt"
 	"github.com/digital-dream-labs/vector-go-sdk/pkg/vector"
 	"github.com/digital-dream-labs/vector-go-sdk/pkg/vectorpb"
@@ -9,7 +11,9 @@ import (
 	_ "image/jpeg"
 	_ "image/png"
 	"log"
+	"net/http"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"strings"
 	"time"
@@ -23,22 +27,27 @@ type SDKConfigData struct {
 
 var Robot *vector.Vector
 var bcAssumption bool = false
-var Ctx context.Context
+var ctx context.Context
+var transCfg = &http.Transport{
+	TLSClientConfig: &tls.Config{InsecureSkipVerify: true}, // ignore SSL warnings
+}
 
 var eventStream vectorpb.ExternalInterface_EventStreamClient
 var SDKConfig = SDKConfigData{"/tmp/", "data", "nvm"}
 
 func InitSDK(serial string) {
 	var err error
+	InitLanguages(LANGUAGE_ENGLISH)
 	Robot, err = vector.NewEP(serial)
 	if err != nil {
 		log.Fatal(err)
 	}
-	Ctx = context.Background()
-	eventStream, err = Robot.Conn.EventStream(Ctx, &vectorpb.EventRequest{})
+	ctx = context.Background()
+	eventStream, err = Robot.Conn.EventStream(ctx, &vectorpb.EventRequest{})
+	RefreshSDKSettings()
 }
 
-func SetSDKPaths(tmpPath string, dataPath string, nvmPath string) {
+func SetNDKPaths(tmpPath string, dataPath string, nvmPath string) {
 	SDKConfig.TmpPath = tmpPath
 	SDKConfig.DataPath = dataPath
 	SDKConfig.NvmPath = nvmPath
@@ -78,7 +87,7 @@ func AssumeBehaviorControl(priority string) {
 		go func() {
 			// * begin - modified from official vector-go-sdk
 			r, err := Robot.Conn.BehaviorControl(
-				Ctx,
+				ctx,
 			)
 			if err != nil {
 				log.Println(err)
@@ -176,3 +185,15 @@ func GetDataPath(filename string) string {
 /**********************************************************************************************************************/
 /*                                              PRIVATE FUNCTIONS                                                     */
 /**********************************************************************************************************************/
+
+const shellToUse = "bash"
+
+func shellout(command string) (string, string, error) {
+	var stdout bytes.Buffer
+	var stderr bytes.Buffer
+	cmd := exec.Command(shellToUse, "-c", command)
+	cmd.Stdout = &stdout
+	cmd.Stderr = &stderr
+	err := cmd.Run()
+	return stdout.String(), stderr.String(), err
+}

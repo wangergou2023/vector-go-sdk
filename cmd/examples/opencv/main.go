@@ -6,8 +6,6 @@ import (
 	"flag"
 	"fmt"
 	sdk_wrapper "github.com/digital-dream-labs/vector-go-sdk/pkg/sdk-wrapper"
-	"github.com/digital-dream-labs/vector-go-sdk/pkg/sdk-wrapper/camera"
-	"github.com/digital-dream-labs/vector-go-sdk/pkg/sdk-wrapper/voice"
 	"log"
 	"os/exec"
 	"time"
@@ -40,7 +38,7 @@ func main() {
 func doOpenCVStuff(numSteps int) {
 	for i := 0; i <= numSteps; i++ {
 		fName := fmt.Sprintf("/tmp/camera%02d.jpg", i)
-		err := camera.SaveHiResCameraPicture(fName)
+		err := sdk_wrapper.SaveHiResCameraPicture(fName)
 		if err == nil {
 			if err == nil {
 				cmd := exec.Command("python", "hand_detection.py", fName)
@@ -51,7 +49,7 @@ func doOpenCVStuff(numSteps int) {
 					log.Fatal(err)
 				}
 				fmt.Printf("FRAME %d, Output: %s\n", i, out.String())
-				voice.SayText(out.String())
+				sdk_wrapper.SayText(out.String())
 				time.Sleep(time.Duration(2000) * time.Millisecond)
 			} else {
 				println("OPENCV Python script not found!")

@@ -5,7 +5,6 @@ import (
 	"flag"
 	"fmt"
 	"github.com/digital-dream-labs/vector-go-sdk/pkg/sdk-wrapper"
-	"github.com/digital-dream-labs/vector-go-sdk/pkg/sdk-wrapper/faces"
 	"time"
 )
 
@@ -31,11 +30,11 @@ func main() {
 			printFaces()
 
 			println("Delete All")
-			faces.FaceEnrollmentDeleteAll()
+			sdk_wrapper.FaceEnrollmentDeleteAll()
 
 			printFaces()
 
-			faces.FaceEnrollmentStart("Ambrogio")
+			sdk_wrapper.FaceEnrollmentStart("Ambrogio")
 			time.Sleep(time.Duration(30000) * time.Millisecond)
 			stop <- true
 			return
@@ -44,7 +43,7 @@ func main() {
 }
 
 func printFaces() {
-	faces := faces.FaceEnrollmentListAll()
+	faces := sdk_wrapper.FaceEnrollmentListAll()
 	println("KNOWN FACES")
 	for i := 0; i < len(faces); i++ {
 		println(fmt.Sprintf("%d) %s", faces[i].FaceId, faces[i].Name))

@@ -1,7 +1,6 @@
-package animations
+package sdk_wrapper
 
 import (
-	"github.com/digital-dream-labs/vector-go-sdk/pkg/sdk-wrapper"
 	"github.com/digital-dream-labs/vector-go-sdk/pkg/vectorpb"
 )
 
@@ -1186,8 +1185,8 @@ anim_reacttocliff_turnright_60_01
 
 func LoadAnimationList() []string {
 	var items []string
-	animationList, err := sdk_wrapper.Robot.Conn.ListAnimations(
-		sdk_wrapper.Ctx,
+	animationList, err := Robot.Conn.ListAnimations(
+		ctx,
 		&vectorpb.ListAnimationsRequest{},
 	)
 	if err == nil {
@@ -1205,8 +1204,8 @@ func PlayAnimation(anim string, loops uint32, ignoreBodyTrack bool, ignoreHeadTr
 	var a = &vectorpb.Animation{
 		Name: anim, // ignore SSL warnings
 	}
-	_, _ = sdk_wrapper.Robot.Conn.PlayAnimation(
-		sdk_wrapper.Ctx,
+	_, _ = Robot.Conn.PlayAnimation(
+		ctx,
 		&vectorpb.PlayAnimationRequest{
 			Animation:       a,
 			Loops:           loops,

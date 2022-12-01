@@ -4,7 +4,6 @@ import (
 	"context"
 	"flag"
 	"fmt"
-	"github.com/digital-dream-labs/vector-go-sdk/pkg"
 	"github.com/digital-dream-labs/vector-go-sdk/pkg/sdk-wrapper"
 	"time"
 )
@@ -34,12 +33,12 @@ func main() {
 					println("Hue: " + strHue)
 					for s := 0; s <= 10; s++ {
 						strSat := fmt.Sprintf("%f", float64(s)/10)
-						pkg.SetCustomEyeColor(strHue, strSat)
+						sdk_wrapper.SetCustomEyeColor(strHue, strSat)
 						time.Sleep(time.Duration(50) * time.Millisecond)
 					}
 				}
 			} else {
-				pkg.SetCustomEyeColor(*hue, *saturation)
+				sdk_wrapper.SetCustomEyeColor(*hue, *saturation)
 			}
 
 			stop <- true
