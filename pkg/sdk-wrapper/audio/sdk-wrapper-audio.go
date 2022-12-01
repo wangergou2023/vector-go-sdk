@@ -1,8 +1,10 @@
-package sdk_wrapper
+package audio
 
 import (
 	"errors"
 	"fmt"
+	"github.com/digital-dream-labs/vector-go-sdk/pkg/sdk-wrapper"
+	"github.com/digital-dream-labs/vector-go-sdk/pkg/sdk-wrapper/settings"
 	"github.com/digital-dream-labs/vector-go-sdk/pkg/vectorpb"
 	"os"
 	"os/exec"
@@ -10,7 +12,7 @@ import (
 	"time"
 )
 
-var SYSTEMSOUND_WIN = GetDataPath("audio/win.pcm")
+var SYSTEMSOUND_WIN = sdk_wrapper.GetDataPath("audio/win.pcm")
 
 const VOLUME_LEVEL_MAXIMUM = 5
 const VOLUME_LEVEL_MINIMUM = 1
@@ -19,7 +21,7 @@ var audioStreamClient vectorpb.ExternalInterface_AudioFeedClient
 var audioStreamEnable bool = false
 
 func EnableAudioStream() {
-	audioStreamClient, _ = Robot.Conn.AudioFeed(ctx, &vectorpb.AudioFeedRequest{})
+	audioStreamClient, _ = sdk_wrapper.Robot.Conn.AudioFeed(sdk_wrapper.Ctx, &vectorpb.AudioFeedRequest{})
 	audioStreamEnable = true
 }
 
@@ -38,7 +40,7 @@ func ProcessAudioStream() {
 
 // Returns values in the range 1-5
 func GetMasterVolume() int {
-	return int(settings["master_volume"].(float64))
+	return int(settings.GetSDKSetting("master_volume").(float64))
 }
 
 // Returns values in the range 0-100
@@ -49,14 +51,14 @@ func GetAudioVolume() int {
 
 func SetMasterVolume(volume int) error {
 	if volume <= VOLUME_LEVEL_MAXIMUM && volume >= VOLUME_LEVEL_MINIMUM {
-		_, err := Robot.Conn.SetMasterVolume(
-			ctx,
+		_, err := sdk_wrapper.Robot.Conn.SetMasterVolume(
+			sdk_wrapper.Ctx,
 			&vectorpb.MasterVolumeRequest{
 				VolumeLevel: vectorpb.MasterVolumeLevel(volume),
 			},
 		)
 		if err != nil {
-			RefreshSDKSettings()
+			settings.RefreshSDKSettings()
 		}
 		return err
 	}
@@ -72,7 +74,7 @@ func PlaySound(filename string) string {
 	}
 
 	var pcmFile []byte
-	tmpFileName := GetTemporaryFilename("sound", "pcm", true)
+	tmpFileName := sdk_wrapper.GetTemporaryFilename("sound", "pcm", true)
 	if strings.Contains(filename, ".pcm") || strings.Contains(filename, ".raw") {
 		fmt.Println("Assuming already pcm")
 		pcmFile, _ = os.ReadFile(filename)
@@ -90,8 +92,8 @@ func PlaySound(filename string) string {
 		pcmFile = pcmFile[1024:]
 	}
 	var audioClient vectorpb.ExternalInterface_ExternalAudioStreamPlaybackClient
-	audioClient, _ = Robot.Conn.ExternalAudioStreamPlayback(
-		ctx,
+	audioClient, _ = sdk_wrapper.Robot.Conn.ExternalAudioStreamPlayback(
+		sdk_wrapper.Ctx,
 	)
 	audioClient.SendMsg(&vectorpb.ExternalAudioStreamRequest{
 		AudioRequestType: &vectorpb.ExternalAudioStreamRequest_AudioStreamPrepare{

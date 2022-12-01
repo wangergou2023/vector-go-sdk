@@ -4,10 +4,12 @@
   sudo apt install espeak -y
 */
 
-package sdk_wrapper
+package voice
 
 import (
 	"github.com/bregydoc/gtranslate"
+	"github.com/digital-dream-labs/vector-go-sdk/pkg/sdk-wrapper"
+	"github.com/digital-dream-labs/vector-go-sdk/pkg/sdk-wrapper/audio"
 	"github.com/digital-dream-labs/vector-go-sdk/pkg/vectorpb"
 	htgotts "github.com/hegedustibor/htgo-tts"
 	"github.com/hegedustibor/htgo-tts/handlers"
@@ -93,20 +95,20 @@ func SayText(text string) {
 		//println("Saying " + text + " in language=" + language)
 		if ttsEngine == TTS_ENGINE_HTGO {
 			// Uses Google voices
-			fName := "TTS-" + GetRobotSerial()
+			fName := "TTS-" + sdk_wrapper.GetRobotSerial()
 			speech := htgotts.Speech{Folder: "/tmp", Language: language, Handler: &handlers.Native{}}
 			speech.CreateSpeechFile(text, fName)
-			PlaySound("/tmp/" + fName + ".mp3")
+			audio.PlaySound("/tmp/" + fName + ".mp3")
 			os.Remove("/tmp/" + fName + ".mp3")
 		} else {
 			// Speex, more robotic. Chinese, Japanese and Russian are not directly supported
-			fName := "/tmp/TTS-" + GetRobotSerial() + ".wav"
+			fName := "/tmp/TTS-" + sdk_wrapper.GetRobotSerial() + ".wav"
 			cmdData := "espeak " + "\"" + text + "\"" + " -l " + eSpeakLang + " -w " + fName + " echo 20 75 pitch 82 74"
-			_, _, err := shellout(cmdData)
+			_, _, err := sdk_wrapper.shellout(cmdData)
 			if err != nil {
 				println("ESPEAK ERROR " + err.Error())
 			} else {
-				PlaySound(fName)
+				audio.PlaySound(fName)
 				os.Remove(fName)
 			}
 		}
@@ -133,8 +135,8 @@ func Translate(text string, inputLanguage string, outputLanguage string) string 
 /**********************************************************************************************************************/
 
 func sayText(text string) {
-	_, _ = Robot.Conn.SayText(
-		ctx,
+	_, _ = sdk_wrapper.Robot.Conn.SayText(
+		sdk_wrapper.Ctx,
 		&vectorpb.SayTextRequest{
 			Text:           text,
 			UseVectorVoice: true,

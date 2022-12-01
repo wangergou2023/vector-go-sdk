@@ -5,6 +5,8 @@ import (
 	"context"
 	"crypto/tls"
 	"fmt"
+	"github.com/digital-dream-labs/vector-go-sdk/pkg/sdk-wrapper/settings"
+	"github.com/digital-dream-labs/vector-go-sdk/pkg/sdk-wrapper/voice"
 	"github.com/digital-dream-labs/vector-go-sdk/pkg/vector"
 	"github.com/digital-dream-labs/vector-go-sdk/pkg/vectorpb"
 	_ "image/gif"
@@ -27,7 +29,7 @@ type SDKConfigData struct {
 
 var Robot *vector.Vector
 var bcAssumption bool = false
-var ctx context.Context
+var Ctx context.Context
 var transCfg = &http.Transport{
 	TLSClientConfig: &tls.Config{InsecureSkipVerify: true}, // ignore SSL warnings
 }
@@ -37,14 +39,14 @@ var SDKConfig = SDKConfigData{"/tmp/", "data", "nvm"}
 
 func InitSDK(serial string) {
 	var err error
-	InitLanguages(LANGUAGE_ENGLISH)
+	voice.InitLanguages(voice.LANGUAGE_ENGLISH)
 	Robot, err = vector.NewEP(serial)
 	if err != nil {
 		log.Fatal(err)
 	}
-	ctx = context.Background()
-	eventStream, err = Robot.Conn.EventStream(ctx, &vectorpb.EventRequest{})
-	RefreshSDKSettings()
+	Ctx = context.Background()
+	eventStream, err = Robot.Conn.EventStream(Ctx, &vectorpb.EventRequest{})
+	settings.RefreshSDKSettings()
 }
 
 func SetNDKPaths(tmpPath string, dataPath string, nvmPath string) {
@@ -87,7 +89,7 @@ func AssumeBehaviorControl(priority string) {
 		go func() {
 			// * begin - modified from official vector-go-sdk
 			r, err := Robot.Conn.BehaviorControl(
-				ctx,
+				Ctx,
 			)
 			if err != nil {
 				log.Println(err)

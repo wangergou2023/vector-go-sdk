@@ -6,6 +6,9 @@ import (
 	"flag"
 	"fmt"
 	sdk_wrapper "github.com/digital-dream-labs/vector-go-sdk/pkg/sdk-wrapper"
+	"github.com/digital-dream-labs/vector-go-sdk/pkg/sdk-wrapper/camera"
+	"github.com/digital-dream-labs/vector-go-sdk/pkg/sdk-wrapper/images"
+	"github.com/digital-dream-labs/vector-go-sdk/pkg/sdk-wrapper/voice"
 	"log"
 	"math/rand"
 	"os"
@@ -40,9 +43,9 @@ func main() {
 		select {
 		case <-start:
 			//playDemo()
-			sdk_wrapper.SayText("Let's play!")
+			voice.SayText("Let's play!")
 			playGame(10)
-			sdk_wrapper.SayText("Ok, I think it's enough")
+			voice.SayText("Ok, I think it's enough")
 			stop <- true
 			return
 		}
@@ -50,18 +53,18 @@ func main() {
 }
 
 func playDemo() {
-	sdk_wrapper.WriteText("OPENCV", 32, true, 10000, true)
-	sdk_wrapper.WriteText("MEDIAPIPE", 32, true, 10000, true)
-	sdk_wrapper.WriteText("0.", 64, true, 2000, true)
-	sdk_wrapper.WriteText("0..", 64, true, 2000, true)
-	sdk_wrapper.WriteText("0...", 64, true, 2000, true)
-	sdk_wrapper.WriteText("0...5", 64, true, 2000, true)
-	sdk_wrapper.WriteText("0", 64, true, 2000, true)
-	sdk_wrapper.DisplayImage(sdk_wrapper.GetDataPath("images/rock.png"), 2000, true)
-	sdk_wrapper.WriteText("2", 64, true, 1000, true)
-	sdk_wrapper.DisplayImage(sdk_wrapper.GetDataPath("images/scissors.png"), 2000, true)
-	sdk_wrapper.WriteText("5", 64, true, 1000, true)
-	sdk_wrapper.DisplayImage(sdk_wrapper.GetDataPath("images/paper.png"), 2000, true)
+	images.WriteText("OPENCV", 32, true, 10000, true)
+	images.WriteText("MEDIAPIPE", 32, true, 10000, true)
+	images.WriteText("0.", 64, true, 2000, true)
+	images.WriteText("0..", 64, true, 2000, true)
+	images.WriteText("0...", 64, true, 2000, true)
+	images.WriteText("0...5", 64, true, 2000, true)
+	images.WriteText("0", 64, true, 2000, true)
+	images.DisplayImage(sdk_wrapper.GetDataPath("images/rock.png"), 2000, true)
+	images.WriteText("2", 64, true, 1000, true)
+	images.DisplayImage(sdk_wrapper.GetDataPath("images/scissors.png"), 2000, true)
+	images.WriteText("5", 64, true, 1000, true)
+	images.DisplayImage(sdk_wrapper.GetDataPath("images/paper.png"), 2000, true)
 }
 
 func playGame(numSteps int) {
@@ -77,12 +80,12 @@ func playGame(numSteps int) {
 	r1 := rand.New(s1)
 
 	for i := 0; i <= numSteps; i++ {
-		sdk_wrapper.SayText("one, two, three!")
+		voice.SayText("one, two, three!")
 
 		myMove := options[r1.Intn(len(options))]
-		sdk_wrapper.DisplayImage(sdk_wrapper.GetDataPath("images/"+myMove+".png"), 5000, false)
+		images.DisplayImage(sdk_wrapper.GetDataPath("images/"+myMove+".png"), 5000, false)
 		fName := sdk_wrapper.GetTemporaryFilename("rps", "jpg", true)
-		err := sdk_wrapper.SaveHiResCameraPicture(fName)
+		err := camera.SaveHiResCameraPicture(fName)
 		if err == nil {
 			if err == nil {
 				cmd := exec.Command("python", "hand_detection.py", fName)
@@ -136,7 +139,7 @@ func playGame(numSteps int) {
 					break
 				default:
 					answer = "Sorry... I don't get it"
-					sdk_wrapper.DisplayImage(fName, 5000, true)
+					images.DisplayImage(fName, 5000, true)
 					_ = os.Rename(fName, "/tmp/not_recognized_"+string(time.Now().Unix())+".jpg")
 					break
 				}
@@ -158,9 +161,9 @@ func playGame(numSteps int) {
 						break
 					}
 				}
-				sdk_wrapper.SayText("I put " + myMove + "!")
-				sdk_wrapper.SayText(answer)
-				sdk_wrapper.WriteText(fmt.Sprintf("%d - %d", myScore, userScore), 64, true, 5000, true)
+				voice.SayText("I put " + myMove + "!")
+				voice.SayText(answer)
+				images.WriteText(fmt.Sprintf("%d - %d", myScore, userScore), 64, true, 5000, true)
 			} else {
 				println("OPENCV Python script not found!")
 			}

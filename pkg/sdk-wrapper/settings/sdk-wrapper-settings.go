@@ -1,9 +1,11 @@
-package sdk_wrapper
+package settings
 
 import (
 	"bytes"
 	"encoding/json"
 	"github.com/PerformLine/go-stockutil/colorutil"
+	"github.com/digital-dream-labs/vector-go-sdk/pkg/sdk-wrapper"
+	"github.com/digital-dream-labs/vector-go-sdk/pkg/sdk-wrapper/weather"
 	"github.com/digital-dream-labs/vector-go-sdk/pkg/vectorpb"
 	"image/color"
 	"log"
@@ -75,12 +77,16 @@ func GetEyeColor() color.RGBA {
 }
 
 func GetTemperatureUnit() string {
-	unit := WEATHER_UNIT_CELSIUS
+	unit := weather.WEATHER_UNIT_CELSIUS
 	isFaranheit := settings["temp_is_fahrenheit"].(bool)
 	if isFaranheit {
-		unit = WEATHER_UNIT_FARANHEIT
+		unit = weather.WEATHER_UNIT_FARANHEIT
 	}
 	return unit
+}
+
+func GetSDKSetting(name string) interface{} {
+	return settings["name"]
 }
 
 func SetCustomEyeColor(hue string, sat string) {
@@ -121,7 +127,7 @@ func SetSettingSDKstring(setting string, value string) {
 /********************************************************************************************************/
 
 func getSDKSettings() []byte {
-	resp, err := Robot.Conn.PullJdocs(ctx, &vectorpb.PullJdocsRequest{
+	resp, err := sdk_wrapper.Robot.Conn.PullJdocs(sdk_wrapper.Ctx, &vectorpb.PullJdocsRequest{
 		JdocTypes: []vectorpb.JdocType{vectorpb.JdocType_ROBOT_SETTINGS},
 	})
 	if err != nil {
@@ -132,13 +138,13 @@ func getSDKSettings() []byte {
 }
 
 func setSettingSDKStringHelper(payload string) {
-	if !strings.Contains(Robot.Cfg.Token, "error") {
-		url := "https://" + Robot.Cfg.Target + "/v1/update_settings"
+	if !strings.Contains(sdk_wrapper.Robot.Cfg.Token, "error") {
+		url := "https://" + sdk_wrapper.Robot.Cfg.Target + "/v1/update_settings"
 		var updateJSON = []byte(`{"update_settings": true, "settings": ` + payload + ` }`)
 		req, _ := http.NewRequest("POST", url, bytes.NewBuffer(updateJSON))
-		req.Header.Set("Authorization", "Bearer "+Robot.Cfg.Token)
+		req.Header.Set("Authorization", "Bearer "+sdk_wrapper.Robot.Cfg.Token)
 		req.Header.Set("Content-Type", "application/json")
-		client := &http.Client{Transport: transCfg}
+		client := &http.Client{Transport: sdk_wrapper.transCfg}
 		resp, err := client.Do(req)
 		if err != nil {
 			panic(err)
@@ -151,7 +157,7 @@ func setSettingSDKStringHelper(payload string) {
 }
 
 func getCustomSettings() ([]byte, error) {
-	json, err := os.ReadFile(GetMyStoragePath("custom_settings.json"))
+	json, err := os.ReadFile(sdk_wrapper.GetMyStoragePath("custom_settings.json"))
 	if err == nil {
 		return nil, err
 	}
@@ -160,5 +166,5 @@ func getCustomSettings() ([]byte, error) {
 
 func saveCustomSettings() {
 	file, _ := json.MarshalIndent(customSettings, "", " ")
-	_ = os.WriteFile(GetMyStoragePath("custom_settings.json"), file, 0644)
+	_ = os.WriteFile(sdk_wrapper.GetMyStoragePath("custom_settings.json"), file, 0644)
 }

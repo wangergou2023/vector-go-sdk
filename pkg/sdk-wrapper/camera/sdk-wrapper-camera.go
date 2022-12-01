@@ -1,7 +1,8 @@
-package sdk_wrapper
+package camera
 
 import (
 	"bytes"
+	"github.com/digital-dream-labs/vector-go-sdk/pkg/sdk-wrapper"
 	"github.com/digital-dream-labs/vector-go-sdk/pkg/vectorpb"
 	"image"
 	"image/jpeg"
@@ -13,7 +14,7 @@ var camStreamEnable bool = false
 var camStreamClient vectorpb.ExternalInterface_CameraFeedClient
 
 func EnableCameraStream() {
-	camStreamClient, _ = Robot.Conn.CameraFeed(ctx, &vectorpb.CameraFeedRequest{})
+	camStreamClient, _ = sdk_wrapper.Robot.Conn.CameraFeed(sdk_wrapper.Ctx, &vectorpb.CameraFeedRequest{})
 	camStreamEnable = true
 }
 
@@ -72,8 +73,8 @@ func SaveCameraPicture(fileName string) error {
 // Anyways the image is saved at the regular 360p size.
 
 func SaveHiResCameraPicture(fileName string) error {
-	i, err := Robot.Conn.CaptureSingleImage(
-		ctx,
+	i, err := sdk_wrapper.Robot.Conn.CaptureSingleImage(
+		sdk_wrapper.Ctx,
 		&vectorpb.CaptureSingleImageRequest{
 			EnableHighResolution: true,
 		},

@@ -4,6 +4,8 @@ import (
 	"context"
 	"flag"
 	sdk_wrapper "github.com/digital-dream-labs/vector-go-sdk/pkg/sdk-wrapper"
+	"github.com/digital-dream-labs/vector-go-sdk/pkg/sdk-wrapper/audio"
+	"github.com/digital-dream-labs/vector-go-sdk/pkg/sdk-wrapper/voice"
 )
 
 func main() {
@@ -27,10 +29,10 @@ func main() {
 		case <-start:
 			println("OK")
 			if *sentence != "" {
-				sdk_wrapper.SayText(*sentence)
+				voice.SayText(*sentence)
 			}
 			if *audioFile != "" {
-				ret := sdk_wrapper.PlaySound(*audioFile)
+				ret := audio.PlaySound(*audioFile)
 				println(ret)
 			}
 			stop <- true

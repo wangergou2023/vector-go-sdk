@@ -1,20 +1,21 @@
-package sdk_wrapper
+package faces
 
 import (
+	"github.com/digital-dream-labs/vector-go-sdk/pkg/sdk-wrapper"
 	"github.com/digital-dream-labs/vector-go-sdk/pkg/vectorpb"
 )
 
 func FaceEnrollmentListAll() []*vectorpb.LoadedKnownFace {
-	response, _ := Robot.Conn.RequestEnrolledNames(
-		ctx,
+	response, _ := sdk_wrapper.Robot.Conn.RequestEnrolledNames(
+		sdk_wrapper.Ctx,
 		&vectorpb.RequestEnrolledNamesRequest{},
 	)
 	return response.GetFaces()
 }
 
 func FaceEnrollmentChangeName(faceId int32, oldName string, newName string) string {
-	response, _ := Robot.Conn.UpdateEnrolledFaceByID(
-		ctx,
+	response, _ := sdk_wrapper.Robot.Conn.UpdateEnrolledFaceByID(
+		sdk_wrapper.Ctx,
 		&vectorpb.UpdateEnrolledFaceByIDRequest{
 			FaceId:  faceId,
 			OldName: oldName,
@@ -38,8 +39,8 @@ func FaceEnrollmentStart(personName string) string {
 	}
 	maxId++
 
-	response, _ := Robot.Conn.SetFaceToEnroll(
-		ctx,
+	response, _ := sdk_wrapper.Robot.Conn.SetFaceToEnroll(
+		sdk_wrapper.Ctx,
 		&vectorpb.SetFaceToEnrollRequest{
 			Name:        personName,
 			ObservedId:  0,
@@ -55,24 +56,24 @@ func FaceEnrollmentStart(personName string) string {
 
 // Cancels operation
 func FaceEnrollmentCancel() string {
-	response, _ := Robot.Conn.CancelFaceEnrollment(
-		ctx,
+	response, _ := sdk_wrapper.Robot.Conn.CancelFaceEnrollment(
+		sdk_wrapper.Ctx,
 		&vectorpb.CancelFaceEnrollmentRequest{},
 	)
 	return response.Status.String()
 }
 
 func FaceEnrollmentDeleteAll() string {
-	response, _ := Robot.Conn.EraseAllEnrolledFaces(
-		ctx,
+	response, _ := sdk_wrapper.Robot.Conn.EraseAllEnrolledFaces(
+		sdk_wrapper.Ctx,
 		&vectorpb.EraseAllEnrolledFacesRequest{},
 	)
 	return response.Status.String()
 }
 
 func FaceEnrollmentDeleteById(id int32) string {
-	response, _ := Robot.Conn.EraseEnrolledFaceByID(
-		ctx,
+	response, _ := sdk_wrapper.Robot.Conn.EraseEnrolledFaceByID(
+		sdk_wrapper.Ctx,
 		&vectorpb.EraseEnrolledFaceByIDRequest{
 			FaceId: id,
 		},

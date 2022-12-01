@@ -4,6 +4,7 @@ import (
 	"context"
 	"flag"
 	"github.com/digital-dream-labs/vector-go-sdk/pkg/sdk-wrapper"
+	"github.com/digital-dream-labs/vector-go-sdk/pkg/sdk-wrapper/voice"
 	"math/rand"
 	"time"
 )
@@ -49,7 +50,7 @@ func main() {
 	for {
 		select {
 		case <-start:
-			sdk_wrapper.SayText(phrase)
+			voice.SayText(phrase)
 			stop <- true
 			return
 		}
