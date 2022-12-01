@@ -17,11 +17,15 @@ type CustomSettings struct {
 }
 
 var settings map[string]interface{}
-var customSettings = CustomSettings{""}
+var defaultCustomSettings = CustomSettings{""}
+var customSettings = defaultCustomSettings
 
 func RefreshSDKSettings() {
 	settingsJSON := getSDKSettings()
-	customSettingsJSON := getCustomSettings()
+	customSettingsJSON, err := getCustomSettings()
+	if err != nil {
+		customSettings = defaultCustomSettings
+	}
 	println(string(settingsJSON))
 	json.Unmarshal([]byte(settingsJSON), &settings)
 	json.Unmarshal([]byte(customSettingsJSON), &customSettings)
@@ -146,12 +150,12 @@ func setSettingSDKStringHelper(payload string) {
 	RefreshSDKSettings()
 }
 
-func getCustomSettings() []byte {
+func getCustomSettings() ([]byte, error) {
 	json, err := os.ReadFile(GetMyStoragePath("custom_settings.json"))
 	if err == nil {
-		return []byte(err.Error())
+		return nil, err
 	}
-	return []byte(json)
+	return []byte(json), nil
 }
 
 func saveCustomSettings() {
