@@ -5,8 +5,6 @@ import (
 	"context"
 	"crypto/tls"
 	"fmt"
-	"github.com/fforchino/vector-go-sdk/pkg/vector"
-	"github.com/fforchino/vector-go-sdk/pkg/vectorpb"
 	_ "image/gif"
 	_ "image/jpeg"
 	_ "image/png"
@@ -17,6 +15,9 @@ import (
 	"path/filepath"
 	"strings"
 	"time"
+
+	"github.com/fforchino/vector-go-sdk/pkg/vector"
+	"github.com/fforchino/vector-go-sdk/pkg/vectorpb"
 )
 
 type SDKConfigData struct {
@@ -35,27 +36,38 @@ var transCfg = &http.Transport{
 var eventStream vectorpb.ExternalInterface_EventStreamClient
 var SDKConfig = SDKConfigData{"/tmp/", "data", "nvm"}
 
-func InitSDK(serial string) {
+func InitSDK(serial string) error {
 	var err error
 	InitLanguages(LANGUAGE_ENGLISH)
 	Robot, err = vector.NewEP(serial)
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
+		return err
 	}
 	ctx = context.Background()
-	eventStream, err = Robot.Conn.EventStream(ctx, &vectorpb.EventRequest{})
+	_, err = Robot.Conn.EventStream(ctx, &vectorpb.EventRequest{})
+	if err != nil {
+		log.Println(err)
+		return err
+	}
 	RefreshSDKSettings()
+	return nil
 }
 
-func InitSDKForWirepod(serial string) {
+func InitSDKForWirepod(serial string) error {
 	var err error
 	InitLanguages(LANGUAGE_ENGLISH)
 	Robot, err = vector.NewWP(serial)
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
+		return err
 	}
 	ctx = context.Background()
-	eventStream, err = Robot.Conn.EventStream(ctx, &vectorpb.EventRequest{})
+	_, err = Robot.Conn.EventStream(ctx, &vectorpb.EventRequest{})
+	if err != nil {
+		log.Println(err)
+		return err
+	}
 	tmpPath := os.Getenv("WIREPOD_EX_TMP_PATH")
 	dataPath := os.Getenv("WIREPOD_EX_DATA_PATH")
 	nvmPath := os.Getenv("WIREPOD_EX_NVM_PATH")
@@ -71,6 +83,7 @@ func InitSDKForWirepod(serial string) {
 	}
 	SetSDKPaths(tmpPath, dataPath, nvmPath)
 	RefreshSDKSettings()
+	return nil
 }
 
 func SetSDKPaths(tmpPath string, dataPath string, nvmPath string) {
