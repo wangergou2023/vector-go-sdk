@@ -34,6 +34,9 @@ Please see the cmd/examples directory for usage examples.
 
 ## Changelog 
 
++***RELEASE_ALPHA_09***
+Integration with VectorX (https://github.com/fforchino/vectorx)
+
 +***RELEASE_ALPHA_08***
 Integration with Wirepod
 
