@@ -10,7 +10,7 @@ import (
 	"time"
 )
 
-var SYSTEMSOUND_WIN = GetDataPath("audio/win.pcm")
+var SYSTEMSOUND_WIN = "audio/win.pcm"
 
 const VOLUME_LEVEL_MAXIMUM = 5
 const VOLUME_LEVEL_MINIMUM = 1
@@ -61,6 +61,12 @@ func SetMasterVolume(volume int) error {
 		return err
 	}
 	return fmt.Errorf("Invalid volume level")
+}
+
+// Plays one of the SYSTEMSOUND_... files
+
+func PlaySystemSound(systemsound string) {
+	PlaySound(GetDataPath(systemsound))
 }
 
 // Plays amy sound file (mp3, wav, ecc) using FFMpeg to convert it to the right format

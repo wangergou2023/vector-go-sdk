@@ -39,7 +39,7 @@ func main() {
 
 			sdk_wrapper.DisplayAnimatedGif(sdk_wrapper.GetDataPath("images/dice/roll-the-dice.gif"), sdk_wrapper.ANIMATED_GIF_SPEED_FASTEST, 1, false)
 			sdk_wrapper.DisplayImage(dieImage, 100, false)
-			sdk_wrapper.PlaySound(sdk_wrapper.SYSTEMSOUND_WIN)
+			sdk_wrapper.PlaySystemSound(sdk_wrapper.SYSTEMSOUND_WIN)
 			sdk_wrapper.SayText(fmt.Sprintf("You rolled a %d", die))
 			sdk_wrapper.DisplayImageWithTransition(dieImage, 1000, sdk_wrapper.IMAGE_TRANSITION_FADE_OUT, 10)
 
