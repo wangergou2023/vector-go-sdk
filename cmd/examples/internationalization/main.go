@@ -23,6 +23,14 @@ func main() {
 	for {
 		select {
 		case <-start:
+			loc := sdk_wrapper.GetLocale()
+			println("Robot locale: " + loc)
+			sdk_wrapper.SetLocale("it_IT")
+			loc = sdk_wrapper.GetLocale()
+			println("Robot locale: " + loc)
+			sdk_wrapper.SetLocale("en_US")
+			loc = sdk_wrapper.GetLocale()
+			println("Robot locale: " + loc)
 			sdk_wrapper.SetRobotName("Augustus")
 			sdk_wrapper.SetLanguage(sdk_wrapper.LANGUAGE_ENGLISH)
 			sdk_wrapper.SayText("Hello world!")

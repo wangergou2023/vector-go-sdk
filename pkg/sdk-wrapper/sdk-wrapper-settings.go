@@ -31,6 +31,11 @@ func RefreshSDKSettings() {
 	json.Unmarshal([]byte(customSettingsJSON), &customSettings)
 }
 
+func GetVectorSettings() map[string]interface{} {
+	RefreshSDKSettings()
+	return settings
+}
+
 func GetEyeColor() color.RGBA {
 	eyeColor := color.RGBA{0, 0, 0, 0xff}
 
@@ -95,6 +100,11 @@ func SetPresetEyeColor(value string) {
 
 func SetLocale(locale string) {
 	SetSettingSDKstring("locale", locale)
+}
+
+func GetLocale() string {
+	locale := settings["locale"].(string)
+	return locale
 }
 
 func SetLocation(location string) {
