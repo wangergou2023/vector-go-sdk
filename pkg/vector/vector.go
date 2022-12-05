@@ -79,7 +79,7 @@ func NewWP(serial string) (*Vector, error) {
 	if len(wirepodPath) == 0 {
 		wirepodPath = "."
 	}
-	botSdkInfoFile := filepath.Join(wirepodPath, "/jdocs/botSdkInfo.json")
+	botSdkInfoFile := filepath.Join(wirepodPath, "chipper/jdocs/botSdkInfo.json")
 	jsonBytes, err := os.ReadFile(botSdkInfoFile)
 	if err != nil {
 		log.Println("vector-go-sdk error: Error opening " + botSdkInfoFile + ", likely doesn't exist")
