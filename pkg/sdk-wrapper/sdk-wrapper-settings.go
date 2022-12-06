@@ -129,7 +129,6 @@ func GetCustomSettings() *CustomSettings {
 
 func SaveCustomSettings() {
 	file, _ := json.Marshal(GetCustomSettings())
-	println(string(file))
 	_ = os.WriteFile(GetMyStoragePath("custom_settings.json"), file, 0644)
 }
 
