@@ -13,18 +13,17 @@ import (
 )
 
 type CustomSettings struct {
-	robot_name string
+	RobotName string `json:"RobotName"`
 }
 
 var settings map[string]interface{}
-var defaultCustomSettings = CustomSettings{""}
-var customSettings = defaultCustomSettings
+var customSettings CustomSettings
 
 func RefreshSDKSettings() {
 	settingsJSON := getSDKSettings()
 	customSettingsJSON, err := getCustomSettings()
 	if err != nil {
-		customSettings = defaultCustomSettings
+		customSettings = CustomSettings{RobotName: ""}
 	}
 	//println(string(settingsJSON))
 	json.Unmarshal([]byte(settingsJSON), &settings)
@@ -116,12 +115,12 @@ func SetTimeZone(timezone string) {
 }
 
 func SetRobotName(name string) {
-	customSettings.robot_name = name
+	customSettings.RobotName = name
 	SaveCustomSettings()
 }
 
 func GetRobotName() string {
-	return customSettings.robot_name
+	return customSettings.RobotName
 }
 
 func GetCustomSettings() *CustomSettings {
@@ -129,7 +128,8 @@ func GetCustomSettings() *CustomSettings {
 }
 
 func SaveCustomSettings() {
-	file, _ := json.MarshalIndent(customSettings, "", " ")
+	file, _ := json.Marshal(GetCustomSettings())
+	println(string(file))
 	_ = os.WriteFile(GetMyStoragePath("custom_settings.json"), file, 0644)
 }
 

@@ -34,6 +34,9 @@ Please see the cmd/examples directory for usage examples.
 
 ## Changelog 
 
++***RELEASE_ALPHA_10***
+- Bugfix: SetRobotName doesn't write permanent data
+
 +***RELEASE_ALPHA_09***
 Integration with VectorX (https://github.com/fforchino/vectorx)
 
