@@ -25,7 +25,9 @@ func RefreshSDKSettings() {
 	if err != nil {
 		customSettings = CustomSettings{RobotName: ""}
 	}
+	//println(string(customSettingsJSON))
 	//println(string(settingsJSON))
+
 	json.Unmarshal([]byte(settingsJSON), &settings)
 	json.Unmarshal([]byte(customSettingsJSON), &customSettings)
 }
@@ -174,7 +176,7 @@ func setSettingSDKStringHelper(payload string) {
 
 func getCustomSettings() ([]byte, error) {
 	json, err := os.ReadFile(GetMyStoragePath("custom_settings.json"))
-	if err == nil {
+	if err != nil {
 		return nil, err
 	}
 	return []byte(json), nil
