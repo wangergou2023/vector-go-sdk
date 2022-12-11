@@ -13,6 +13,7 @@ import (
 	"github.com/hegedustibor/htgo-tts/handlers"
 	"github.com/hegedustibor/htgo-tts/voices"
 	"os"
+	"strings"
 )
 
 const LANGUAGE_ENGLISH = voices.English
@@ -65,6 +66,11 @@ func SetLanguage(lang string) {
 
 func GetLanguage() string {
 	return language
+}
+
+func GetLanguageISO2() string {
+	locale := GetLocale()
+	return strings.Split(locale, "-")[0]
 }
 
 func SetTTSEngine(TTSEngine int) {
@@ -131,6 +137,21 @@ func Translate(text string, inputLanguage string, outputLanguage string) string 
 /**********************************************************************************************************************/
 /*                                              PRIVATE FUNCTIONS                                                     */
 /**********************************************************************************************************************/
+
+func refreshLanguage() {
+	loc := GetLocale()
+	if strings.HasPrefix(loc, "it") {
+		SetLanguage(LANGUAGE_ITALIAN)
+	} else if strings.HasPrefix(loc, "es") {
+		SetLanguage(LANGUAGE_SPANISH)
+	} else if strings.HasPrefix(loc, "fr") {
+		SetLanguage(LANGUAGE_FRENCH)
+	} else if strings.HasPrefix(loc, "de") {
+		SetLanguage(LANGUAGE_SPANISH)
+	} else {
+		SetLanguage(LANGUAGE_ENGLISH)
+	}
+}
 
 func sayText(text string) {
 	_, _ = Robot.Conn.SayText(

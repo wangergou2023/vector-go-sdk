@@ -34,6 +34,12 @@ Please see the cmd/examples directory for usage examples.
 
 ## Changelog 
 
++***RELEASE_ALPHA_12***
+- Bugfix: Language not correctly set to robot's locale language when initializing the sdk
+
++***RELEASE_ALPHA_11***
+- Bugfix: SetRobotName doesn't write permanent data
+
 +***RELEASE_ALPHA_10***
 - Bugfix: SetRobotName doesn't write permanent data
 

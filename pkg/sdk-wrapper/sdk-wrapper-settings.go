@@ -30,6 +30,7 @@ func RefreshSDKSettings() {
 
 	json.Unmarshal([]byte(settingsJSON), &settings)
 	json.Unmarshal([]byte(customSettingsJSON), &customSettings)
+	refreshLanguage()
 }
 
 func GetVectorSettings() map[string]interface{} {
