@@ -147,7 +147,7 @@ func refreshLanguage() {
 	} else if strings.HasPrefix(loc, "fr") {
 		SetLanguage(LANGUAGE_FRENCH)
 	} else if strings.HasPrefix(loc, "de") {
-		SetLanguage(LANGUAGE_SPANISH)
+		SetLanguage(LANGUAGE_GERMAN)
 	} else {
 		SetLanguage(LANGUAGE_ENGLISH)
 	}
