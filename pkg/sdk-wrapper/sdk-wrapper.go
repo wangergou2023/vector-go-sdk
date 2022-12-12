@@ -195,6 +195,10 @@ func GetRobotSerial() string {
 	return Robot.Cfg.SerialNo
 }
 
+func GetTempPath() string {
+	return SDKConfig.TmpPath
+}
+
 func GetTemporaryFilename(tag string, extension string, fullpath bool) string {
 	tmpPath := SDKConfig.TmpPath
 	tmpFile := GetRobotSerial() + "_" + tag + fmt.Sprintf("_%d", time.Now().Unix()) + "." + extension

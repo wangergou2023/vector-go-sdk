@@ -13,6 +13,7 @@ import (
 	"github.com/hegedustibor/htgo-tts/handlers"
 	"github.com/hegedustibor/htgo-tts/voices"
 	"os"
+	"path"
 	"strings"
 )
 
@@ -29,7 +30,7 @@ const LANGUAGE_CHINESE = voices.Chinese
 
 const TTS_ENGINE_HTGO = 0
 const TTS_ENGINE_ESPEAK = 1
-const TTS_ENGINE_MAX = TTS_ENGINE_HTGO
+const TTS_ENGINE_MAX = TTS_ENGINE_ESPEAK
 
 var language string = LANGUAGE_ENGLISH
 var eSpeakLang string = "english"
@@ -74,7 +75,7 @@ func GetLanguageISO2() string {
 }
 
 func SetTTSEngine(TTSEngine int) {
-	if TTSEngine >= 0 && TTSEngine < TTS_ENGINE_MAX {
+	if TTSEngine >= 0 && TTSEngine <= TTS_ENGINE_MAX {
 		ttsEngine = TTSEngine
 	}
 }
@@ -100,13 +101,13 @@ func SayText(text string) {
 		if ttsEngine == TTS_ENGINE_HTGO {
 			// Uses Google voices
 			fName := "TTS-" + GetRobotSerial()
-			speech := htgotts.Speech{Folder: "/tmp", Language: language, Handler: &handlers.Native{}}
+			speech := htgotts.Speech{Folder: GetTempPath(), Language: language, Handler: &handlers.Native{}}
 			speech.CreateSpeechFile(text, fName)
-			PlaySound("/tmp/" + fName + ".mp3")
-			os.Remove("/tmp/" + fName + ".mp3")
+			PlaySound(path.Join(GetTempPath(), fName+".mp3"))
+			os.Remove(path.Join(GetTempPath(), fName+".mp3"))
 		} else {
 			// Speex, more robotic. Chinese, Japanese and Russian are not directly supported
-			fName := "/tmp/TTS-" + GetRobotSerial() + ".wav"
+			fName := path.Join(GetTempPath(), "TTS-"+GetRobotSerial()+".wav")
 			cmdData := "espeak " + "\"" + text + "\"" + " -l " + eSpeakLang + " -w " + fName + " echo 20 75 pitch 82 74"
 			_, _, err := shellout(cmdData)
 			if err != nil {

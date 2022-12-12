@@ -23,20 +23,15 @@ func main() {
 	for {
 		select {
 		case <-start:
-			println("Robot name:" + sdk_wrapper.GetRobotName())
+			sdk_wrapper.SetTTSEngine(sdk_wrapper.TTS_ENGINE_HTGO)
 			sdk_wrapper.SetRobotName("Augustus")
 			loc := sdk_wrapper.GetLocale()
 			println("Robot locale: " + loc)
 			sdk_wrapper.SetLocale("it_IT")
-			loc = sdk_wrapper.GetLocale()
+			sdk_wrapper.SayText("Ciao mondo!")
 			println("Robot locale: " + loc)
 			sdk_wrapper.SetLocale("en_US")
-			loc = sdk_wrapper.GetLocale()
-			println("Robot locale: " + loc)
-			sdk_wrapper.SetLanguage(sdk_wrapper.LANGUAGE_ENGLISH)
 			sdk_wrapper.SayText("Hello world!")
-			sdk_wrapper.SetLanguage(sdk_wrapper.LANGUAGE_ITALIAN)
-			sdk_wrapper.SayText("Ciao mondo!")
 			sdk_wrapper.SetLanguage(sdk_wrapper.LANGUAGE_SPANISH)
 			sdk_wrapper.SayText(sdk_wrapper.Translate("Hello, world!", sdk_wrapper.LANGUAGE_ENGLISH, sdk_wrapper.LANGUAGE_SPANISH))
 			sdk_wrapper.SetLanguage(sdk_wrapper.LANGUAGE_FRENCH)
