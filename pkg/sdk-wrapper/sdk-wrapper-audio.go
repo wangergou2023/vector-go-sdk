@@ -80,14 +80,14 @@ func PlaySound(filename string) string {
 	var pcmFile []byte
 	tmpFileName := GetTemporaryFilename("sound", "pcm", true)
 	if strings.Contains(filename, ".pcm") || strings.Contains(filename, ".raw") {
-		fmt.Println("Assuming already pcm")
+		//fmt.Println("Assuming already pcm")
 		pcmFile, _ = os.ReadFile(filename)
 	} else {
-		conOutput, conError := exec.Command("ffmpeg", "-y", "-i", filename, "-f", "s16le", "-acodec", "pcm_s16le", "-ar", "16000", "-ac", "1", tmpFileName).Output()
+		_, conError := exec.Command("ffmpeg", "-y", "-i", filename, "-f", "s16le", "-acodec", "pcm_s16le", "-ar", "16000", "-ac", "1", tmpFileName).Output()
 		if conError != nil {
 			fmt.Println(conError)
 		}
-		fmt.Println("FFMPEG output: " + string(conOutput))
+		//fmt.Println("FFMPEG output: " + string(conOutput))
 		pcmFile, _ = os.ReadFile(tmpFileName)
 	}
 	var audioChunks [][]byte
@@ -107,7 +107,7 @@ func PlaySound(filename string) string {
 			},
 		},
 	})
-	fmt.Println(len(audioChunks))
+	//fmt.Println(len(audioChunks))
 	for _, chunk := range audioChunks {
 		audioClient.SendMsg(&vectorpb.ExternalAudioStreamRequest{
 			AudioRequestType: &vectorpb.ExternalAudioStreamRequest_AudioStreamChunk{
