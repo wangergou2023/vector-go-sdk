@@ -26,7 +26,7 @@ func RefreshSDKSettings() {
 		customSettings = CustomSettings{RobotName: ""}
 	}
 	//println(string(customSettingsJSON))
-	//println(string(settingsJSON))
+	println(string(settingsJSON))
 
 	json.Unmarshal([]byte(settingsJSON), &settings)
 	json.Unmarshal([]byte(customSettingsJSON), &customSettings)

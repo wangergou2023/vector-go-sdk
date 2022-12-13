@@ -103,7 +103,10 @@ func SayText(text string) {
 			fName := "TTS-" + GetRobotSerial()
 			speech := htgotts.Speech{Folder: GetTempPath(), Language: language, Handler: &handlers.Native{}}
 			speech.CreateSpeechFile(text, fName)
+			currentVolume := GetMasterVolume()
+			SetMasterVolume(VOLUME_LEVEL_MAXIMUM)
 			PlaySound(path.Join(GetTempPath(), fName+".mp3"))
+			SetMasterVolume(currentVolume)
 			os.Remove(path.Join(GetTempPath(), fName+".mp3"))
 		} else {
 			// Speex, more robotic. Chinese, Japanese and Russian are not directly supported

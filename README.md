@@ -34,6 +34,9 @@ Please see the cmd/examples directory for usage examples.
 
 ## Changelog 
 
++***RELEASE_ALPHA_13***
+- Set TTS output always at the maximum volume 
+
 +***RELEASE_ALPHA_12***
 - Bugfix: Language not correctly set to robot's locale language when initializing the sdk
 
