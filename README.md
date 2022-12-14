@@ -34,6 +34,10 @@ Please see the cmd/examples directory for usage examples.
 
 ## Changelog 
 
++***RELEASE_ALPHA_14***
+- Bugfix: TextOnImg uses an hardcoded data path
+- Bugfix: InitSDK doesn't correctly initialize event stream (event example broken!)
+
 +***RELEASE_ALPHA_13***
 - Set TTS output always at the maximum volume 
 

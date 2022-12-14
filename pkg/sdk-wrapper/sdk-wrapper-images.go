@@ -57,7 +57,7 @@ func TextOnImg(text string, size float64, isBold bool, color color.RGBA) []byte 
 		fontName = fontName + "-Bold"
 	}
 
-	if err := dc.LoadFontFace("data/fonts/"+fontName+".ttf", size); err != nil {
+	if err := dc.LoadFontFace(GetDataPath("fonts/"+fontName+".ttf"), size); err != nil {
 		fmt.Println(err)
 		return nil
 	}

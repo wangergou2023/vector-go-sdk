@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"flag"
+	"fmt"
 	sdk_wrapper "github.com/fforchino/vector-go-sdk/pkg/sdk-wrapper"
 	"github.com/fforchino/vector-go-sdk/pkg/vectorpb"
 	"time"
@@ -31,6 +32,12 @@ func main() {
 				for {
 					evt := sdk_wrapper.WaitForEvent()
 					if evt != nil {
+						evtUserIntent := evt.GetUserIntent()
+						if evtUserIntent != nil {
+							println(fmt.Sprintf("Received intent %d", evtUserIntent.IntentId))
+							println(evtUserIntent.JsonData)
+							println(evtUserIntent.String())
+						}
 						evtRobotState := evt.GetRobotState()
 						if evtRobotState != nil {
 							if evtRobotState.Status&uint32(vectorpb.RobotStatus_ROBOT_STATUS_IS_PICKED_UP) > 0 ||

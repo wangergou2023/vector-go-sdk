@@ -45,7 +45,7 @@ func InitSDK(serial string) error {
 		return err
 	}
 	ctx = context.Background()
-	_, err = Robot.Conn.EventStream(ctx, &vectorpb.EventRequest{})
+	eventStream, err = Robot.Conn.EventStream(ctx, &vectorpb.EventRequest{})
 	if err != nil {
 		log.Println(err)
 		return err

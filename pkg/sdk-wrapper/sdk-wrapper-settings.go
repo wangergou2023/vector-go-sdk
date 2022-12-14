@@ -19,6 +19,25 @@ type CustomSettings struct {
 var settings map[string]interface{}
 var customSettings CustomSettings
 
+/*
+{
+   "button_wakeword" : 0,
+   "clock_24_hour" : false,
+   "custom_eye_color" : {
+      "enabled" : false,
+      "hue" : 0,
+      "saturation" : 0
+   },
+   "default_location" : "San Francisco, California, United States",
+   "dist_is_metric" : true,
+   "eye_color" : 0,
+   "locale" : "en-US",
+   "master_volume" : 5,
+   "temp_is_fahrenheit" : false,
+   "time_zone" : "Europe/Paris"
+}
+*/
+
 func RefreshSDKSettings() {
 	settingsJSON := getSDKSettings()
 	customSettingsJSON, err := getCustomSettings()
@@ -26,7 +45,7 @@ func RefreshSDKSettings() {
 		customSettings = CustomSettings{RobotName: ""}
 	}
 	//println(string(customSettingsJSON))
-	println(string(settingsJSON))
+	//println(string(settingsJSON))
 
 	json.Unmarshal([]byte(settingsJSON), &settings)
 	json.Unmarshal([]byte(customSettingsJSON), &customSettings)
