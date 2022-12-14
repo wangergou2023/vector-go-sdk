@@ -12,6 +12,7 @@ import (
 	"net/http"
 	"os"
 	"os/exec"
+	"path"
 	"path/filepath"
 	"strings"
 	"time"
@@ -90,6 +91,7 @@ func SetSDKPaths(tmpPath string, dataPath string, nvmPath string) {
 	SDKConfig.TmpPath = tmpPath
 	SDKConfig.DataPath = dataPath
 	SDKConfig.NvmPath = nvmPath
+	_ = os.MkdirAll(tmpPath, os.ModePerm)
 }
 
 func WaitForEvent() *vectorpb.Event {
@@ -203,7 +205,7 @@ func GetTemporaryFilename(tag string, extension string, fullpath bool) string {
 	tmpPath := SDKConfig.TmpPath
 	tmpFile := GetRobotSerial() + "_" + tag + fmt.Sprintf("_%d", time.Now().Unix()) + "." + extension
 	if fullpath {
-		tmpFile = tmpPath + tmpFile
+		tmpFile = path.Join(tmpPath, tmpFile)
 	}
 	return tmpFile
 }
