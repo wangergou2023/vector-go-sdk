@@ -19,6 +19,7 @@ func EnableCameraStream() {
 
 func DisableCameraStream() {
 	camStreamEnable = false
+	camStreamClient.CloseSend()
 	camStreamClient = nil
 }
 
