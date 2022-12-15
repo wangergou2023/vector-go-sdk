@@ -72,7 +72,7 @@ func TextOnImg(text string, size float64, isBold bool, color color.RGBA) []byte 
 	}
 	dc.DrawStringWrapped(text, x, y, 0.5, 0.5, maxWidth, 1.5, gg.AlignCenter)
 	buf := new(bytes.Buffer)
-	bitmap := convertPixelsToRawBitmap(dc.Image(), 100)
+	bitmap := ConvertPixelsToRawBitmap(dc.Image(), 100)
 	for _, ui := range bitmap {
 		binary.Write(buf, binary.LittleEndian, ui)
 	}
@@ -155,7 +155,7 @@ func DataOnImgWithTransition(fileName string, transition int, pct int) []byte {
 	dc.DrawImage(dst, x, y)
 
 	buf := new(bytes.Buffer)
-	bitmap := convertPixelsToRawBitmap(dc.Image(), opacity)
+	bitmap := ConvertPixelsToRawBitmap(dc.Image(), opacity)
 	for _, ui := range bitmap {
 		binary.Write(buf, binary.LittleEndian, ui)
 	}
@@ -235,7 +235,7 @@ func DisplayAnimatedGif(imageFile string, speed float64, loops int, repaintBackg
 			dc.DrawImage(dst, (imgWidth-dst.Bounds().Dx())/2, (imgHeight-dst.Bounds().Dy())/2)
 
 			buf := new(bytes.Buffer)
-			bitmap := convertPixelsToRawBitmap(dc.Image(), 100)
+			bitmap := ConvertPixelsToRawBitmap(dc.Image(), 100)
 			for _, ui := range bitmap {
 				binary.Write(buf, binary.LittleEndian, ui)
 			}
@@ -253,6 +253,54 @@ func DisplayAnimatedGif(imageFile string, speed float64, loops int, repaintBackg
 		}
 	}
 	return nil
+}
+
+func ConvertPixesTo16BitRGB(r uint32, g uint32, b uint32, a uint32, opacityPercentage uint16) uint16 {
+	R, G, B := uint16(r/257), uint16(g/8193), uint16(b/257)
+
+	R = R * opacityPercentage / 100
+	G = G * opacityPercentage / 100
+	B = B * opacityPercentage / 100
+
+	//The format appears to be: 000bbbbbrrrrrggg
+
+	var Br uint16 = (uint16(B & 0xF8)) << 5 // 5 bits for blue  [8..12]
+	var Rr uint16 = (uint16(R & 0xF8))      // 5 bits for red   [3..7]
+	var Gr uint16 = (uint16(G))             // 3 bits for green [0..2]
+
+	out := uint16(Br | Rr | Gr)
+	//println(fmt.Sprintf("%d,%d,%d -> R: %016b G: %016b B: %016b = %016b", R, G, B, Rr, Gr, Br, out))
+	return out
+}
+
+func ConvertPixelsToRawBitmap(image image.Image, opacityPercentage int) []uint16 {
+	imgHeight, imgWidth := image.Bounds().Max.Y, image.Bounds().Max.X
+	bitmap := make([]uint16, imgWidth*imgHeight)
+
+	for y := 0; y < imgHeight; y++ {
+		for x := 0; x < imgWidth; x++ {
+			/*
+				// TEST CODE
+				r := 0
+				g := 65535 / imgWidth * (x + 1)
+				b := 0
+				bitmap[(y)*imgWidth+(x)] = ConvertPixesTo16BitRGB(uint32(r), uint32(g), uint32(b), 0)
+			*/
+			r, g, b, a := image.At(x, y).RGBA()
+			if useVectorEyeColor {
+				vectorEyes := GetEyeColor()
+				vR := uint32(vectorEyes.R) * 255
+				vG := uint32(vectorEyes.G) * 255
+				vB := uint32(vectorEyes.B) * 255
+
+				r = r * vR / 0xffff
+				g = g * vG / 0xffff
+				b = b * vB / 0xffff
+			}
+			bitmap[(y)*imgWidth+(x)] = ConvertPixesTo16BitRGB(r, g, b, a, uint16(opacityPercentage))
+		}
+	}
+	return bitmap
 }
 
 /********************************************************************************************************/
@@ -273,54 +321,6 @@ func displayFaceImage(faceBytes []byte, duration int, blocking bool) {
 	}
 }
 
-func convertPixesTo16BitRGB(r uint32, g uint32, b uint32, a uint32, opacityPercentage uint16) uint16 {
-	R, G, B := uint16(r/257), uint16(g/8193), uint16(b/257)
-
-	R = R * opacityPercentage / 100
-	G = G * opacityPercentage / 100
-	B = B * opacityPercentage / 100
-
-	//The format appears to be: 000bbbbbrrrrrggg
-
-	var Br uint16 = (uint16(B & 0xF8)) << 5 // 5 bits for blue  [8..12]
-	var Rr uint16 = (uint16(R & 0xF8))      // 5 bits for red   [3..7]
-	var Gr uint16 = (uint16(G))             // 3 bits for green [0..2]
-
-	out := uint16(Br | Rr | Gr)
-	//println(fmt.Sprintf("%d,%d,%d -> R: %016b G: %016b B: %016b = %016b", R, G, B, Rr, Gr, Br, out))
-	return out
-}
-
-func convertPixelsToRawBitmap(image image.Image, opacityPercentage int) []uint16 {
-	imgHeight, imgWidth := image.Bounds().Max.Y, image.Bounds().Max.X
-	bitmap := make([]uint16, imgWidth*imgHeight)
-
-	for y := 0; y < imgHeight; y++ {
-		for x := 0; x < imgWidth; x++ {
-			/*
-				// TEST CODE
-				r := 0
-				g := 65535 / imgWidth * (x + 1)
-				b := 0
-				bitmap[(y)*imgWidth+(x)] = convertPixesTo16BitRGB(uint32(r), uint32(g), uint32(b), 0)
-			*/
-			r, g, b, a := image.At(x, y).RGBA()
-			if useVectorEyeColor {
-				vectorEyes := GetEyeColor()
-				vR := uint32(vectorEyes.R) * 255
-				vG := uint32(vectorEyes.G) * 255
-				vB := uint32(vectorEyes.B) * 255
-
-				r = r * vR / 0xffff
-				g = g * vG / 0xffff
-				b = b * vB / 0xffff
-			}
-			bitmap[(y)*imgWidth+(x)] = convertPixesTo16BitRGB(r, g, b, a, uint16(opacityPercentage))
-		}
-	}
-	return bitmap
-}
-
 func imageOnImg(src image.Image) []byte {
 	bgImage := image.NewRGBA(image.Rectangle{
 		Min: image.Point{X: 0, Y: 0},
@@ -335,7 +335,7 @@ func imageOnImg(src image.Image) []byte {
 	dc.DrawImage(dst, (imgWidth-dst.Bounds().Dx())/2, (imgHeight-dst.Bounds().Dy())/2)
 
 	buf := new(bytes.Buffer)
-	bitmap := convertPixelsToRawBitmap(dc.Image(), 100)
+	bitmap := ConvertPixelsToRawBitmap(dc.Image(), 100)
 	for _, ui := range bitmap {
 		binary.Write(buf, binary.LittleEndian, ui)
 	}

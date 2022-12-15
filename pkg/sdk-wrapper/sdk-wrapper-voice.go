@@ -33,7 +33,7 @@ const TTS_ENGINE_ESPEAK = 1
 const TTS_ENGINE_MAX = TTS_ENGINE_ESPEAK
 
 var language string = LANGUAGE_ENGLISH
-var eSpeakLang string = "english"
+var eSpeakLang string = "en"
 var ttsEngine = TTS_ENGINE_ESPEAK
 
 func InitLanguages(language string) {
@@ -43,25 +43,25 @@ func InitLanguages(language string) {
 
 func SetLanguage(lang string) {
 	language = lang
-	eSpeakLang = "english"
+	eSpeakLang = "en"
 	if language == LANGUAGE_ITALIAN {
-		eSpeakLang = "italian"
+		eSpeakLang = "it"
 	} else if language == LANGUAGE_SPANISH {
-		eSpeakLang = "spanish"
+		eSpeakLang = "es"
 	} else if language == LANGUAGE_FRENCH {
-		eSpeakLang = "french"
+		eSpeakLang = "fr"
 	} else if language == LANGUAGE_GERMAN {
-		eSpeakLang = "german"
+		eSpeakLang = "de"
 	} else if language == LANGUAGE_PORTUGUESE {
-		eSpeakLang = "portuguese"
+		eSpeakLang = "pt"
 	} else if language == LANGUAGE_DUTCH {
-		eSpeakLang = "dutch"
+		eSpeakLang = "nl"
 	} else if language == LANGUAGE_RUSSIAN {
-		eSpeakLang = "russian"
+		eSpeakLang = "ru"
 	} else if language == LANGUAGE_JAPANESE {
-		eSpeakLang = "japanese"
+		eSpeakLang = "jp"
 	} else if language == LANGUAGE_CHINESE {
-		eSpeakLang = "chinese"
+		eSpeakLang = "zh"
 	}
 }
 
@@ -112,6 +112,7 @@ func SayText(text string) {
 			// Speex, more robotic. Chinese, Japanese and Russian are not directly supported
 			fName := path.Join(GetTempPath(), "TTS-"+GetRobotSerial()+".wav")
 			cmdData := "espeak " + "\"" + text + "\"" + " -l " + eSpeakLang + " -w " + fName + " echo 20 75 pitch 82 74"
+			//println(cmdData)
 			_, _, err := shellout(cmdData)
 			if err != nil {
 				println("ESPEAK ERROR " + err.Error())
