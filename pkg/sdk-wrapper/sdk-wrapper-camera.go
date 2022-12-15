@@ -15,12 +15,12 @@ var camStreamClient vectorpb.ExternalInterface_CameraFeedClient
 func EnableCameraStream() {
 	camStreamClient, _ = Robot.Conn.CameraFeed(ctx, &vectorpb.CameraFeedRequest{})
 	camStreamEnable = true
+	defer camStreamClient.CloseSend()
 }
 
 func DisableCameraStream() {
 	camStreamEnable = false
 	camStreamClient.CloseSend()
-	camStreamClient = nil
 }
 
 func ProcessCameraStream() image.Image {
