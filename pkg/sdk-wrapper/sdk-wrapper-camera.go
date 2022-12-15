@@ -72,6 +72,23 @@ func SaveCameraPicture(fileName string) error {
 // Anyways the image is saved at the regular 360p size.
 
 func SaveHiResCameraPicture(fileName string) error {
+	img, err := GetHiResCameraPicture()
+	if err == nil {
+		f, err := os.Create(fileName)
+		if err == nil {
+			var opt jpeg.Options
+			opt.Quality = 100
+			err = jpeg.Encode(f, img, &opt)
+			if err == nil {
+				println("Image saved as " + fileName)
+			}
+		}
+	}
+	return err
+}
+
+// Gets a single image from camera. Tries to set hi res
+func GetHiResCameraPicture() (image.Image, error) {
 	i, err := Robot.Conn.CaptureSingleImage(
 		ctx,
 		&vectorpb.CaptureSingleImageRequest{
@@ -84,17 +101,8 @@ func SaveHiResCameraPicture(fileName string) error {
 		img, _, err := image.Decode(bytes.NewReader(imageData))
 		if err == nil {
 			println("Image decoded")
-			f, err := os.Create(fileName)
-			if err == nil {
-				var opt jpeg.Options
-				opt.Quality = 100
-				err = jpeg.Encode(f, img, &opt)
-				if err == nil {
-					println("Image saved as " + fileName)
-				}
-			}
 		}
+		return img, err
 	}
-
-	return err
+	return nil, err
 }
