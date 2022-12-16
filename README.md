@@ -38,6 +38,7 @@ Please see the cmd/examples directory for usage examples.
 - Added GetStaticCameraPicture()
 - Exposed a few image functions
 - Fixed eSpeak TTS: now the proper language voice is used 
+- Bugfix: Using events with wirepod crashes the application
 
 +***RELEASE_ALPHA_14***
 - Bugfix: TextOnImg uses an hardcoded data path
