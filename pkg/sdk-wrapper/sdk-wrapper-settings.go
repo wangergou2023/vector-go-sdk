@@ -13,7 +13,8 @@ import (
 )
 
 type CustomSettings struct {
-	RobotName string `json:"RobotName"`
+	RobotName  string `json:"RobotName"`
+	ChatTarget string `json:"ChatTarget"`
 }
 
 var settings map[string]interface{}
@@ -42,7 +43,10 @@ func RefreshSDKSettings() {
 	settingsJSON := getSDKSettings()
 	customSettingsJSON, err := getCustomSettings()
 	if err != nil {
-		customSettings = CustomSettings{RobotName: ""}
+		customSettings = CustomSettings{
+			RobotName:  "",
+			ChatTarget: "",
+		}
 	}
 	//println(string(customSettingsJSON))
 	//println(string(settingsJSON))
@@ -143,6 +147,15 @@ func SetRobotName(name string) {
 
 func GetRobotName() string {
 	return customSettings.RobotName
+}
+
+func SetChatTarget(name string) {
+	customSettings.ChatTarget = name
+	SaveCustomSettings()
+}
+
+func GetChatTarget() string {
+	return customSettings.ChatTarget
 }
 
 func GetCustomSettings() *CustomSettings {

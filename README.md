@@ -34,6 +34,9 @@ Please see the cmd/examples directory for usage examples.
 
 ## Changelog 
 
++***RELEASE_ALPHA_16***
+- Added SetChatTarget() and GetChatTarget() to save username with whom this bot is chatting with
+
 +***RELEASE_ALPHA_15***
 - Added GetStaticCameraPicture()
 - Exposed a few image functions
