@@ -34,6 +34,9 @@ Please see the cmd/examples directory for usage examples.
 
 ## Changelog 
 
++***RELEASE_ALPHA_17***
+- Added a couple of extra fields in custom settings to use with VIM chat
+
 +***RELEASE_ALPHA_16***
 - Added SetChatTarget() and GetChatTarget() to save username with whom this bot is chatting with
 

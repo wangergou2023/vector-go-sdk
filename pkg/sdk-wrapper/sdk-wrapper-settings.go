@@ -13,8 +13,10 @@ import (
 )
 
 type CustomSettings struct {
-	RobotName  string `json:"RobotName"`
-	ChatTarget string `json:"ChatTarget"`
+	RobotName           string `json:"RobotName"`
+	ChatTarget          string `json:"ChatTarget"`
+	LoggedInToChat      bool   `json:"LoggedInToChat"`
+	LastChatMessageRead int32  `json:"LastChatMessageRead"`
 }
 
 var settings map[string]interface{}
@@ -44,8 +46,9 @@ func RefreshSDKSettings() {
 	customSettingsJSON, err := getCustomSettings()
 	if err != nil {
 		customSettings = CustomSettings{
-			RobotName:  "",
-			ChatTarget: "",
+			RobotName:      "",
+			ChatTarget:     "",
+			LoggedInToChat: false,
 		}
 	}
 	//println(string(customSettingsJSON))
