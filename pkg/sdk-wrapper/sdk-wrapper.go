@@ -83,7 +83,9 @@ func InitSDKForWirepod(serial string) error {
 		nvmPath = SDKConfig.NvmPath
 	}
 	SetSDKPaths(tmpPath, dataPath, nvmPath)
-	print("Completing init with paths TMP:" + tmpPath + ", DATA:" + dataPath + ", NVM:" + nvmPath)
+	println("Completing init with paths TMP:" + tmpPath + ", DATA:" + dataPath + ", NVM:" + nvmPath)
+	// Using this call to force Vector to save its settings to JDocs, so then we can read them
+	SetLocale("en-US")
 	return RefreshSDKSettings()
 }
 
