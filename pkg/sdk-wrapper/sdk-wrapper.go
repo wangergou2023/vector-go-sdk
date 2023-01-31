@@ -84,8 +84,12 @@ func InitSDKForWirepod(serial string) error {
 	}
 	SetSDKPaths(tmpPath, dataPath, nvmPath)
 	println("Completing init with paths TMP:" + tmpPath + ", DATA:" + dataPath + ", NVM:" + nvmPath)
-	// Using this call to force Vector to save its settings to JDocs, so then we can read them
-	SetLocale("en-US")
+
+	_, err = Robot.Conn.BatteryState(ctx, &vectorpb.BatteryStateRequest{})
+	if err != nil {
+		println("ERROR pingin JDOCs, likely the robot is unuthenticated")
+		return err
+	}
 	return RefreshSDKSettings()
 }
 
