@@ -93,6 +93,7 @@ func NewWP(serial string) (*Vector, error) {
 	for _, robot := range robotSDKInfo.Robots {
 		if strings.TrimSpace(strings.ToLower(robot.Esn)) == strings.TrimSpace(strings.ToLower(serial)) {
 			cfg.Target = robot.IPAddress + ":443"
+			cfg.Token = robot.GUID
 			matched = true
 		}
 	}
@@ -117,7 +118,7 @@ func NewWP(serial string) (*Vector, error) {
 	return New(
 		WithTarget(cfg.Target),
 		WithSerialNo(cfg.SerialNo),
-		WithToken(robotSDKInfo.GlobalGUID),
+		WithToken(cfg.Token),
 	)
 }
 
