@@ -83,8 +83,8 @@ func InitSDKForWirepod(serial string) error {
 		nvmPath = SDKConfig.NvmPath
 	}
 	SetSDKPaths(tmpPath, dataPath, nvmPath)
-	RefreshSDKSettings()
-	return nil
+	print("Completing init with paths TMP:" + tmpPath + ", DATA:" + dataPath + ", NVM:" + nvmPath)
+	return RefreshSDKSettings()
 }
 
 func SetSDKPaths(tmpPath string, dataPath string, nvmPath string) {

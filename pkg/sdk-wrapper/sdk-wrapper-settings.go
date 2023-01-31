@@ -41,10 +41,15 @@ var customSettings CustomSettings
 }
 */
 
-func RefreshSDKSettings() {
-	settingsJSON := getSDKSettings()
+func RefreshSDKSettings() error {
+	settingsJSON, err := getSDKSettings()
+	if err != nil {
+		log.Println("ERROR: Could not load Vector settings from JDOCS")
+		return err
+	}
 	customSettingsJSON, err := getCustomSettings()
 	if err != nil {
+		log.Println("WARNING: Could not load Vector custom settings, creating a blank file")
 		customSettings = CustomSettings{
 			RobotName:      "",
 			ChatTarget:     "",
@@ -57,6 +62,7 @@ func RefreshSDKSettings() {
 	json.Unmarshal([]byte(settingsJSON), &settings)
 	json.Unmarshal([]byte(customSettingsJSON), &customSettings)
 	refreshLanguage()
+	return nil
 }
 
 func GetVectorSettings() map[string]interface{} {
@@ -180,15 +186,15 @@ func SetSettingSDKstring(setting string, value string) {
 /*                                                PRIVATE FUNCTIONS                                     */
 /********************************************************************************************************/
 
-func getSDKSettings() []byte {
+func getSDKSettings() ([]byte, error) {
 	resp, err := Robot.Conn.PullJdocs(ctx, &vectorpb.PullJdocsRequest{
 		JdocTypes: []vectorpb.JdocType{vectorpb.JdocType_ROBOT_SETTINGS},
 	})
 	if err != nil {
-		return []byte(err.Error())
+		return nil, err
 	}
 	json := resp.NamedJdocs[0].Doc.JsonDoc
-	return []byte(json)
+	return []byte(json), nil
 }
 
 func setSettingSDKStringHelper(payload string) {

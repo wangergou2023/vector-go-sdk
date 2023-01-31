@@ -112,6 +112,7 @@ func NewWP(serial string) (*Vector, error) {
 	}
 
 	cfg.SerialNo = serial
+	log.Println("Creating EP connection with robot on address " + cfg.Target + ", serialNo " + cfg.SerialNo + ", GUID " + robotSDKInfo.GlobalGUID)
 
 	return New(
 		WithTarget(cfg.Target),
