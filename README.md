@@ -34,6 +34,9 @@ Please see the cmd/examples directory for usage examples.
 
 ## Changelog 
 
++***RELEASE_ALPHA_18***
+- Fix InitSDKForWirepod() function 
+
 +***RELEASE_ALPHA_17***
 - Added a couple of extra fields in custom settings to use with VIM chat
 

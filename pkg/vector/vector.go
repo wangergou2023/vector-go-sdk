@@ -62,6 +62,8 @@ type RobotSDKInfoStore struct {
 	Robots     []struct {
 		Esn       string `json:"esn"`
 		IPAddress string `json:"ip_address"`
+		GUID      string `json:"guid"`
+		Activated bool   `json:"activated"`
 	} `json:"robots"`
 }
 
