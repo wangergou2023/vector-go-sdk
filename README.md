@@ -34,6 +34,9 @@ Please see the cmd/examples directory for usage examples.
 
 ## Changelog 
 
++***RELEASE_ALPHA_19***
+- GetEyeColor() in case of custom eye colors returns always full white
+
 +***RELEASE_ALPHA_18***
 - Fix InitSDKForWirepod() function 
 

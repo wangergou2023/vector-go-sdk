@@ -24,6 +24,7 @@ func main() {
 	for {
 		select {
 		case <-start:
+			sdk_wrapper.GetEyeColor()
 			sdk_wrapper.MoveHead(3.0)
 			for l := 1; l < 64; l++ {
 				sdk_wrapper.WriteText("TEXT", float64(l), true, 30, true)

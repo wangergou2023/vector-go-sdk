@@ -81,8 +81,7 @@ func GetEyeColor() color.RGBA {
 		customEyeColorHue := customEyeColor["hue"].(float64)
 		customEyeColorSaturation := customEyeColor["saturation"].(float64)
 		//println(fmt.Sprintf("HUE/SAT: %0f,%f", customEyeColorHue, customEyeColorSaturation))
-
-		eyeColor.R, eyeColor.G, eyeColor.B = colorutil.HslToRgb(customEyeColorHue, customEyeColorSaturation, 1.0)
+		eyeColor.R, eyeColor.G, eyeColor.B = colorutil.HslToRgb(customEyeColorHue*360, customEyeColorSaturation, 0.5)
 	} else {
 		switch presetEyeColor {
 		case float64(vectorpb.EyeColor_value["TIP_OVER_TEAL"]):
