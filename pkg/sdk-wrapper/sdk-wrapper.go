@@ -243,6 +243,7 @@ func DownloadFile(filepath string, url string) (error, string) {
 	defer resp.Body.Close()
 
 	contentDisposition := resp.Header.Get("Content-Disposition")
+	println(contentDisposition)
 	line := strings.Split(contentDisposition, "=")
 	fNameFromWeb := line[1]
 
