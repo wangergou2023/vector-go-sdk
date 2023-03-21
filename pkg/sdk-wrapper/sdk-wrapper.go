@@ -243,7 +243,8 @@ func DownloadFile(filepath string, url string) (error, string) {
 	}
 	defer resp.Body.Close()
 
-	_, params, err := mime.ParseMediaType(`attachment;filename="foo.png"`)
+	contentDisposition := resp.Header.Get("Content-Disposition")
+	_, params, err := mime.ParseMediaType(contentDisposition)
 	fNameFromWeb := params["filename"]
 
 	// Create the file
