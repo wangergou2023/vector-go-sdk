@@ -125,9 +125,13 @@ func SayText(text string) {
 		} else if ttsEngine == TTS_ENGINE_VOICESERVER {
 			// Uses FakeYou voices
 			fName := path.Join(GetTempPath(), "TTS-"+GetRobotSerial()+".wav")
-			err, fName := DownloadFile(fName, "https://www.wondergarden.app/voiceserver/index.php/getText?text="+url.QueryEscape(text)+"&lang=en-US&voice=1")
+			theUrl := "https://www.wondergarden.app/voiceserver/index.php/getText?text=" + url.QueryEscape(text) + "&lang=en-US&voice=1"
+			println("Will save file " + fName)
+			println("Request url: " + theUrl)
+			err, fWebName := DownloadFile(fName, theUrl)
 			if err == nil {
-				if strings.HasSuffix(fName, ".mp3") {
+				println("Name from web: " + fWebName)
+				if strings.HasSuffix(fWebName, ".mp3") {
 					os.Rename(fName, path.Join(GetTempPath(), "TTS-"+GetRobotSerial()+".mp3"))
 				}
 				currentVolume := GetMasterVolume()
