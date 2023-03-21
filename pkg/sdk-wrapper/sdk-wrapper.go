@@ -10,7 +10,6 @@ import (
 	_ "image/png"
 	"io"
 	"log"
-	"mime"
 	"net/http"
 	"os"
 	"os/exec"
@@ -244,8 +243,8 @@ func DownloadFile(filepath string, url string) (error, string) {
 	defer resp.Body.Close()
 
 	contentDisposition := resp.Header.Get("Content-Disposition")
-	_, params, err := mime.ParseMediaType(contentDisposition)
-	fNameFromWeb := params["filename"]
+	line := strings.Split(contentDisposition, "=")
+	fNameFromWeb := line[1]
 
 	// Create the file
 	out, err := os.Create(filepath)
