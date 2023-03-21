@@ -244,7 +244,7 @@ func DownloadFile(filepath string, url string) (error, string) {
 
 	contentDisposition := resp.Header.Get("Content-Disposition")
 	println(contentDisposition)
-	line := strings.Split(contentDisposition, "=")
+	line := strings.Split(contentDisposition, "=\"")
 	fNameFromWeb := line[1]
 
 	// Create the file

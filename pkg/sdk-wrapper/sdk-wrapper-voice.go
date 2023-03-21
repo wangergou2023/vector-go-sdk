@@ -126,8 +126,8 @@ func SayText(text string) {
 			// Uses FakeYou voices
 			fName := path.Join(GetTempPath(), "TTS-"+GetRobotSerial()+".wav")
 
-			// Yoda
-			theUrl := "https://www.wondergarden.app/voiceserver/index.php/getText?text=" + url.QueryEscape(text) + "&lang=en-US&voice=TM:fmspb239ea3a"
+			// Battle droid
+			theUrl := "https://www.wondergarden.app/voiceserver/index.php/getText?text=" + url.QueryEscape(text) + "&lang=en-US&voice=TM:x8kck28kthq7"
 
 			println("Will save file " + fName)
 			println("Request url: " + theUrl)
