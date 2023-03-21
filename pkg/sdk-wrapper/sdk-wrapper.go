@@ -8,7 +8,9 @@ import (
 	_ "image/gif"
 	_ "image/jpeg"
 	_ "image/png"
+	"io"
 	"log"
+	"mime"
 	"net/http"
 	"os"
 	"os/exec"
@@ -231,6 +233,29 @@ func GetDataPath(filename string) string {
 		dataPath = filepath.Join(dataPath, chunk)
 	}
 	return dataPath
+}
+
+func DownloadFile(filepath string, url string) (error, string) {
+	// Get the data
+	resp, err := http.Get(url)
+	if err != nil {
+		return err, ""
+	}
+	defer resp.Body.Close()
+
+	_, params, err := mime.ParseMediaType(`attachment;filename="foo.png"`)
+	fNameFromWeb := params["filename"]
+
+	// Create the file
+	out, err := os.Create(filepath)
+	if err != nil {
+		return err, fNameFromWeb
+	}
+	defer out.Close()
+
+	// Write the body to file
+	_, err = io.Copy(out, resp.Body)
+	return err, fNameFromWeb
 }
 
 /**********************************************************************************************************************/

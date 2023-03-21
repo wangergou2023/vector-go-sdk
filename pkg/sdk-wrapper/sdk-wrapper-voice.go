@@ -12,6 +12,7 @@ import (
 	htgotts "github.com/hegedustibor/htgo-tts"
 	"github.com/hegedustibor/htgo-tts/handlers"
 	"github.com/hegedustibor/htgo-tts/voices"
+	"net/url"
 	"os"
 	"path"
 	"strings"
@@ -30,11 +31,12 @@ const LANGUAGE_CHINESE = voices.Chinese
 
 const TTS_ENGINE_HTGO = 0
 const TTS_ENGINE_ESPEAK = 1
-const TTS_ENGINE_MAX = TTS_ENGINE_ESPEAK
+const TTS_ENGINE_VOICESERVER = 2
+const TTS_ENGINE_MAX = TTS_ENGINE_VOICESERVER
 
 var language string = LANGUAGE_ENGLISH
 var eSpeakLang string = "en"
-var ttsEngine = TTS_ENGINE_ESPEAK
+var ttsEngine = TTS_ENGINE_VOICESERVER
 
 func InitLanguages(language string) {
 	// Here we should get the master volume level...
@@ -81,7 +83,7 @@ func SetTTSEngine(TTSEngine int) {
 }
 
 func SayText(text string) {
-	useNativeTTS := true
+	useNativeTTS := false // Use web TTS also for English
 	if language == LANGUAGE_ITALIAN ||
 		language == LANGUAGE_SPANISH ||
 		language == LANGUAGE_FRENCH ||
@@ -108,7 +110,7 @@ func SayText(text string) {
 			PlaySound(path.Join(GetTempPath(), fName+".mp3"))
 			SetMasterVolume(currentVolume)
 			os.Remove(path.Join(GetTempPath(), fName+".mp3"))
-		} else {
+		} else if ttsEngine == TTS_ENGINE_ESPEAK {
 			// Speex, more robotic. Chinese, Japanese and Russian are not directly supported
 			fName := path.Join(GetTempPath(), "TTS-"+GetRobotSerial()+".wav")
 			cmdData := "espeak " + "\"" + text + "\"" + " -l " + eSpeakLang + " -w " + fName + " echo 20 75 pitch 82 74"
@@ -118,6 +120,20 @@ func SayText(text string) {
 				println("ESPEAK ERROR " + err.Error())
 			} else {
 				PlaySound(fName)
+				os.Remove(fName)
+			}
+		} else if ttsEngine == TTS_ENGINE_VOICESERVER {
+			// Uses FakeYou voices
+			fName := path.Join(GetTempPath(), "TTS-"+GetRobotSerial()+".wav")
+			err, fName := DownloadFile(fName, "https://www.wondergarden.app/voiceserver/index.php/getText?text="+url.QueryEscape(text)+"&lang=en-US&voice=1")
+			if err == nil {
+				if strings.HasSuffix(fName, ".mp3") {
+					os.Rename(fName, path.Join(GetTempPath(), "TTS-"+GetRobotSerial()+".mp3"))
+				}
+				currentVolume := GetMasterVolume()
+				SetMasterVolume(VOLUME_LEVEL_MAXIMUM)
+				PlaySound(fName)
+				SetMasterVolume(currentVolume)
 				os.Remove(fName)
 			}
 		}
