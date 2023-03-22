@@ -56,6 +56,8 @@ func RefreshSDKSettings() error {
 			RobotName:      "",
 			ChatTarget:     "",
 			LoggedInToChat: false,
+			TTSEngine:      TTS_ENGINE_NATIVE,
+			TTSVoice:       TTS_ENGINE_VOICESERVER_VOICE_ENGLISH_DEFAULT,
 		}
 	}
 	//println(string(customSettingsJSON))
@@ -171,6 +173,7 @@ func GetChatTarget() string {
 func SetTTSConfiguration(ttsEngine int, ttsVoice string) {
 	customSettings.TTSEngine = ttsEngine
 	customSettings.TTSVoice = ttsVoice
+	refreshLanguage()
 	SaveCustomSettings()
 }
 
@@ -183,6 +186,7 @@ func GetCustomSettings() *CustomSettings {
 }
 
 func SaveCustomSettings() {
+	refreshLanguage()
 	file, _ := json.Marshal(GetCustomSettings())
 	_ = os.WriteFile(GetMyStoragePath("custom_settings.json"), file, 0644)
 }

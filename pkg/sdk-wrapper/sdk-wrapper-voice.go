@@ -201,6 +201,8 @@ func refreshLanguage() {
 	} else {
 		SetLanguage(LANGUAGE_ENGLISH)
 	}
+	SetTTSEngine(customSettings.TTSEngine)
+	SetTTSVoice(customSettings.TTSVoice)
 }
 
 func sayText(text string) {
