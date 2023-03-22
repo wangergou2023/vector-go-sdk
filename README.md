@@ -34,6 +34,10 @@ Please see the cmd/examples directory for usage examples.
 
 ## Changelog 
 
++***RELEASE_ALPHA_20***
+- Improved TTS support. Added custom voice server that provides custom voices from different providers 
+  (currently only using FakeYou.com)
+
 +***RELEASE_ALPHA_19***
 - GetEyeColor() in case of custom eye colors returns always full white
 

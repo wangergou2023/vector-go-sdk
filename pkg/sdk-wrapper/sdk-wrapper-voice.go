@@ -35,9 +35,19 @@ const TTS_ENGINE_VOICESERVER = 2
 const TTS_ENGINE_NATIVE = 3
 const TTS_ENGINE_MAX = TTS_ENGINE_NATIVE
 
+const TTS_ENGINE_VOICESERVER_VOICE_ENGLISH_DEFAULT = "TM:x8kck28kthq7"
+const TTS_ENGINE_VOICESERVER_VOICE_ENGLISH_BATTLEDROID = "TM:x8kck28kthq7"
+const TTS_ENGINE_VOICESERVER_VOICE_ENGLISH_WEDNESDAY = "TM:pqv7261xqhjk"
+const TTS_ENGINE_VOICESERVER_VOICE_ENGLISH_VOLDEMORT = "TM:nczpqg58jj6n"
+const TTS_ENGINE_VOICESERVER_VOICE_ITALIAN_WANNA_MARCHI = "TM:rdejatdh1r6h"
+const TTS_ENGINE_VOICESERVER_VOICE_GERMAN_WOLFF_FUSS = "TM:pdp9dhyra0ph"
+const TTS_ENGINE_VOICESERVER_VOICE_FRENCH_BUGS_BUNNY = "TM:xn0ps57a5akf"
+const TTS_ENGINE_VOICESERVER_VOICE_SPANISH_BURRO_DE_SHREK = "TM:09awctyevpey"
+
 var language string = LANGUAGE_ENGLISH
 var eSpeakLang string = "en"
-var ttsEngine = TTS_ENGINE_VOICESERVER
+var ttsEngine = TTS_ENGINE_NATIVE
+var ttsVoice = TTS_ENGINE_VOICESERVER_VOICE_ENGLISH_DEFAULT
 
 func InitLanguages(language string) {
 	// Here we should get the master volume level...
@@ -68,8 +78,25 @@ func SetLanguage(lang string) {
 	}
 }
 
+func SetTTSVoice(voice string) {
+	ttsVoice = voice
+}
+
 func GetLanguage() string {
 	return language
+}
+
+func GetLanguageAndCountry() string {
+	if language == "it" {
+		return "it-IT"
+	} else if language == "es" {
+		return "es-ES"
+	} else if language == "fr" {
+		return "fr-FR"
+	} else if language == "de" {
+		return "de-DE"
+	}
+	return "en-US"
 }
 
 func GetLanguageISO2() string {
@@ -105,16 +132,20 @@ func SayText(text string) {
 		if err != nil {
 			println("ESPEAK ERROR " + err.Error())
 		} else {
+			currentVolume := GetMasterVolume()
+			SetMasterVolume(VOLUME_LEVEL_MAXIMUM)
 			PlaySound(fName)
+			SetMasterVolume(currentVolume)
 			os.Remove(fName)
 		}
 		break
 	case TTS_ENGINE_VOICESERVER:
 		// Uses FakeYou voices
 		fName := path.Join(GetTempPath(), "TTS-"+GetRobotSerial()+".wav")
+		vsLanguage := GetLanguageAndCountry()
 
 		// Battle droid
-		theUrl := "https://www.wondergarden.app/voiceserver/index.php/getText?text=" + url.QueryEscape(text) + "&lang=en-US&voice=TM:x8kck28kthq7"
+		theUrl := "https://www.wondergarden.app/voiceserver/index.php/getText?text=" + url.QueryEscape(text) + "&lang=" + vsLanguage + "&voice=" + ttsVoice
 
 		println("Will save file " + fName)
 		println("Request url: " + theUrl)
