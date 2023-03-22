@@ -32,7 +32,8 @@ const LANGUAGE_CHINESE = voices.Chinese
 const TTS_ENGINE_HTGO = 0
 const TTS_ENGINE_ESPEAK = 1
 const TTS_ENGINE_VOICESERVER = 2
-const TTS_ENGINE_MAX = TTS_ENGINE_VOICESERVER
+const TTS_ENGINE_NATIVE = 3
+const TTS_ENGINE_MAX = TTS_ENGINE_NATIVE
 
 var language string = LANGUAGE_ENGLISH
 var eSpeakLang string = "en"
@@ -83,67 +84,57 @@ func SetTTSEngine(TTSEngine int) {
 }
 
 func SayText(text string) {
-	useNativeTTS := false // Use web TTS also for English
-	if language == LANGUAGE_ITALIAN ||
-		language == LANGUAGE_SPANISH ||
-		language == LANGUAGE_FRENCH ||
-		language == LANGUAGE_GERMAN ||
-		language == LANGUAGE_PORTUGUESE ||
-		language == LANGUAGE_DUTCH ||
-		language == LANGUAGE_RUSSIAN ||
-		language == LANGUAGE_JAPANESE ||
-		language == LANGUAGE_CHINESE {
-		useNativeTTS = false
-	}
+	switch ttsEngine {
+	case TTS_ENGINE_HTGO:
+		// Uses Google voices
+		fName := "TTS-" + GetRobotSerial()
+		speech := htgotts.Speech{Folder: GetTempPath(), Language: language, Handler: &handlers.Native{}}
+		speech.CreateSpeechFile(text, fName)
+		currentVolume := GetMasterVolume()
+		SetMasterVolume(VOLUME_LEVEL_MAXIMUM)
+		PlaySound(path.Join(GetTempPath(), fName+".mp3"))
+		SetMasterVolume(currentVolume)
+		os.Remove(path.Join(GetTempPath(), fName+".mp3"))
+		break
+	case TTS_ENGINE_ESPEAK:
+		// Speex, more robotic. Chinese, Japanese and Russian are not directly supported
+		fName := path.Join(GetTempPath(), "TTS-"+GetRobotSerial()+".wav")
+		cmdData := "espeak " + "\"" + text + "\"" + " -l " + eSpeakLang + " -w " + fName + " echo 20 75 pitch 82 74"
+		//println(cmdData)
+		_, _, err := shellout(cmdData)
+		if err != nil {
+			println("ESPEAK ERROR " + err.Error())
+		} else {
+			PlaySound(fName)
+			os.Remove(fName)
+		}
+		break
+	case TTS_ENGINE_VOICESERVER:
+		// Uses FakeYou voices
+		fName := path.Join(GetTempPath(), "TTS-"+GetRobotSerial()+".wav")
 
-	if useNativeTTS {
-		sayText(text)
-	} else {
-		//println("Saying " + text + " in language=" + language)
-		if ttsEngine == TTS_ENGINE_HTGO {
-			// Uses Google voices
-			fName := "TTS-" + GetRobotSerial()
-			speech := htgotts.Speech{Folder: GetTempPath(), Language: language, Handler: &handlers.Native{}}
-			speech.CreateSpeechFile(text, fName)
+		// Battle droid
+		theUrl := "https://www.wondergarden.app/voiceserver/index.php/getText?text=" + url.QueryEscape(text) + "&lang=en-US&voice=TM:x8kck28kthq7"
+
+		println("Will save file " + fName)
+		println("Request url: " + theUrl)
+		err, fWebName := DownloadFile(fName, theUrl)
+		if err == nil {
+			println("Name from web: " + fWebName)
+			if strings.HasSuffix(fWebName, ".mp3") {
+				os.Rename(fName, path.Join(GetTempPath(), "TTS-"+GetRobotSerial()+".mp3"))
+			}
 			currentVolume := GetMasterVolume()
 			SetMasterVolume(VOLUME_LEVEL_MAXIMUM)
-			PlaySound(path.Join(GetTempPath(), fName+".mp3"))
+			PlaySound(fName)
 			SetMasterVolume(currentVolume)
-			os.Remove(path.Join(GetTempPath(), fName+".mp3"))
-		} else if ttsEngine == TTS_ENGINE_ESPEAK {
-			// Speex, more robotic. Chinese, Japanese and Russian are not directly supported
-			fName := path.Join(GetTempPath(), "TTS-"+GetRobotSerial()+".wav")
-			cmdData := "espeak " + "\"" + text + "\"" + " -l " + eSpeakLang + " -w " + fName + " echo 20 75 pitch 82 74"
-			//println(cmdData)
-			_, _, err := shellout(cmdData)
-			if err != nil {
-				println("ESPEAK ERROR " + err.Error())
-			} else {
-				PlaySound(fName)
-				os.Remove(fName)
-			}
-		} else if ttsEngine == TTS_ENGINE_VOICESERVER {
-			// Uses FakeYou voices
-			fName := path.Join(GetTempPath(), "TTS-"+GetRobotSerial()+".wav")
-
-			// Battle droid
-			theUrl := "https://www.wondergarden.app/voiceserver/index.php/getText?text=" + url.QueryEscape(text) + "&lang=en-US&voice=TM:x8kck28kthq7"
-
-			println("Will save file " + fName)
-			println("Request url: " + theUrl)
-			err, fWebName := DownloadFile(fName, theUrl)
-			if err == nil {
-				println("Name from web: " + fWebName)
-				if strings.HasSuffix(fWebName, ".mp3") {
-					os.Rename(fName, path.Join(GetTempPath(), "TTS-"+GetRobotSerial()+".mp3"))
-				}
-				currentVolume := GetMasterVolume()
-				SetMasterVolume(VOLUME_LEVEL_MAXIMUM)
-				PlaySound(fName)
-				SetMasterVolume(currentVolume)
-				os.Remove(fName)
-			}
+			os.Remove(fName)
 		}
+		break
+	default:
+	case TTS_ENGINE_NATIVE:
+		sayText(text)
+		break
 	}
 }
 

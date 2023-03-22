@@ -3,8 +3,8 @@ package main
 import (
 	"context"
 	"flag"
+	sdk_wrapper "github.com/fforchino/vector-go-sdk/pkg/sdk-wrapper"
 	"github.com/fforchino/vector-go-sdk/pkg/vector"
-	"github.com/fforchino/vector-go-sdk/pkg/vectorpb"
 	"log"
 )
 
@@ -54,14 +54,7 @@ func main() {
 			"she begged him to write and tell her that he was well"
 			"she refused to hold him even by a thread"
 			*/
-			_, _ = v.Conn.SayText(
-				ctx,
-				&vectorpb.SayTextRequest{
-					Text:           "she refused to hold him even by a thread",
-					UseVectorVoice: true,
-					DurationScalar: 1.0,
-				},
-			)
+			sdk_wrapper.SayText("Hello, world. I really want to explore!")
 			stop <- true
 			return
 		}
