@@ -17,6 +17,8 @@ type CustomSettings struct {
 	ChatTarget          string `json:"ChatTarget"`
 	LoggedInToChat      bool   `json:"LoggedInToChat"`
 	LastChatMessageRead int32  `json:"LastChatMessageRead"`
+	TTSEngine           int    `json:"TTSEngine"`
+	TTSVoice            string `json:"TTSVoice"`
 }
 
 var settings map[string]interface{}
@@ -164,6 +166,16 @@ func SetChatTarget(name string) {
 
 func GetChatTarget() string {
 	return customSettings.ChatTarget
+}
+
+func SetTTSConfiguration(ttsEngine int, ttsVoice string) {
+	customSettings.TTSEngine = ttsEngine
+	customSettings.TTSVoice = ttsVoice
+	SaveCustomSettings()
+}
+
+func GetTTSConfiguration() (int, string) {
+	return customSettings.TTSEngine, customSettings.TTSVoice
 }
 
 func GetCustomSettings() *CustomSettings {
