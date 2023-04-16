@@ -1,0 +1,14 @@
+syntax = "proto3";
+
+package Anki.Vector.oskr;
+
+service OSKRService {
+  rpc GetWifiSignalStrength (WifiSignalStrengthRequest) returns (WifiSignalStrengthResponse);
+}
+
+message WifiSignalStrengthRequest {
+}
+
+message WifiSignalStrengthResponse {
+  int32 signal_strength = 1;
+}

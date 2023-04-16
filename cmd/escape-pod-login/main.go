@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"encoding/json"
+	"flag"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -24,37 +25,36 @@ const (
 )
 
 func main() {
-	var robotName = "Vector-R8H6"               //flag.String("name", "", "Vector's name")
-	var host = "192.168.43.216"                 //flag.String("host", "", "Vector's IP address")
-	var serial = "005070ac"                     //flag.String("serial", "", "Vector's serial number")
-	var username = "filippo.forchino@gmail.com" //flag.String("username", "", "Anki account username")
-	var password = "Suka99!!!"                  //flag.String("password", "", "Anki account password")
-	/*
-		flag.Parse()
-		if *robotName == "" {
-			log.Fatal("please use the -name argument and set it to your robot name")
-		}
-		if *host == "" {
-			log.Fatal("please use the -host argument and set it to your robots IP address")
-		}
-		if *serial == "" {
-			log.Fatal("please use the -serial argument and set it to your robots serial number")
-		}
-		if *username == "" {
-			log.Fatal("please use the -username argument and set it to your anki account username")
-		}
-		if *password == "" {
-			log.Fatal("please use the -password argument and set it to your anki account password")
-		}
-	*/
-	var certFile = download_certificate(serial, "./")
+	var robotName = flag.String("name", "", "Vector's name")
+	var host = flag.String("host", "", "Vector's IP address")
+	var serial = flag.String("serial", "", "Vector's serial number")
+	var username = flag.String("username", "", "Anki account username")
+	var password = flag.String("password", "", "Anki account password")
+	flag.Parse()
+	if *robotName == "" {
+		log.Fatal("please use the -name argument and set it to your robot name")
+	}
+	if *host == "" {
+		log.Fatal("please use the -host argument and set it to your robots IP address")
+	}
+	if *serial == "" {
+		log.Fatal("please use the -serial argument and set it to your robots serial number")
+	}
+	if *username == "" {
+		log.Fatal("please use the -username argument and set it to your anki account username")
+	}
+	if *password == "" {
+		log.Fatal("please use the -password argument and set it to your anki account password")
+	}
+
+	var certFile = download_certificate(*serial, "./")
 	var cert, _ = ioutil.ReadFile(certFile)
-	var token = get_session_token(username, password)
+	var token = get_session_token(*username, *password)
 	st := token["session"].(map[string]interface{})
 	stt := []byte(fmt.Sprintf("%s", st["session_token"]))
 	print("Session token: " + string(stt) + "\n\n")
 
-	guid, err := user_authentication(stt, cert, host, robotName)
+	guid, err := user_authentication(stt, cert, *host, *robotName)
 
 	if err != nil {
 		log.Fatal(err)
