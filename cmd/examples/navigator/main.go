@@ -4,10 +4,10 @@ import (
 	"context"
 	"flag"
 	"fmt"
+	"github.com/fforchino/vector-go-sdk/pkg/oskrpb"
 	sdk_wrapper "github.com/fforchino/vector-go-sdk/pkg/sdk-wrapper"
-	"os/exec"
-	"regexp"
-	"strconv"
+	"google.golang.org/grpc"
+	"log"
 	"time"
 )
 
@@ -24,8 +24,17 @@ func main() {
 	flag.Parse()
 
 	sdk_wrapper.InitSDK(*serial)
+	conn, err := grpc.Dial(sdk_wrapper.Robot.Cfg.Target+":50051", grpc.WithInsecure(), grpc.WithBlock())
+	if err != nil {
+		log.Fatalf("did not connect: %v", err)
+	}
+	defer conn.Close()
+	client := oskrpb.NewOSKRServiceClient(conn)
 
-	ctx := context.Background()
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+	defer cancel()
+
+	ctx = context.Background()
 	start := make(chan bool)
 	stop := make(chan bool)
 
@@ -36,19 +45,26 @@ func main() {
 	for {
 		select {
 		case <-start:
-			Navigate()
+			Navigate(ctx, client)
 			stop <- true
 			return
 		}
 	}
 }
 
-func Navigate() {
+func Navigate(ctx context.Context, client oskrpb.OSKRServiceClient) {
 	maxSignal := 0
 	prevSignal := 0
 	for {
 		proximity := GetProximitySensorData()
-		wifiSignal := GetWifiSignalStrength()
+
+		// Get wifi signal strength using grpc
+		wifiSignalRes, err := client.GetWifiSignalStrength(ctx, &oskrpb.WifiSignalStrengthRequest{})
+		if err != nil {
+			log.Fatalf("could not get signal strength: %v", err)
+		}
+		wifiSignal := int(wifiSignalRes.GetSignalStrength())
+		log.Printf("Wifi signal strength: %d", wifiSignal)
 
 		if wifiSignal > maxSignal {
 			maxSignal = wifiSignal
@@ -75,41 +91,10 @@ func Navigate() {
 
 func MoveRobot(leftSpeed int, rightSpeed int) {
 	// Placeholder for the API call
+	//sdk_wrapper.DriveWheelsForward(float32(leftSpeed), float32(rightSpeed), 1, 1)
 }
 
 func GetProximitySensorData() int {
 	// Placeholder for the API call
 	return 0
-}
-
-func GetWifiSignalStrength() int {
-	cmd := exec.Command("sh", "-c", "iwconfig wlan0 | grep -i --color signal")
-	output, err := cmd.Output()
-	if err != nil {
-		fmt.Println("Error executing command:", err)
-		return 0
-	}
-
-	signalRegexp := regexp.MustCompile(`Signal level=(-?\d+) dBm`)
-	matches := signalRegexp.FindStringSubmatch(string(output))
-	if len(matches) < 2 {
-		fmt.Println("Error parsing signal level")
-		return 0
-	}
-
-	signal, err := strconv.Atoi(matches[1])
-	if err != nil {
-		fmt.Println("Error converting signal level to integer:", err)
-		return 0
-	}
-
-	// Convert dBm to a percentage value between 0 and WIFI_MAX
-	percentage := int((float64(signal+100) / 70) * float64(WIFI_MAX))
-	if percentage < 0 {
-		percentage = 0
-	} else if percentage > WIFI_MAX {
-		percentage = WIFI_MAX
-	}
-
-	return percentage
 }
