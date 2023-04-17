@@ -1,5 +1,7 @@
 package main
 
+// This requires
+
 import (
 	"context"
 	"flag"
@@ -8,6 +10,7 @@ import (
 	sdk_wrapper "github.com/fforchino/vector-go-sdk/pkg/sdk-wrapper"
 	"google.golang.org/grpc"
 	"log"
+	"strings"
 	"time"
 )
 
@@ -23,12 +26,17 @@ func main() {
 	var serial = flag.String("serial", "", "Vector's Serial Number")
 	flag.Parse()
 
+	fmt.Println("Init SDK")
 	sdk_wrapper.InitSDK(*serial)
-	conn, err := grpc.Dial(sdk_wrapper.Robot.Cfg.Target+":50051", grpc.WithInsecure(), grpc.WithBlock())
+	targetIP := strings.Split(sdk_wrapper.Robot.Cfg.Target, ":")[0]
+	fmt.Println("Dialling OSKR @ " + targetIP + ":50051")
+	conn, err := grpc.Dial(targetIP+":50051", grpc.WithInsecure(), grpc.WithBlock())
 	if err != nil {
 		log.Fatalf("did not connect: %v", err)
+		fmt.Println("did not connect: %v", err)
 	}
 	defer conn.Close()
+	fmt.Println("Open client connection")
 	client := oskrpb.NewOSKRServiceClient(conn)
 
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
@@ -45,6 +53,7 @@ func main() {
 	for {
 		select {
 		case <-start:
+			fmt.Println("Start navigation")
 			Navigate(ctx, client)
 			stop <- true
 			return
@@ -90,11 +99,10 @@ func Navigate(ctx context.Context, client oskrpb.OSKRServiceClient) {
 }
 
 func MoveRobot(leftSpeed int, rightSpeed int) {
-	// Placeholder for the API call
-	//sdk_wrapper.DriveWheelsForward(float32(leftSpeed), float32(rightSpeed), 1, 1)
+	sdk_wrapper.DriveWheelsForward(float32(leftSpeed), float32(rightSpeed), 1, 1)
 }
 
 func GetProximitySensorData() int {
 	// Placeholder for the API call
-	return 0
+	return 20
 }
