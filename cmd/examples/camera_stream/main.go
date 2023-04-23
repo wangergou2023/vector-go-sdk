@@ -6,7 +6,6 @@ import (
 	"flag"
 	"fmt"
 	"image"
-	// "image/color"
 	"image/jpeg"
 	"log"
 	"mime/multipart"
