@@ -34,6 +34,13 @@ Please see the cmd/examples directory for usage examples.
 
 ## Changelog 
 
++***RELEASE_ALPHA_21***
+- Added sdk-wrapper-oskr for OSKR-only functions:
+  - TriggerWakeWord() to trigger a voice input prompt on Vector
+- Added oskr.proto / oskr.pb.go, oskr_grpc.pb.go to allow communication with a custom grpc server to be run on OSKR
+  See an example in examples/navigator, this needs to be used in conjunction with the server counterpart that you can
+  find here: https://github.com/fforchino/vector-go-sdk-oskr-extensions
+
 +***RELEASE_ALPHA_20***
 - Improved TTS support. Added custom voice server that provides custom voices from different providers 
   (currently only using FakeYou.com)

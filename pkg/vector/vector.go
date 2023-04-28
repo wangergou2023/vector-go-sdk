@@ -20,6 +20,11 @@ type Vector struct {
 	Cfg  options
 }
 
+func (v *Vector) GetIPAddress() string {
+	targetIP := strings.Split(v.Cfg.Target, ":")[0]
+	return targetIP
+}
+
 // New returns either a vector struct, or an error on failure
 func New(opts ...Option) (*Vector, error) {
 	cfg := options{}

@@ -10,7 +10,7 @@ import (
 	sdk_wrapper "github.com/fforchino/vector-go-sdk/pkg/sdk-wrapper"
 	"google.golang.org/grpc"
 	"log"
-	"strings"
+	"strconv"
 	"time"
 )
 
@@ -22,13 +22,15 @@ const (
 	CHECK_INTERVAL = 100 * time.Millisecond
 )
 
+var DistanceCm int = 20
+
 func main() {
 	var serial = flag.String("serial", "", "Vector's Serial Number")
 	flag.Parse()
 
 	fmt.Println("Init SDK")
 	sdk_wrapper.InitSDK(*serial)
-	targetIP := strings.Split(sdk_wrapper.Robot.Cfg.Target, ":")[0]
+	targetIP := sdk_wrapper.Robot.GetIPAddress()
 	fmt.Println("Dialling OSKR @ " + targetIP + ":50051")
 	conn, err := grpc.Dial(targetIP+":50051", grpc.WithInsecure(), grpc.WithBlock())
 	if err != nil {
@@ -48,6 +50,25 @@ func main() {
 
 	go func() {
 		_ = sdk_wrapper.Robot.BehaviorControl(ctx, start, stop)
+	}()
+
+	go func() {
+		println("Listening for events...")
+		for {
+			evt := sdk_wrapper.WaitForEvent()
+			if evt != nil {
+				evtRobotState := evt.GetRobotState()
+				if evtRobotState != nil {
+					DistanceCm = int(evtRobotState.ProxData.DistanceMm) / 10
+					log.Printf(fmt.Sprintf("Proximity: Distance (mm) %d, Signal Quality %f, Unobstructed %s, found_object %s, is_lift_in_fov %s",
+						evtRobotState.ProxData.DistanceMm,
+						evtRobotState.ProxData.SignalQuality,
+						strconv.FormatBool(evtRobotState.ProxData.Unobstructed),
+						strconv.FormatBool(evtRobotState.ProxData.FoundObject),
+						strconv.FormatBool(evtRobotState.ProxData.IsLiftInFov)))
+				}
+			}
+		}
 	}()
 
 	for {
@@ -104,5 +125,5 @@ func MoveRobot(leftSpeed int, rightSpeed int) {
 
 func GetProximitySensorData() int {
 	// Placeholder for the API call
-	return 20
+	return DistanceCm
 }
