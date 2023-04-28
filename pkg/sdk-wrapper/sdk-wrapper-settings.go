@@ -19,6 +19,7 @@ type CustomSettings struct {
 	LastChatMessageRead int32  `json:"LastChatMessageRead"`
 	TTSEngine           int    `json:"TTSEngine"`
 	TTSVoice            string `json:"TTSVoice"`
+	GameInProgress      string `json:"GameInProgress"`
 }
 
 var settings map[string]interface{}
@@ -179,6 +180,15 @@ func SetTTSConfiguration(ttsEngine int, ttsVoice string) {
 
 func GetTTSConfiguration() (int, string) {
 	return customSettings.TTSEngine, customSettings.TTSVoice
+}
+
+func GetCurrentGame() string {
+	return customSettings.GameInProgress
+}
+
+func SetCurrentGame(gameName string) {
+	customSettings.GameInProgress = gameName
+	SaveCustomSettings()
 }
 
 func GetCustomSettings() *CustomSettings {

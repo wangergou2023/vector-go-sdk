@@ -34,6 +34,10 @@ Please see the cmd/examples directory for usage examples.
 
 ## Changelog 
 
++***RELEASE_ALPHA_22***
+- Added a custom setting for game in progress. This way a game can progress towards multiple STT invocations and its 
+  state can be made persistent
+
 +***RELEASE_ALPHA_21***
 - Added sdk-wrapper-oskr for OSKR-only functions:
   - TriggerWakeWord() to trigger a voice input prompt on Vector
