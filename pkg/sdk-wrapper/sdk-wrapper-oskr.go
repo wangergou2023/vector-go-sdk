@@ -13,6 +13,22 @@ func TriggerWakeWord() error {
 	return SetAnimProcessVariable("FakeButtonPressType", "1")
 }
 
+// Returns true if the bot is OSKR (or at least, development web servers are running so basic OSKR functions can be
+// executed), false otherwise
+
+func IsOSKR() bool {
+	isOSKR := false
+	ipAddr := Robot.GetIPAddress()
+	targetUrl := "http://" + ipAddr + ":8889"
+
+	resp, err := http.Get(targetUrl)
+	if err == nil {
+		isOSKR = true
+	}
+	defer resp.Body.Close()
+	return isOSKR
+}
+
 // Sets a variable exposed by the vic-anim process using the OSKR web server
 
 func SetAnimProcessVariable(key string, value string) error {

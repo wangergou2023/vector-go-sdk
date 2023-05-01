@@ -19,7 +19,7 @@ type CustomSettings struct {
 	LastChatMessageRead int32  `json:"LastChatMessageRead"`
 	TTSEngine           int    `json:"TTSEngine"`
 	TTSVoice            string `json:"TTSVoice"`
-	GameInProgress      string `json:"GameInProgress"`
+	CurrentGamedata     string `json:"CurrentGamedata"` // Put current game JSON data here, so that it will be preserved across multiple runs
 }
 
 var settings map[string]interface{}
@@ -182,12 +182,12 @@ func GetTTSConfiguration() (int, string) {
 	return customSettings.TTSEngine, customSettings.TTSVoice
 }
 
-func GetCurrentGame() string {
-	return customSettings.GameInProgress
+func GetCurrentGameData() string {
+	return customSettings.CurrentGamedata
 }
 
-func SetCurrentGame(gameName string) {
-	customSettings.GameInProgress = gameName
+func SetCurrentGameData(gameName string) {
+	customSettings.CurrentGamedata = gameName
 	SaveCustomSettings()
 }
 
