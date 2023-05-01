@@ -186,8 +186,8 @@ func GetCurrentGameData() string {
 	return customSettings.CurrentGamedata
 }
 
-func SetCurrentGameData(gameName string) {
-	customSettings.CurrentGamedata = gameName
+func SetCurrentGameData(gameData string) {
+	customSettings.CurrentGamedata = gameData
 	SaveCustomSettings()
 }
 
