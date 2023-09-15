@@ -8,10 +8,13 @@ import (
 	"github.com/fforchino/vector-go-sdk/pkg/vectorpb"
 	"google.golang.org/grpc"
 	"gopkg.in/ini.v1"
+	"io/ioutil"
 	"log"
+	"net/http"
 	"os"
 	"path/filepath"
 	"strings"
+	"time"
 )
 
 // Vector is the struct containing info about Vector
@@ -156,6 +159,76 @@ func NewEP(serial string) (*Vector, error) {
 	println(cfg.Token)
 	println(cfg.CertPath)
 	println(cfg.RobotName)
+
+	c, err := client.New(
+		client.WithTarget(cfg.Target),
+		client.WithInsecureSkipVerify(),
+	)
+	if err != nil {
+		return nil, err
+	}
+	if err := c.Connect(); err != nil {
+		return nil, err
+	}
+
+	return New(
+		WithSerialNo(cfg.SerialNo),
+		WithTarget(cfg.Target),
+		WithToken(cfg.Token),
+	)
+}
+
+// NewWpExternal returns either a vector struct for wirepod vector, or an error on failure
+// This function assumes that you are working with a wirepod setup (i.e. your robot is activated on wirepod, and you
+// have wirepod running on your local network)
+// it only needs the serial number and will retrieve rest of the data needed from wirepod API
+func NewWpExternal(serial string) (*Vector, error) {
+	cfg := options{}
+
+	const apiUrl = "http://escapepod.local/api-sdk/get_sdk_info"
+
+	httpClient := http.Client{
+		Timeout: time.Second * 2,
+	}
+
+	req, err := http.NewRequest(http.MethodGet, apiUrl, nil)
+	res, getErr := httpClient.Do(req)
+	if getErr != nil {
+		log.Println("Error getting data from wirepod API", getErr)
+		return nil, getErr
+	}
+
+	if res.Body != nil {
+		defer res.Body.Close()
+	}
+
+	body, readErr := ioutil.ReadAll(res.Body)
+	if readErr != nil {
+		log.Println("unable to read data from the wirepod API")
+		return nil, readErr
+	}
+
+	robotSDKInfo := RobotSDKInfoStore{}
+	jsonErr := json.Unmarshal(body, &robotSDKInfo)
+
+	if jsonErr != nil {
+		log.Println("error reading JSON data")
+		return nil, jsonErr
+	}
+
+	matched := false
+	for _, robot := range robotSDKInfo.Robots {
+		if strings.TrimSpace(strings.ToLower(robot.Esn)) == strings.TrimSpace(strings.ToLower(serial)) {
+			cfg.Target = robot.IPAddress + ":443"
+			cfg.Token = robot.GUID
+			matched = true
+			break
+		}
+	}
+	if !matched {
+		log.Println("vector-go-sdk error: serial did not match any bot in wirepod API")
+		return nil, errors.New("vector-go-sdk error: serial did not match any bot in wirepod API")
+	}
 
 	c, err := client.New(
 		client.WithTarget(cfg.Target),

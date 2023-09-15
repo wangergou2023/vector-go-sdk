@@ -20,6 +20,10 @@ guid = token for connecting to the robot
 When you instantiate the robot you provide the serial number, then the SDK code will parse the .anki_vector/sdk_config.ini and get the data it needs.
 I develop and test this version of the go SDK using a production Vector 1.0 and [wirepod](https://github.com/kercre123/wire-pod)
 
+### Wirepod Vectors
+If you are working on wirepod, you do not need to create the sdk_config.ini file if you get the vector struct using a `NewWpExternal` function.
+It will automatically search for the activated Vector with this serial number on wirepod API and connect to it.
+
 ## Examples
 
 Please see the cmd/examples directory for usage examples.
