@@ -6,12 +6,13 @@ import (
 	"context"
 	"flag"
 	"fmt"
-	"github.com/fforchino/vector-go-sdk/pkg/oskrpb"
-	sdk_wrapper "github.com/fforchino/vector-go-sdk/pkg/sdk-wrapper"
-	"google.golang.org/grpc"
 	"log"
 	"strconv"
 	"time"
+
+	"github.com/wangergou2023/vector-go-sdk/pkg/oskrpb"
+	sdk_wrapper "github.com/wangergou2023/vector-go-sdk/pkg/sdk-wrapper"
+	"google.golang.org/grpc"
 )
 
 const (

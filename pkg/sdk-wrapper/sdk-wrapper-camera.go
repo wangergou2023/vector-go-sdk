@@ -2,11 +2,12 @@ package sdk_wrapper
 
 import (
 	"bytes"
-	"github.com/fforchino/vector-go-sdk/pkg/vectorpb"
 	"image"
 	"image/jpeg"
 	"math/rand"
 	"os"
+
+	"github.com/wangergou2023/vector-go-sdk/pkg/vectorpb"
 )
 
 var camStreamEnable bool = false

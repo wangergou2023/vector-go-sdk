@@ -3,13 +3,14 @@ package sdk_wrapper
 import (
 	"bytes"
 	"encoding/json"
-	"github.com/PerformLine/go-stockutil/colorutil"
-	"github.com/fforchino/vector-go-sdk/pkg/vectorpb"
 	"image/color"
 	"log"
 	"net/http"
 	"os"
 	"strings"
+
+	"github.com/PerformLine/go-stockutil/colorutil"
+	"github.com/wangergou2023/vector-go-sdk/pkg/vectorpb"
 )
 
 type CustomSettings struct {

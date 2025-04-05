@@ -3,9 +3,10 @@ package main
 import (
 	"context"
 	"flag"
-	sdk_wrapper "github.com/fforchino/vector-go-sdk/pkg/sdk-wrapper"
 	"math/rand"
 	"time"
+
+	sdk_wrapper "github.com/wangergou2023/vector-go-sdk/pkg/sdk-wrapper"
 )
 
 func main() {

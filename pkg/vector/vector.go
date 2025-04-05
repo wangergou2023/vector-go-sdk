@@ -4,10 +4,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/digital-dream-labs/hugh/grpc/client"
-	"github.com/fforchino/vector-go-sdk/pkg/vectorpb"
-	"google.golang.org/grpc"
-	"gopkg.in/ini.v1"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -15,6 +11,11 @@ import (
 	"path/filepath"
 	"strings"
 	"time"
+
+	"github.com/digital-dream-labs/hugh/grpc/client"
+	"github.com/wangergou2023/vector-go-sdk/pkg/vectorpb"
+	"google.golang.org/grpc"
+	"gopkg.in/ini.v1"
 )
 
 // Vector is the struct containing info about Vector

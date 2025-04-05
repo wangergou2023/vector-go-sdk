@@ -2,7 +2,8 @@ package vector
 
 import (
 	"context"
-	"github.com/fforchino/vector-go-sdk/pkg/vectorpb"
+
+	"github.com/wangergou2023/vector-go-sdk/pkg/vectorpb"
 )
 
 // BehaviorControl assumes control of the vector robot for SDK usage.  Once control is
